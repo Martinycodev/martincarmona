@@ -1,0 +1,47 @@
+# 1. Al empezar el día
+git pull origin main
+
+# 2. Crear rama para nueva funcionalidad
+git checkout -b nueva-funcionalidad
+
+# 3. Trabajar en el código...
+
+# 4. Agregar cambios
+git add .
+
+# 5. Hacer commit
+git commit -m "Implementar nueva funcionalidad"
+
+# 6. Subir cambios
+git push -u origin nueva-funcionalidad
+
+# 7. Al terminar, fusionar con main
+git checkout main
+git merge nueva-funcionalidad
+git push
+
+# EN NUEVO ORDENADOR
+# En macOS con Homebrew
+brew install git
+
+git config --global user.name "Tu Nombre"
+git config --global user.email "tu-email@ejemplo.com"
+
+# Navegar al directorio donde quieres el proyecto (ej: htdocs)
+cd /Applications/MAMP/htdocs/
+
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/martincarmona.git
+
+# Entrar al directorio del proyecto
+cd martincarmona
+
+# Crear la base de datos (usando phpMyAdmin o línea de comandos)
+mysql -u root -p
+
+# En MySQL:
+CREATE DATABASE u873002419_campo;
+USE u873002419_campo;
+
+# Importar la estructura de la base de datos
+source /ruta/al/archivo/u873002419_campo.sql;
