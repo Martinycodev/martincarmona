@@ -1265,7 +1265,7 @@ textarea {
 }
 
 .parcel-tag {
-    background: linear-gradient(135deg, #FF9800, #F57C00);
+    background: linear-gradient(135deg, #4CAF50, #45a049);
 }
 
 .worker-tag .remove-worker,
@@ -1342,13 +1342,13 @@ textarea {
 }
 
 .autocomplete-item.selected-parcel {
-    background-color: #3e2a1e;
+    background-color: #1e3a1e;
 }
 
 .autocomplete-item.selected-parcel::after {
     content: " ✓ Seleccionada";
     font-size: 11px;
-    color: #FF9800;
+    color: #4CAF50;
     font-weight: bold;
 }
 
@@ -1945,9 +1945,9 @@ textarea {
 }
 
 .parcela-tag-small {
-    background: #5a4a2d;
-    color: #f0d060;
-    border-color: #ffc107;
+    background: #2d5a2d;
+    color: #90ee90;
+    border-color: #4CAF50;
 }
 
 .trabajo-tag-small {
@@ -2538,7 +2538,7 @@ textarea {
 }
 
 .nav-card.parcelas {
-    --nav-color: #FF9800;
+    --nav-color: #4CAF50;
 }
 
 .nav-card.trabajos {
@@ -2768,7 +2768,7 @@ textarea {
 }
 
 .parcela-item:hover {
-    border-color: #FF9800;
+    border-color: #4CAF50;
     transform: translateY(-2px);
 }
 
@@ -2787,7 +2787,7 @@ textarea {
 }
 
 .roi-badge {
-    background: #FF9800;
+    background: #4CAF50;
     color: white;
     padding: 4px 8px;
     border-radius: 6px;
@@ -2808,7 +2808,7 @@ textarea {
     display: block;
     font-size: 18px;
     font-weight: 700;
-    color: #FF9800;
+    color: #4CAF50;
 }
 
 .stat-label {

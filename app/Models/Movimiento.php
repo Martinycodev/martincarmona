@@ -198,4 +198,105 @@ class Movimiento {
         $stmt->close();
         return $movimientos;
     }
+    
+    /**
+     * Buscar o crear movimiento mensual de un trabajador
+     * @param int $trabajadorId ID del trabajador
+     * @param string $fecha Fecha en formato Y-m-d
+     * @return array|false Datos del movimiento o false si hay error
+     */
+    public function getOrCreateMovimientoMensualTrabajador($trabajadorId, $fecha) {
+        try {
+            // Obtener año y mes de la fecha
+            $year = date('Y', strtotime($fecha));
+            $month = date('m', strtotime($fecha));
+            
+            // Buscar movimiento existente para el trabajador en ese mes
+            $sql = "SELECT * FROM movimientos 
+                    WHERE trabajador_id = ? 
+                    AND YEAR(fecha) = ? 
+                    AND MONTH(fecha) = ?
+                    AND tipo = 'gasto'
+                    AND categoria = 'personal'";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bind_param("iii", $trabajadorId, $year, $month);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $movimiento = $result->fetch_assoc();
+            $stmt->close();
+            
+            if ($movimiento) {
+                return $movimiento;
+            }
+            
+            // Si no existe, crear uno nuevo
+            $fechaInicioMes = sprintf('%04d-%02d-01', $year, $month);
+            $concepto = "Ganancias mensuales - " . date('F Y', strtotime($fechaInicioMes));
+            
+            $sql = "INSERT INTO movimientos (fecha, tipo, concepto, categoria, importe, trabajador_id, estado) 
+                    VALUES (?, 'gasto', ?, 'personal', 0.00, ?, 'pagado')";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bind_param("ssi", $fechaInicioMes, $concepto, $trabajadorId);
+            $result = $stmt->execute();
+            $movimientoId = $this->db->insert_id;
+            $stmt->close();
+            
+            if (!$result) {
+                return false;
+            }
+            
+            // Obtener el movimiento recién creado
+            return $this->getById($movimientoId);
+            
+        } catch (\Exception $e) {
+            error_log("Error en getOrCreateMovimientoMensualTrabajador: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Actualizar ganancias de un trabajador en su movimiento mensual
+     * @param int $trabajadorId ID del trabajador
+     * @param string $fecha Fecha de la tarea
+     * @param float $gananciaAdicional Ganancia a sumar
+     * @return bool True si se actualizó correctamente
+     */
+    public function actualizarGananciasTrabajador($trabajadorId, $fecha, $gananciaAdicional) {
+        try {
+            $this->db->begin_transaction();
+            
+            // Obtener o crear el movimiento mensual
+            $movimiento = $this->getOrCreateMovimientoMensualTrabajador($trabajadorId, $fecha);
+            
+            if (!$movimiento) {
+                throw new \Exception("No se pudo obtener o crear el movimiento mensual");
+            }
+            
+            // Actualizar el importe sumando la ganancia adicional
+            $nuevoImporte = $movimiento['importe'] + $gananciaAdicional;
+            
+            $sql = "UPDATE movimientos 
+                    SET importe = ? 
+                    WHERE id = ?";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bind_param("di", $nuevoImporte, $movimiento['id']);
+            $result = $stmt->execute();
+            $stmt->close();
+            
+            if (!$result) {
+                throw new \Exception("Error actualizando el importe del movimiento");
+            }
+            
+            $this->db->commit();
+            return true;
+            
+        } catch (\Exception $e) {
+            $this->db->rollback();
+            error_log("Error actualizando ganancias del trabajador: " . $e->getMessage());
+            return false;
+        }
+    }
 }

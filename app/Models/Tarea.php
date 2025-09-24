@@ -80,6 +80,12 @@ class Tarea
                 $this->insertarTrabajos($tareaId, [$data['trabajo']], $data['horas']);
             }
             
+            // ===== NUEVA LÓGICA: ACTUALIZAR MOVIMIENTOS MENSUALES =====
+            // Solo procesar si hay trabajadores y trabajo asignado
+            if (!empty($trabajadores) && isset($data['trabajo']) && $data['trabajo'] > 0) {
+                $this->actualizarMovimientosMensuales($trabajadores, $data['trabajo'], $data['horas'], $data['fecha']);
+            }
+            
             $this->db->commit();
             return $tareaId;
             
@@ -930,5 +936,147 @@ class Tarea
             ];
         }
         $stmt->close();
+    }
+    
+    /**
+     * Obtener el precio por hora de un trabajo
+     * @param int $trabajoId ID del trabajo
+     * @return float Precio por hora del trabajo
+     */
+    private function getPrecioHoraTrabajo($trabajoId) {
+        try {
+            // Obtener precio_hora del trabajo desde la tabla trabajos
+            $stmt = $this->db->prepare("
+                SELECT precio_hora 
+                FROM trabajos 
+                WHERE id = ?
+            ");
+            $stmt->bind_param("i", $trabajoId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $stmt->close();
+            
+            if ($row && $row['precio_hora'] > 0) {
+                return (float) $row['precio_hora'];
+            }
+            
+            // Si no hay precio_hora en la tabla trabajos, usar precio por defecto
+            return 15.0; // Precio por defecto de 15€/hora
+            
+        } catch (\Exception $e) {
+            error_log("Error obteniendo precio del trabajo: " . $e->getMessage());
+            return 15.0; // Precio por defecto en caso de error
+        }
+    }
+    
+    /**
+     * Calcular el total de una tarea
+     * @param int $trabajoId ID del trabajo
+     * @param float $horas Horas trabajadas
+     * @return float Total calculado (precio * horas)
+     */
+    private function calcularTotalTarea($trabajoId, $horas) {
+        $precioHora = $this->getPrecioHoraTrabajo($trabajoId);
+        return $precioHora * $horas;
+    }
+    
+    /**
+     * Actualizar movimientos mensuales para todos los trabajadores de una tarea
+     * @param array $trabajadores Array de IDs de trabajadores
+     * @param int $trabajoId ID del trabajo
+     * @param float $horas Horas trabajadas
+     * @param string $fecha Fecha de la tarea
+     * @return bool True si se actualizaron correctamente todos los movimientos
+     */
+    private function actualizarMovimientosMensuales($trabajadores, $trabajoId, $horas, $fecha) {
+        try {
+            // Calcular el total de la tarea (mismo para todos los trabajadores)
+            $totalTarea = $this->calcularTotalTarea($trabajoId, $horas);
+            
+            $todosExitosos = true;
+            
+            foreach ($trabajadores as $trabajadorId) {
+                // Actualizar el movimiento mensual del trabajador
+                $resultado = $this->actualizarMovimientoMensualTrabajador($trabajadorId, $fecha, $totalTarea);
+                
+                if (!$resultado) {
+                    $todosExitosos = false;
+                    error_log("Error actualizando movimientos para trabajador ID: $trabajadorId");
+                } else {
+                    error_log("Movimiento actualizado para trabajador ID: $trabajadorId, total: $totalTarea");
+                }
+            }
+            
+            return $todosExitosos;
+            
+        } catch (\Exception $e) {
+            error_log("Error en actualizarMovimientosMensuales: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Actualizar o crear movimiento mensual para un trabajador específico
+     * @param int $trabajadorId ID del trabajador
+     * @param string $fecha Fecha de la tarea
+     * @param float $importe Importe a sumar
+     * @return bool True si se actualizó correctamente
+     */
+    private function actualizarMovimientoMensualTrabajador($trabajadorId, $fecha, $importe) {
+        try {
+            // Obtener año y mes de la fecha
+            $year = date('Y', strtotime($fecha));
+            $month = date('m', strtotime($fecha));
+            
+            // Buscar movimiento existente para el trabajador en ese mes
+            $sql = "SELECT * FROM movimientos 
+                    WHERE trabajador_id = ? 
+                    AND YEAR(fecha) = ? 
+                    AND MONTH(fecha) = ?
+                    AND tipo = 'gasto'
+                    AND categoria = 'gasto'";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bind_param("iii", $trabajadorId, $year, $month);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $movimiento = $result->fetch_assoc();
+            $stmt->close();
+            
+            if ($movimiento) {
+                // Si existe, sumar el importe al existente
+                $nuevoImporte = $movimiento['importe'] + $importe;
+                
+                $sql = "UPDATE movimientos 
+                        SET importe = ? 
+                        WHERE id = ?";
+                
+                $stmt = $this->db->prepare($sql);
+                $stmt->bind_param("di", $nuevoImporte, $movimiento['id']);
+                $resultado = $stmt->execute();
+                $stmt->close();
+                
+                return $resultado;
+            } else {
+                // Si no existe, crear uno nuevo
+                $fechaInicioMes = sprintf('%04d-%02d-01', $year, $month);
+                $concepto = "Sueldo - " . date('F Y', strtotime($fechaInicioMes));
+                
+                $sql = "INSERT INTO movimientos (fecha, tipo, concepto, categoria, importe, trabajador_id, estado) 
+                        VALUES (?, 'gasto', ?, 'gasto', ?, ?, 'pendiente')";
+                
+                $stmt = $this->db->prepare($sql);
+                $stmt->bind_param("ssdi", $fechaInicioMes, $concepto, $importe, $trabajadorId);
+                $resultado = $stmt->execute();
+                $stmt->close();
+                
+                return $resultado;
+            }
+            
+        } catch (\Exception $e) {
+            error_log("Error actualizando movimiento mensual del trabajador: " . $e->getMessage());
+            return false;
+        }
     }
 }
