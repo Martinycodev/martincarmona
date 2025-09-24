@@ -1242,14 +1242,16 @@ textarea {
     position: relative;
 }
 
-.selected-workers {
+.selected-workers,
+.selected-parcels {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     min-height: 0;
 }
 
-.worker-tag {
+.worker-tag,
+.parcel-tag {
     background: linear-gradient(135deg, #4CAF50, #45a049);
     color: white;
     padding: 4px 8px;
@@ -1262,7 +1264,12 @@ textarea {
     animation: slideIn 0.3s ease-out;
 }
 
-.worker-tag .remove-worker {
+.parcel-tag {
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+}
+
+.worker-tag .remove-worker,
+.parcel-tag .remove-parcel {
     background: rgba(255,255,255,0.3);
     border: none;
     color: white;
@@ -1277,7 +1284,8 @@ textarea {
     transition: all 0.2s;
 }
 
-.worker-tag .remove-worker:hover {
+.worker-tag .remove-worker:hover,
+.parcel-tag .remove-parcel:hover {
     background: rgba(255,255,255,0.5);
     transform: scale(1.1);
 }
@@ -1319,7 +1327,8 @@ textarea {
     animation: slideDown 0.2s ease-out;
 }
 
-.autocomplete-item.selected-worker {
+.autocomplete-item.selected-worker,
+.autocomplete-item.selected-parcel {
     background-color: #1e3a1e;
     color: #666;
     cursor: not-allowed;
@@ -1329,6 +1338,17 @@ textarea {
     content: " ✓ Seleccionado";
     font-size: 11px;
     color: #4CAF50;
+    font-weight: bold;
+}
+
+.autocomplete-item.selected-parcel {
+    background-color: #3e2a1e;
+}
+
+.autocomplete-item.selected-parcel::after {
+    content: " ✓ Seleccionada";
+    font-size: 11px;
+    color: #FF9800;
     font-weight: bold;
 }
 

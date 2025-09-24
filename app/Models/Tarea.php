@@ -66,8 +66,12 @@ class Tarea
                 $this->insertarTrabajadores($tareaId, $trabajadores, $data['horas']);
             }
             
-            // Insertar parcela en la tabla de relaciones N:N (si existe)
-            if (isset($data['parcela']) && $data['parcela'] > 0) {
+            // Insertar parcelas en la tabla de relaciones N:N (si existen)
+            if (isset($data['parcelas']) && is_array($data['parcelas']) && !empty($data['parcelas'])) {
+                // Modo múltiple: array de IDs de parcelas
+                $this->insertarParcelas($tareaId, $data['parcelas']);
+            } elseif (isset($data['parcela']) && $data['parcela'] > 0) {
+                // Modo único: una sola parcela (compatibilidad)
                 $this->insertarParcelas($tareaId, [$data['parcela']]);
             }
             
@@ -735,9 +739,13 @@ class Tarea
                 $this->insertarTrabajadores($data['id'], $trabajadores, $data['horas']);
             }
             
-            // Actualizar parcela en tabla de relaciones
+            // Actualizar parcelas en tabla de relaciones
             $this->eliminarRelacionesTarea($data['id'], 'parcelas');
-            if (isset($data['parcela']) && $data['parcela'] > 0) {
+            if (isset($data['parcelas']) && is_array($data['parcelas']) && !empty($data['parcelas'])) {
+                // Modo múltiple: array de IDs de parcelas
+                $this->insertarParcelas($data['id'], $data['parcelas']);
+            } elseif (isset($data['parcela']) && $data['parcela'] > 0) {
+                // Modo único: una sola parcela (compatibilidad)
                 $this->insertarParcelas($data['id'], [$data['parcela']]);
             }
             

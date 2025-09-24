@@ -253,11 +253,23 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="editTaskParcela">Parcela:</label>
-                            <div class="autocomplete-wrapper">
-                                <input type="text" id="editTaskParcela" name="parcela_nombre" autocomplete="off">
-                                <input type="hidden" id="editTaskParcelaId" name="parcela" value="">
-                                <div id="editParcelaResults" class="autocomplete-results" style="display: none;"></div>
+                            <label for="editTaskParcela">Parcelas:</label>
+                            <div class="multi-select-wrapper">
+                                <!-- Tags de parcelas seleccionadas -->
+                                <div class="selected-parcels" id="editSelectedParcels"></div>
+                                
+                                <!-- Input de búsqueda -->
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" 
+                                           id="editTaskParcela" 
+                                           name="parcela_busqueda" 
+                                           placeholder="Buscar parcela..." 
+                                           autocomplete="off">
+                                    <div id="editParcelaResults" class="autocomplete-results" style="display: none;"></div>
+                                </div>
+                                
+                                <!-- Inputs hidden para enviar los IDs -->
+                                <div id="editParcelHiddenInputs"></div>
                             </div>
                         </div>
                         
@@ -328,11 +340,23 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="createTaskParcela">Parcela:</label>
-                            <div class="autocomplete-wrapper">
-                                <input type="text" id="createTaskParcela" name="parcela_nombre" autocomplete="off">
-                                <input type="hidden" id="createTaskParcelaId" name="parcela" value="">
-                                <div id="parcelaResults" class="autocomplete-results" style="display: none;"></div>
+                            <label for="createTaskParcela">Parcelas:</label>
+                            <div class="multi-select-wrapper">
+                                <!-- Tags de parcelas seleccionadas -->
+                                <div class="selected-parcels" id="selectedParcels"></div>
+                                
+                                <!-- Input de búsqueda -->
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" 
+                                           id="createTaskParcela" 
+                                           name="parcela_busqueda" 
+                                           placeholder="Buscar parcela..." 
+                                           autocomplete="off">
+                                    <div id="parcelaResults" class="autocomplete-results" style="display: none;"></div>
+                                </div>
+                                
+                                <!-- Inputs hidden para enviar los IDs -->
+                                <div id="parcelHiddenInputs"></div>
                             </div>
                         </div>
                         
@@ -657,15 +681,17 @@ include BASE_PATH . '/app/Views/layouts/header.php';
             
             const formData = new FormData(this);
             const selectedWorkerIds = createWorkerSelector.getSelectedWorkerIds();
+            const selectedParcelaIds = createParcelaSelector.getSelectedParcelaIds();
             
             console.log('Trabajadores seleccionados:', selectedWorkerIds);
+            console.log('Parcelas seleccionadas:', selectedParcelaIds);
             
             const taskData = {
                 user_id: <?= $_SESSION['user_id'] ?? 0 ?>,
                 fecha: formData.get('fecha'),
                 descripcion: formData.get('descripcion'),
-                parcela: parseInt(document.getElementById('createTaskParcelaId').value) || 0,
-                trabajadores: selectedWorkerIds, // Array de IDs
+                parcelas: selectedParcelaIds, // Array de IDs de parcelas
+                trabajadores: selectedWorkerIds, // Array de IDs de trabajadores
                 trabajo: parseInt(document.getElementById('createTaskTrabajoId').value) || 0,
                 horas: parseFloat(formData.get('horas')) || 0
             };
@@ -710,8 +736,8 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                 user_id: parseInt(formData.get('user_id')),
                 fecha: formData.get('fecha'),
                 descripcion: formData.get('descripcion'),
-                parcela: parseInt(document.getElementById('editTaskParcelaId').value) || 0,
-                trabajadores: editWorkerSelector.getSelectedWorkerIds(), // Obtener IDs de trabajadores seleccionados
+                parcelas: editParcelaSelector.getSelectedParcelaIds(), // Array de IDs de parcelas
+                trabajadores: editWorkerSelector.getSelectedWorkerIds(), // Array de IDs de trabajadores
                 trabajo: parseInt(formData.get('trabajo')) || 0,
                 horas: parseFloat(formData.get('horas')) || 0
             };
@@ -749,109 +775,208 @@ include BASE_PATH . '/app/Views/layouts/header.php';
             await cargarYRenderizarCalendario();
         });
 
-        // ====== PRESERVAR FUNCIONES EXISTENTES DE PARCELAS Y TRABAJOS ======
-
-        // Función para manejar la selección de parcela (MANTENER ORIGINAL)
-        function handleParcelaSelect(element, inputId) {
-            console.log('Elemento seleccionado:', element);
-            console.log('Input ID:', inputId);
-            
-            const id = element.getAttribute('data-id');
-            const nombre = element.getAttribute('data-name');
-            const hiddenInputId = inputId === 'createTaskParcela' ? 'createTaskParcelaId' : 'editTaskParcelaId';
-            const resultsId = inputId === 'createTaskParcela' ? 'parcelaResults' : 'editParcelaResults';
-            
-            console.log('Datos a insertar:', { id, nombre, hiddenInputId, resultsId });
-            
-            // Actualizar campos
-            document.getElementById(inputId).value = nombre;
-            document.getElementById(hiddenInputId).value = id;
-            document.getElementById(resultsId).style.display = 'none';
-            
-            console.log('Campos actualizados');
-        }
-
-        function highlightParcela(resultsId, index) {
-            const items = document.getElementById(resultsId).getElementsByClassName('autocomplete-item');
-            for (let item of items) {
-                item.classList.remove('selected');
+        // ====== NUEVO SISTEMA DE SELECCIÓN MÚLTIPLE DE PARCELAS ======
+        class MultiParcelaSelector {
+            constructor(inputId, resultsId, selectedParcelsId, hiddenInputsId) {
+                this.input = document.getElementById(inputId);
+                this.results = document.getElementById(resultsId);
+                this.selectedParcelsContainer = document.getElementById(selectedParcelsId);
+                this.hiddenInputsContainer = document.getElementById(hiddenInputsId);
+                this.selectedParcels = new Map();
+                this.selectedIndex = -1;
+                
+                this.init();
             }
-            if (items[index]) {
-                items[index].classList.add('selected');
+            
+            init() {
+                this.setupEventListeners();
             }
-        }
-
-
-
-        // Configurar autocompletado para parcelas (MANTENER ORIGINAL)
-        function setupAutocomplete(inputId, resultsId, hiddenInputId) {
-            const input = document.getElementById(inputId);
-            const results = document.getElementById(resultsId);
-            const hiddenInput = document.getElementById(hiddenInputId);
-            let selectedIndex = -1;
-
-            input.addEventListener('input', function() {
-                console.log('Input event triggered');
-                const query = this.value.trim();
+            
+            setupEventListeners() {
+                this.input.addEventListener('input', (e) => {
+                    this.handleSearch(e.target.value.trim());
+                });
+                
+                this.input.addEventListener('keydown', (e) => {
+                    this.handleKeydown(e);
+                });
+                
+                this.input.addEventListener('focus', () => {
+                    this.input.value = '';
+                });
+            }
+            
+            async handleSearch(query) {
                 if (query.length >= 3) {
-                    console.log('Fetching results for:', query);
-                    fetch(`<?= $this->url("/parcelas/buscar") ?>?q=${encodeURIComponent(query)}`, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                    .then(response => {
-                        console.log('Response received:', response);
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Data received:', data);
-                        if (data.length > 0) {
-                            results.innerHTML = data
-                                .map((parcela, index) => `
-                                    <div class="autocomplete-item" 
-                                         data-id="${parcela.id}" 
-                                         data-name="${parcela.nombre}"
-                                         onclick="handleParcelaSelect(this, '${inputId}')"
-                                         onmouseover="highlightParcela('${resultsId}', ${index})">
-                                        ${parcela.nombre} (${parcela.olivos} olivos)
-                                    </div>
-                                `).join('');
-                        } else {
-                            results.innerHTML = `
-                                <div class="autocomplete-item no-results">
-                                    No hay coincidencias
-                                </div>`;
-                        }
-
-                        results.style.display = 'block';
-                    })
-                    .catch(error => {
-                        console.error('Error en autocompletado:', error);
-                    });
+                    try {
+                        const response = await fetch(`<?= $this->url("/parcelas/buscar") ?>?q=${encodeURIComponent(query)}`, {
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+                        const parcels = await response.json();
+                        this.displayResults(parcels);
+                    } catch (error) {
+                        console.error('Error en búsqueda de parcelas:', error);
+                    }
                 } else {
-                    results.style.display = 'none';
+                    this.hideResults();
                 }
-            });
-
-            input.addEventListener('keydown', function(e) {
-                const items = results.getElementsByClassName('autocomplete-item');
+            }
+            
+            displayResults(parcels) {
+                if (parcels.length === 0) {
+                    this.results.innerHTML = '<div class="autocomplete-item no-results">No hay coincidencias</div>';
+                } else {
+                    this.results.innerHTML = parcels
+                        .map((parcela, index) => {
+                            const isSelected = this.selectedParcels.has(parcela.id);
+                            const extraClass = isSelected ? 'selected-parcel' : '';
+                            
+                            return `
+                                <div class="autocomplete-item ${extraClass}" 
+                                     data-id="${parcela.id}" 
+                                     data-name="${parcela.nombre}"
+                                     data-olivos="${parcela.olivos || 0}"
+                                     data-index="${index}"
+                                     onclick="${isSelected ? '' : `this.multiSelector.selectParcela(${parcela.id}, '${parcela.nombre.replace(/'/g, "\\'")}', ${parcela.olivos || 0})`}">
+                                    <strong>${parcela.nombre}</strong>
+                                    <br><small>${parcela.olivos || 0} olivos</small>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                    this.results.querySelectorAll('.autocomplete-item').forEach(item => {
+                        item.multiSelector = this;
+                    });
+                }
+                this.showResults();
+                this.selectedIndex = -1;
+            }
+            
+            selectParcela(id, name, olivos) {
+                if (this.selectedParcels.has(id)) return;
+                
+                this.selectedParcels.set(id, { id, name, olivos });
+                this.createParcelaTag(id, name, olivos);
+                this.createHiddenInput(id);
+                this.input.value = '';
+                this.hideResults();
+                this.updatePlaceholder();
+                
+                console.log('Parcela seleccionada:', { id, name, olivos });
+            }
+            
+            createParcelaTag(id, name, olivos) {
+                const tag = document.createElement('div');
+                tag.className = 'parcel-tag';
+                tag.dataset.parcelId = id;
+                tag.innerHTML = `
+                    <span>${name} (${olivos} olivos)</span>
+                    <button type="button" class="remove-parcel" onclick="this.closest('.parcel-tag').multiSelector.removeParcela(${id})">×</button>
+                `;
+                
+                tag.multiSelector = this;
+                this.selectedParcelsContainer.appendChild(tag);
+            }
+            
+            createHiddenInput(id) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'parcelas[]';
+                input.value = id;
+                input.dataset.parcelId = id;
+                
+                this.hiddenInputsContainer.appendChild(input);
+            }
+            
+            removeParcela(id) {
+                this.selectedParcels.delete(id);
+                
+                const tag = this.selectedParcelsContainer.querySelector(`[data-parcel-id="${id}"]`);
+                if (tag) {
+                    tag.style.animation = 'slideOut 0.3s ease-in forwards';
+                    setTimeout(() => tag.remove(), 300);
+                }
+                
+                const hiddenInput = this.hiddenInputsContainer.querySelector(`[data-parcel-id="${id}"]`);
+                if (hiddenInput) hiddenInput.remove();
+                
+                this.updatePlaceholder();
+            }
+            
+            updatePlaceholder() {
+                const count = this.selectedParcels.size;
+                if (count === 0) {
+                    this.input.placeholder = 'Buscar parcela...';
+                } else {
+                    this.input.placeholder = `${count} parcela${count > 1 ? 's' : ''} seleccionada${count > 1 ? 's' : ''}. Buscar más...`;
+                }
+            }
+            
+            handleKeydown(e) {
+                const items = this.results.querySelectorAll('.autocomplete-item:not(.selected-parcel)');
                 if (items.length === 0) return;
-
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    selectedIndex = (selectedIndex + 1) % items.length;
-                    highlightParcela(resultsId, selectedIndex);
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    selectedIndex = selectedIndex <= 0 ? items.length - 1 : selectedIndex - 1;
-                    highlightParcela(resultsId, selectedIndex);
-                } else if (e.key === 'Enter' && selectedIndex >= 0) {
-                    e.preventDefault();
-                    const selected = items[selectedIndex];
-                    handleParcelaSelect(selected, inputId);
+                
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.selectedIndex = (this.selectedIndex + 1) % items.length;
+                        this.highlightItem(items);
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.selectedIndex = this.selectedIndex <= 0 ? items.length - 1 : this.selectedIndex - 1;
+                        this.highlightItem(items);
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (this.selectedIndex >= 0 && items[this.selectedIndex]) {
+                            const item = items[this.selectedIndex];
+                            const id = item.dataset.id;
+                            const name = item.dataset.name;
+                            const olivos = item.dataset.olivos;
+                            this.selectParcela(id, name, olivos);
+                        }
+                        break;
+                    case 'Escape':
+                        this.hideResults();
+                        this.input.blur();
+                        break;
                 }
-            });
+            }
+            
+            highlightItem(items) {
+                items.forEach(item => item.classList.remove('selected'));
+                if (items[this.selectedIndex]) {
+                    items[this.selectedIndex].classList.add('selected');
+                }
+            }
+            
+            showResults() {
+                this.results.style.display = 'block';
+            }
+            
+            hideResults() {
+                this.results.style.display = 'none';
+                this.selectedIndex = -1;
+            }
+            
+            clearAll() {
+                this.selectedParcels.clear();
+                this.selectedParcelsContainer.innerHTML = '';
+                this.hiddenInputsContainer.innerHTML = '';
+                this.updatePlaceholder();
+            }
+            
+            preloadParcels(parcels) {
+                this.clearAll();
+                parcels.forEach(parcela => {
+                    this.selectParcela(parcela.id, parcela.nombre, parcela.olivos || 0);
+                });
+            }
+            
+            getSelectedParcelaIds() {
+                return Array.from(this.selectedParcels.keys());
+            }
         }
 
         // Configurar autocompletado para trabajos (MANTENER ORIGINAL)
@@ -1190,10 +1315,25 @@ include BASE_PATH . '/app/Views/layouts/header.php';
             'editWorkerHiddenInputs'
         );
 
+        const createParcelaSelector = new MultiParcelaSelector(
+            'createTaskParcela',
+            'parcelaResults',
+            'selectedParcels',
+            'parcelHiddenInputs'
+        );
+
+        const editParcelaSelector = new MultiParcelaSelector(
+            'editTaskParcela',
+            'editParcelaResults',
+            'editSelectedParcels',
+            'editParcelHiddenInputs'
+        );
+
         // Función actualizada para abrir modal de crear
         function openCreateTaskModal(fecha) {
             document.getElementById('createTaskFecha').value = fecha;
             createWorkerSelector.clearAll();
+            createParcelaSelector.clearAll();
             openModal('createTaskModal');
         }
 
@@ -1205,8 +1345,6 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                 document.getElementById('editTaskUserId').value = tarea.id_user || <?= $_SESSION['user_id'] ?? 0 ?>;
                 document.getElementById('editTaskFecha').value = tarea.fecha;
                 document.getElementById('editTaskDescripcion').value = tarea.descripcion;
-                document.getElementById('editTaskParcela').value = tarea.parcela_nombre || '';
-                document.getElementById('editTaskParcelaId').value = tarea.parcela || '';
                 document.getElementById('editTaskTrabajo').value = tarea.trabajo_nombre || '';
                 document.getElementById('editTaskTrabajoId').value = tarea.trabajo || '';
                 document.getElementById('editTaskHoras').value = tarea.horas || '';
@@ -1221,6 +1359,17 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                     }]);
                 }
                 
+                // Precargar parcelas
+                if (tarea.parcelas && Array.isArray(tarea.parcelas)) {
+                    editParcelaSelector.preloadParcels(tarea.parcelas);
+                } else if (tarea.parcela && tarea.parcela_nombre) {
+                    editParcelaSelector.preloadParcels([{
+                        id: tarea.parcela,
+                        nombre: tarea.parcela_nombre,
+                        olivos: tarea.parcela_olivos || 0
+                    }]);
+                }
+                
                 openModal('editTaskModal');
             }
         }
@@ -1229,15 +1378,15 @@ include BASE_PATH . '/app/Views/layouts/header.php';
 
         // Cerrar resultados al hacer clic fuera
         document.addEventListener('click', function(e) {
-            // Parcelas
-            const createWrapper = document.querySelector('#createTaskParcela').closest('.autocomplete-wrapper');
-            const editWrapper = document.querySelector('#editTaskParcela').closest('.autocomplete-wrapper');
+            // Parcelas múltiples
+            const createParcelaWrapper = document.querySelector('#createTaskParcela').closest('.multi-select-wrapper');
+            const editParcelaWrapper = document.querySelector('#editTaskParcela').closest('.multi-select-wrapper');
             
-            if (!createWrapper.contains(e.target)) {
-                document.getElementById('parcelaResults').style.display = 'none';
+            if (createParcelaWrapper && !createParcelaWrapper.contains(e.target)) {
+                createParcelaSelector.hideResults();
             }
-            if (!editWrapper.contains(e.target)) {
-                document.getElementById('editParcelaResults').style.display = 'none';
+            if (editParcelaWrapper && !editParcelaWrapper.contains(e.target)) {
+                editParcelaSelector.hideResults();
             }
 
             // Trabajadores múltiples
@@ -1265,9 +1414,7 @@ include BASE_PATH . '/app/Views/layouts/header.php';
 
 
 
-        // Inicializar autocompletado para todos los campos
-        setupAutocomplete('createTaskParcela', 'parcelaResults', 'createTaskParcelaId');
-        setupAutocomplete('editTaskParcela', 'editParcelaResults', 'editTaskParcelaId');
+        // Inicializar autocompletado para trabajos
         setupTrabajoAutocomplete('createTaskTrabajo', 'trabajoResults', 'createTaskTrabajoId');
         setupTrabajoAutocomplete('editTaskTrabajo', 'editTrabajoResults', 'editTaskTrabajoId');
 

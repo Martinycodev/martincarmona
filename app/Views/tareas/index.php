@@ -33,11 +33,23 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="createParcela">Parcela:</label>
-                            <div class="autocomplete-wrapper">
-                                <input type="text" id="createParcela" name="parcela_nombre" autocomplete="off">
-                                <input type="hidden" id="createParcelaId" name="parcela" value="">
-                                <div id="createParcelaResults" class="autocomplete-results" style="display: none;"></div>
+                            <label for="createParcela">Parcelas:</label>
+                            <div class="multi-select-wrapper">
+                                <!-- Tags de parcelas seleccionadas -->
+                                <div class="selected-parcels" id="createSelectedParcels"></div>
+                                
+                                <!-- Input de búsqueda -->
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" 
+                                           id="createParcela" 
+                                           name="parcela_busqueda" 
+                                           placeholder="Buscar parcela..." 
+                                           autocomplete="off">
+                                    <div id="createParcelaResults" class="autocomplete-results" style="display: none;"></div>
+                                </div>
+                                
+                                <!-- Inputs hidden para enviar los IDs -->
+                                <div id="createParcelHiddenInputs"></div>
                             </div>
                         </div>
                         
@@ -247,11 +259,23 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="editParcela">Parcela:</label>
-                            <div class="autocomplete-wrapper">
-                                <input type="text" id="editParcela" name="parcela_nombre" autocomplete="off">
-                                <input type="hidden" id="editParcelaId" name="parcela" value="">
-                                <div id="editParcelaResults" class="autocomplete-results" style="display: none;"></div>
+                            <label for="editParcela">Parcelas:</label>
+                            <div class="multi-select-wrapper">
+                                <!-- Tags de parcelas seleccionadas -->
+                                <div class="selected-parcels" id="editSelectedParcels"></div>
+                                
+                                <!-- Input de búsqueda -->
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" 
+                                           id="editParcela" 
+                                           name="parcela_busqueda" 
+                                           placeholder="Buscar parcela..." 
+                                           autocomplete="off">
+                                    <div id="editParcelaResults" class="autocomplete-results" style="display: none;"></div>
+                                </div>
+                                
+                                <!-- Inputs hidden para enviar los IDs -->
+                                <div id="editParcelHiddenInputs"></div>
                             </div>
                         </div>
                         
@@ -323,9 +347,9 @@ include BASE_PATH . '/app/Views/layouts/header.php';
             document.getElementById('createTareaForm').reset();
             
             // Limpiar campos relacionados
-            document.getElementById('createParcelaId').value = '';
             document.getElementById('createTrabajoId').value = '';
             createWorkerSelector.clearAll();
+            createParcelaSelector.clearAll();
         }
 
         // Funciones para el modal de ver detalles
@@ -551,16 +575,14 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                     document.getElementById('editHoras').value = tarea.horas || '';
                     
                     // Limpiar campos relacionados
-                    document.getElementById('editParcela').value = '';
-                    document.getElementById('editParcelaId').value = '';
                     document.getElementById('editTrabajo').value = '';
                     document.getElementById('editTrabajoId').value = '';
                     
-                    // Cargar parcela si existe
+                    // Cargar parcelas múltiples
                     if (tarea.parcelas && tarea.parcelas.length > 0) {
-                        const parcela = tarea.parcelas[0]; // Primera parcela
-                        document.getElementById('editParcela').value = parcela.nombre;
-                        document.getElementById('editParcelaId').value = parcela.id;
+                        editParcelaSelector.preloadParcels(tarea.parcelas);
+                    } else {
+                        editParcelaSelector.clearAll();
                     }
                     
                     // Cargar trabajo si existe
@@ -657,7 +679,7 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                 user_id: parseInt(formData.get('user_id')),
                 fecha: formData.get('fecha'),
                 descripcion: formData.get('descripcion'),
-                parcela: parseInt(document.getElementById('createParcelaId').value) || 0,
+                parcelas: createParcelaSelector.getSelectedParcelaIds(),
                 trabajadores: createWorkerSelector.getSelectedWorkerIds(),
                 trabajo: parseInt(document.getElementById('createTrabajoId').value) || 0,
                 horas: parseFloat(formData.get('horas')) || 0
@@ -723,7 +745,7 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                 user_id: parseInt(formData.get('user_id')),
                 fecha: formData.get('fecha'),
                 descripcion: formData.get('descripcion'),
-                parcela: parseInt(document.getElementById('editParcelaId').value) || 0,
+                parcelas: editParcelaSelector.getSelectedParcelaIds(),
                 trabajadores: editWorkerSelector.getSelectedWorkerIds(),
                 trabajo: parseInt(document.getElementById('editTrabajoId').value) || 0,
                 horas: parseFloat(formData.get('horas')) || 0
@@ -775,6 +797,17 @@ include BASE_PATH . '/app/Views/layouts/header.php';
             }
             if (e.target === editModal) {
                 closeEditModal();
+            }
+            
+            // Cerrar resultados de parcelas múltiples
+            const createParcelaWrapper = document.querySelector('#createParcela').closest('.multi-select-wrapper');
+            const editParcelaWrapper = document.querySelector('#editParcela').closest('.multi-select-wrapper');
+            
+            if (createParcelaWrapper && !createParcelaWrapper.contains(e.target)) {
+                createParcelaSelector.hideResults();
+            }
+            if (editParcelaWrapper && !editParcelaWrapper.contains(e.target)) {
+                editParcelaSelector.hideResults();
             }
         });
 
@@ -950,53 +983,225 @@ include BASE_PATH . '/app/Views/layouts/header.php';
             'editWorkerHiddenInputs'
         );
 
-        // ====== AUTOCOMPLETADO PARA PARCELAS ======
-        function setupParcelaAutocomplete(inputId, hiddenInputId, resultsId) {
-            const input = document.getElementById(inputId);
-            const hiddenInput = document.getElementById(hiddenInputId);
-            const results = document.getElementById(resultsId);
+        // ====== SISTEMA DE SELECCIÓN MÚLTIPLE DE PARCELAS ======
+        class MultiParcelaSelector {
+            constructor(inputId, resultsId, selectedParcelsId, hiddenInputsId) {
+                this.input = document.getElementById(inputId);
+                this.results = document.getElementById(resultsId);
+                this.selectedParcelsContainer = document.getElementById(selectedParcelsId);
+                this.hiddenInputsContainer = document.getElementById(hiddenInputsId);
+                this.selectedParcels = new Map();
+                this.selectedIndex = -1;
+                
+                this.init();
+            }
             
-            let debounceTimer;
+            init() {
+                this.setupEventListeners();
+            }
             
-            input.addEventListener('input', function() {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(async () => {
-                    const query = this.value.trim();
-                    if (query.length < 2) {
-                        results.style.display = 'none';
-                        return;
-                    }
-                    
+            setupEventListeners() {
+                this.input.addEventListener('input', (e) => {
+                    this.handleSearch(e.target.value.trim());
+                });
+                
+                this.input.addEventListener('keydown', (e) => {
+                    this.handleKeydown(e);
+                });
+                
+                this.input.addEventListener('focus', () => {
+                    this.input.value = '';
+                });
+            }
+            
+            async handleSearch(query) {
+                if (query.length >= 3) {
                     try {
-                        const response = await fetch(`<?= $this->url("/parcelas/buscar") ?>?q=${encodeURIComponent(query)}`);
-                        const parcelas = await response.json();
-                        
-                        if (parcelas.length > 0) {
-                            results.innerHTML = parcelas.map(parcela => 
-                                `<div class="autocomplete-item" onclick="selectParcela('${inputId}', '${hiddenInputId}', '${resultsId}', ${parcela.id}, '${parcela.nombre.replace(/'/g, "\\'")}')">\n                                    <strong>${parcela.nombre}</strong>\n                                    <small>${parcela.olivos} olivos</small>\n                                </div>`
-                            ).join('');
-                            results.style.display = 'block';
-                        } else {
-                            results.style.display = 'none';
-                        }
+                        const response = await fetch(`<?= $this->url("/parcelas/buscar") ?>?q=${encodeURIComponent(query)}`, {
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+                        const parcels = await response.json();
+                        this.displayResults(parcels);
                     } catch (error) {
-                        console.error('Error buscando parcelas:', error);
+                        console.error('Error en búsqueda de parcelas:', error);
                     }
-                }, 300);
-            });
+                } else {
+                    this.hideResults();
+                }
+            }
             
-            input.addEventListener('blur', function() {
-                setTimeout(() => {
-                    results.style.display = 'none';
-                }, 200);
-            });
+            displayResults(parcels) {
+                if (parcels.length === 0) {
+                    this.results.innerHTML = '<div class="autocomplete-item no-results">No hay coincidencias</div>';
+                } else {
+                    this.results.innerHTML = parcels
+                        .map((parcela, index) => {
+                            const isSelected = this.selectedParcels.has(parcela.id);
+                            const extraClass = isSelected ? 'selected-parcel' : '';
+                            
+                            return `
+                                <div class="autocomplete-item ${extraClass}" 
+                                     data-id="${parcela.id}" 
+                                     data-name="${parcela.nombre}"
+                                     data-olivos="${parcela.olivos || 0}"
+                                     data-index="${index}"
+                                     onclick="${isSelected ? '' : `this.multiSelector.selectParcela(${parcela.id}, '${parcela.nombre.replace(/'/g, "\\'")}', ${parcela.olivos || 0})`}">
+                                    <strong>${parcela.nombre}</strong>
+                                    <br><small>${parcela.olivos || 0} olivos</small>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                    this.results.querySelectorAll('.autocomplete-item').forEach(item => {
+                        item.multiSelector = this;
+                    });
+                }
+                this.showResults();
+                this.selectedIndex = -1;
+            }
+            
+            selectParcela(id, name, olivos) {
+                if (this.selectedParcels.has(id)) return;
+                
+                this.selectedParcels.set(id, { id, name, olivos });
+                this.createParcelaTag(id, name, olivos);
+                this.createHiddenInput(id);
+                this.input.value = '';
+                this.hideResults();
+                this.updatePlaceholder();
+                
+                console.log('Parcela seleccionada:', { id, name, olivos });
+            }
+            
+            createParcelaTag(id, name, olivos) {
+                const tag = document.createElement('div');
+                tag.className = 'parcel-tag';
+                tag.dataset.parcelId = id;
+                tag.innerHTML = `
+                    <span>${name} (${olivos} olivos)</span>
+                    <button type="button" class="remove-parcel" onclick="this.closest('.parcel-tag').multiSelector.removeParcela(${id})">×</button>
+                `;
+                
+                tag.multiSelector = this;
+                this.selectedParcelsContainer.appendChild(tag);
+            }
+            
+            createHiddenInput(id) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'parcelas[]';
+                input.value = id;
+                input.dataset.parcelId = id;
+                
+                this.hiddenInputsContainer.appendChild(input);
+            }
+            
+            removeParcela(id) {
+                this.selectedParcels.delete(id);
+                
+                const tag = this.selectedParcelsContainer.querySelector(`[data-parcel-id="${id}"]`);
+                if (tag) {
+                    tag.style.animation = 'slideOut 0.3s ease-in forwards';
+                    setTimeout(() => tag.remove(), 300);
+                }
+                
+                const hiddenInput = this.hiddenInputsContainer.querySelector(`[data-parcel-id="${id}"]`);
+                if (hiddenInput) hiddenInput.remove();
+                
+                this.updatePlaceholder();
+            }
+            
+            updatePlaceholder() {
+                const count = this.selectedParcels.size;
+                if (count === 0) {
+                    this.input.placeholder = 'Buscar parcela...';
+                } else {
+                    this.input.placeholder = `${count} parcela${count > 1 ? 's' : ''} seleccionada${count > 1 ? 's' : ''}. Buscar más...`;
+                }
+            }
+            
+            handleKeydown(e) {
+                const items = this.results.querySelectorAll('.autocomplete-item:not(.selected-parcel)');
+                if (items.length === 0) return;
+                
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.selectedIndex = (this.selectedIndex + 1) % items.length;
+                        this.highlightItem(items);
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.selectedIndex = this.selectedIndex <= 0 ? items.length - 1 : this.selectedIndex - 1;
+                        this.highlightItem(items);
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (this.selectedIndex >= 0 && items[this.selectedIndex]) {
+                            const item = items[this.selectedIndex];
+                            const id = item.dataset.id;
+                            const name = item.dataset.name;
+                            const olivos = item.dataset.olivos;
+                            this.selectParcela(id, name, olivos);
+                        }
+                        break;
+                    case 'Escape':
+                        this.hideResults();
+                        this.input.blur();
+                        break;
+                }
+            }
+            
+            highlightItem(items) {
+                items.forEach(item => item.classList.remove('selected'));
+                if (items[this.selectedIndex]) {
+                    items[this.selectedIndex].classList.add('selected');
+                }
+            }
+            
+            showResults() {
+                this.results.style.display = 'block';
+            }
+            
+            hideResults() {
+                this.results.style.display = 'none';
+                this.selectedIndex = -1;
+            }
+            
+            clearAll() {
+                this.selectedParcels.clear();
+                this.selectedParcelsContainer.innerHTML = '';
+                this.hiddenInputsContainer.innerHTML = '';
+                this.updatePlaceholder();
+            }
+            
+            preloadParcels(parcels) {
+                this.clearAll();
+                parcels.forEach(parcela => {
+                    this.selectParcela(parcela.id, parcela.nombre, parcela.olivos || 0);
+                });
+            }
+            
+            getSelectedParcelaIds() {
+                return Array.from(this.selectedParcels.keys());
+            }
         }
-        
-        function selectParcela(inputId, hiddenInputId, resultsId, id, nombre) {
-            document.getElementById(inputId).value = nombre;
-            document.getElementById(hiddenInputId).value = id;
-            document.getElementById(resultsId).style.display = 'none';
-        }
+
+        // Instanciar selectores de parcelas
+        const createParcelaSelector = new MultiParcelaSelector(
+            'createParcela',
+            'createParcelaResults',
+            'createSelectedParcels',
+            'createParcelHiddenInputs'
+        );
+
+        const editParcelaSelector = new MultiParcelaSelector(
+            'editParcela',
+            'editParcelaResults',
+            'editSelectedParcels',
+            'editParcelHiddenInputs'
+        );
+
 
         // ====== AUTOCOMPLETADO PARA TRABAJOS ======
         function setupTrabajoAutocomplete(inputId, hiddenInputId, resultsId) {
@@ -1051,10 +1256,8 @@ include BASE_PATH . '/app/Views/layouts/header.php';
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('fecha').value = today;
             
-            // Inicializar autocompletados para crear y editar
-            setupParcelaAutocomplete('createParcela', 'createParcelaId', 'createParcelaResults');
+            // Inicializar autocompletados para trabajos
             setupTrabajoAutocomplete('createTrabajo', 'createTrabajoId', 'createTrabajoResults');
-            setupParcelaAutocomplete('editParcela', 'editParcelaId', 'editParcelaResults');
             setupTrabajoAutocomplete('editTrabajo', 'editTrabajoId', 'editTrabajoResults');
         });
     </script>

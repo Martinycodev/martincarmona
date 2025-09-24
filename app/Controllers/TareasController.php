@@ -87,7 +87,6 @@ class TareasController extends BaseController
                 $tareaData = [
                     'fecha' => $input['fecha'] ?? date('Y-m-d'),
                     'descripcion' => $input['descripcion'] ?? '',
-                    'parcela' => intval($input['parcela'] ?? 0),
                     'trabajo' => intval($input['trabajo'] ?? 0),
                     'horas' => floatval($input['horas'] ?? 0)
                 ];
@@ -101,13 +100,21 @@ class TareasController extends BaseController
                     $tareaData['trabajador'] = intval($input['trabajador']);
                 }
                 
+                // Manejar parcelas múltiples
+                if (isset($input['parcelas']) && is_array($input['parcelas'])) {
+                    // Modo múltiple: array de IDs
+                    $tareaData['parcelas'] = array_map('intval', $input['parcelas']);
+                } elseif (isset($input['parcela']) && $input['parcela'] > 0) {
+                    // Modo único: compatible con formato anterior
+                    $tareaData['parcela'] = intval($input['parcela']);
+                }
+                
                 error_log('Intentando crear tarea con datos: ' . print_r($tareaData, true));
                 error_log('User ID: ' . $userId);
                 
                 // Validar tipos de datos
                 $tareaData['fecha'] = (string) $tareaData['fecha'];
                 $tareaData['descripcion'] = (string) $tareaData['descripcion'];
-                $tareaData['parcela'] = (int) $tareaData['parcela'];
                 $tareaData['trabajo'] = (int) $tareaData['trabajo'];
                 $tareaData['horas'] = (float) $tareaData['horas'];
                 $userId = (int) $userId;
@@ -115,6 +122,11 @@ class TareasController extends BaseController
                 // No convertir trabajadores si es array (ya están convertidos)
                 if (isset($tareaData['trabajador'])) {
                     $tareaData['trabajador'] = (int) $tareaData['trabajador'];
+                }
+                
+                // No convertir parcelas si es array (ya están convertidas)
+                if (isset($tareaData['parcela'])) {
+                    $tareaData['parcela'] = (int) $tareaData['parcela'];
                 }
                 
                 error_log('Datos después de la conversión: ' . print_r($tareaData, true));
@@ -145,45 +157,69 @@ class TareasController extends BaseController
     
     public function actualizar()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+        $userId = $_SESSION['user_id'];
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Verificar si es una petición AJAX
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                      strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+            
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                
+                // Obtener datos JSON
+                $input = json_decode(file_get_contents('php://input'), true);
+                
+                if ($input === null) {
+                    echo json_encode(['success' => false, 'message' => 'Error al procesar los datos JSON']);
+                    return;
+                }
+        
+                $tareaData = [
+                    'id' => $input['id'] ?? 0,
+                    'fecha' => $input['fecha'] ?? date('Y-m-d'),
+                    'descripcion' => $input['descripcion'] ?? '',
+                    'horas' => $input['horas'] ?? 0
+                ];
+        
+                // Manejar trabajadores múltiples en actualización
+                if (isset($input['trabajadores']) && is_array($input['trabajadores'])) {
+                    // Modo múltiple: array de IDs
+                    $tareaData['trabajadores'] = array_map('intval', $input['trabajadores']);
+                } elseif (isset($input['trabajador']) && $input['trabajador'] > 0) {
+                    // Modo único: compatible con formato anterior
+                    $tareaData['trabajador'] = intval($input['trabajador']);
+                }
+                
+                // Manejar parcelas múltiples en actualización
+                if (isset($input['parcelas']) && is_array($input['parcelas'])) {
+                    // Modo múltiple: array de IDs
+                    $tareaData['parcelas'] = array_map('intval', $input['parcelas']);
+                } elseif (isset($input['parcela']) && $input['parcela'] > 0) {
+                    // Modo único: compatible con formato anterior
+                    $tareaData['parcela'] = intval($input['parcela']);
+                }
+                
+                // Manejar trabajo
+                if (isset($input['trabajo']) && $input['trabajo'] > 0) {
+                    $tareaData['trabajo'] = intval($input['trabajo']);
+                }
+                
+                if ($this->tareaModel->update($tareaData, $userId)) {
+                    echo json_encode(['success' => true, 'message' => 'Tarea actualizada exitosamente']);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Error al actualizar la tarea']);
+                }
+                return;
+            }
+            
+            // Si no es AJAX, redirigir al dashboard
+            $this->redirect('/dashboard');
             return;
         }
         
-        $userId = $_SESSION['user_id'];
-        $input = json_decode(file_get_contents('php://input'), true);
-        
-        $tareaData = [
-            'id' => $input['id'] ?? 0,
-            'fecha' => $input['fecha'] ?? date('Y-m-d'),
-            'descripcion' => $input['descripcion'] ?? '',
-            'horas' => $input['horas'] ?? 0
-        ];
-        
-        // Manejar trabajadores múltiples en actualización
-        if (isset($input['trabajadores']) && is_array($input['trabajadores'])) {
-            // Modo múltiple: array de IDs
-            $tareaData['trabajadores'] = array_map('intval', $input['trabajadores']);
-        } elseif (isset($input['trabajador']) && $input['trabajador'] > 0) {
-            // Modo único: compatible con formato anterior
-            $tareaData['trabajador'] = intval($input['trabajador']);
-        }
-        
-        // Manejar parcela
-        if (isset($input['parcela']) && $input['parcela'] > 0) {
-            $tareaData['parcela'] = intval($input['parcela']);
-        }
-        
-        // Manejar trabajo
-        if (isset($input['trabajo']) && $input['trabajo'] > 0) {
-            $tareaData['trabajo'] = intval($input['trabajo']);
-        }
-        
-        if ($this->tareaModel->update($tareaData, $userId)) {
-            echo json_encode(['success' => true, 'message' => 'Tarea actualizada exitosamente']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Error al actualizar la tarea']);
-        }
+        // Si no es POST, mostrar error
+        echo json_encode(['success' => false, 'message' => 'Método no permitido']);
     }
     
     public function eliminar()
