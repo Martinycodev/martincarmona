@@ -8,11 +8,9 @@
 *Sistema financiero completo para gestión de costos y ingresos*
 
 - [ ] **1.1** Diseñar estructura de base de datos económica
-  - [ ] Tabla `precios_trabajo` (tipo_trabajo, precio_hora)
+  - [x] Tabla `precios_trabajo` (tipo_trabajo, precio_hora)
   - [ ] Tabla `deudas_trabajadores` (trabajador_id, monto, fecha, descripcion)
-  - [ ] Tabla `cobros_trabajadores` (trabajador_id, monto, fecha, metodo_pago)
-  - [ ] Tabla `gastos` (categoria, monto, fecha, descripcion, proveedor_id)
-  - [ ] Tabla `ingresos` (categoria, monto, fecha, descripcion, cliente)
+ 
   - [ ] Tabla `cuentas_bancarias` (nombre, tipo, saldo_actual)
 
 - [ ] **1.2** Crear controlador EconomiaController

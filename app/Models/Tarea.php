@@ -957,7 +957,7 @@ class Tarea
             $row = $result->fetch_assoc();
             $stmt->close();
             
-            if ($row && $row['precio_hora'] > 0) {
+            if ($row && $row['precio_hora'] !== null) {
                 return (float) $row['precio_hora'];
             }
             
@@ -993,6 +993,13 @@ class Tarea
         try {
             // Calcular el total de la tarea (mismo para todos los trabajadores)
             $totalTarea = $this->calcularTotalTarea($trabajoId, $horas);
+            
+            // Si el importe es 0, no crear/actualizar movimientos
+            if ($totalTarea <= 0) {
+                $precioHora = $this->getPrecioHoraTrabajo($trabajoId);
+                error_log("Importe 0 para trabajo ID: $trabajoId, precio_hora: $precioHora, horas: $horas - No se crearán movimientos");
+                return true; // No es un error, simplemente no hay nada que procesar
+            }
             
             $todosExitosos = true;
             
