@@ -1,7 +1,7 @@
 <?php 
 $title = 'Datos - MartinCarmona.com';
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
+<div class="container">
         <div class="welcome-section">
             <h1>📊 Bases de Datos</h1>
         </div>
@@ -46,6 +46,16 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                 <span class="action-icon">📝</span>
                 <div class="action-title">Tareas</div>
                 <div class="action-desc">Gestión de todas las tareas</div>
+            </a>
+            <a href="<?= $this->url('/tareas') ?>" class="action-card">
+                <span class="action-icon">💧</span>
+                <div class="action-title">Riegos</div>
+                <div class="action-desc">Gestión del riego</div>
+            </a>
+            <a href="<?= $this->url('/tareas') ?>" class="action-card">
+                <span class="action-icon">💊</span>
+                <div class="action-title">Fitosanitarios</div>
+                <div class="action-desc">Gestión de tratamientos</div>
             </a>
         </div>
     </div>

@@ -1,7 +1,7 @@
 <?php 
 $title = 'Gestión de Trabajos';
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
+<div class="container">
         <div class="page-header">
             <h1>🛠️ Gestión de Trabajos</h1>
             <div class="header-actions">
@@ -23,6 +23,17 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                             <label for="nombre">Nombre del Trabajo:</label>
                             <input type="text" id="nombre" name="nombre" required>
                         </div>
+                        <div class="form-group">
+                            <label for="precio_hora">Precio por Hora (€):</label>
+                            <input type="number" id="precio_hora" name="precio_hora" step="0.01" min="0" placeholder="0.00" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="descripcion">Descripción:</label>
+                            <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripción opcional del trabajo"></textarea>
+                        </div>
                     </div>
 
                     <div class="form-buttons">
@@ -40,7 +51,7 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-
+                        <th>Precio/Hora</th>
                         <th class="actions-column">Acciones</th>
                     </tr>
                 </thead>
@@ -49,7 +60,7 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                     <tr data-id="<?= $trabajo['id'] ?>">
                         <td><?= htmlspecialchars($trabajo['id'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($trabajo['nombre'] ?? '-') ?></td>
-
+                        <td><?= isset($trabajo['precio_hora']) ? '€' . number_format($trabajo['precio_hora'], 2) : '-' ?></td>
                         <td class="actions">
                             <button class="btn-icon btn-edit" onclick="editJob(<?= $trabajo['id'] ?>, this)" title="Editar">
                                 ✏️
@@ -77,6 +88,17 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                         <div class="form-group">
                             <label for="editNombre">Nombre del Trabajo:</label>
                             <input type="text" id="editNombre" name="nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPrecioHora">Precio por Hora (€):</label>
+                            <input type="number" id="editPrecioHora" name="precio_hora" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="editDescripcion">Descripción:</label>
+                            <textarea id="editDescripcion" name="descripcion" rows="3"></textarea>
                         </div>
                     </div>
 
@@ -183,6 +205,8 @@ include BASE_PATH . '/app/Views/layouts/header.php';
                     const job = data.trabajo;
                     document.getElementById('editId').value = job.id;
                     document.getElementById('editNombre').value = job.nombre || '';
+                    document.getElementById('editPrecioHora').value = job.precio_hora || '';
+                    document.getElementById('editDescripcion').value = job.descripcion || '';
 
                     openEditModal(buttonElement);
                     showToast('Datos cargados correctamente', 'success');

@@ -32,7 +32,7 @@
     <nav class="nav-menu" id="navMenu">
         <br>
         <a href="<?= $this->url('/datos') ?>">📚 Bases de datos</a>
-        <a href="<?= $this->url('/tareas/crear') ?>">💶 Economía</a>
+        <a href="<?= $this->url('/economia') ?>">💶 Economía</a>
         <a href="<?= $this->url('/reportes') ?>">📊 Reportes</a>
         <a href="<?= $this->url('/perfil') ?>">👤 Mi Perfil</a>
         <a href="<?= $this->url('/logout') ?>" style="color: #ff4444;">🚪 Cerrar Sesión</a>
@@ -64,5 +64,4 @@
             }
         }
     </script>
-    
-    <div class="container">
+

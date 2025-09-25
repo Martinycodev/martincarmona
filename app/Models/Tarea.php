@@ -1061,6 +1061,7 @@ class Tarea
             } else {
                 // Si no existe, crear uno nuevo
                 $fechaInicioMes = sprintf('%04d-%02d-01', $year, $month);
+                setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'es');
                 $concepto = "Sueldo - " . date('F Y', strtotime($fechaInicioMes));
                 
                 $sql = "INSERT INTO movimientos (fecha, tipo, concepto, categoria, importe, trabajador_id, estado) 

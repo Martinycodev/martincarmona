@@ -1,8 +1,7 @@
 <?php 
 $title = 'Economía - MartinCarmona.com';
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
-
+<div class="container">
 <div class="economy-container">
     <!-- Header de Economía -->
     <div class="economy-header">
@@ -56,9 +55,9 @@ include BASE_PATH . '/app/Views/layouts/header.php';
             <div class="summary-icon">⏳</div>
             <div class="summary-content">
                 <div class="summary-value" id="movimientosPendientes">
-                    <?= $resumen['movimientos_pendientes'] ?? 0 ?>
+                    <?= $resumen['importe_pendiente'] ?? 0 ?> €
                 </div>
-                <div class="summary-label">Pendientes</div>
+                <div class="summary-label">Pendiente de pago</div>
             </div>
         </div>
     </div>

@@ -72,9 +72,14 @@ class TrabajosController extends BaseController
     public function index()
     {
         $db = \Database::connect();
-        $result = $db->query("SELECT * FROM trabajos ORDER BY nombre");
+        $stmt = $db->prepare("SELECT * FROM trabajos WHERE id_user = ? ORDER BY nombre");
+        $stmt->bind_param("i", $_SESSION['user_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
         $trabajos = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
         $db->close();
+        
         $data = [
             'trabajos' => $trabajos,
             'user' => [
@@ -105,17 +110,24 @@ class TrabajosController extends BaseController
             }
             
             $nombre = trim($input['nombre'] ?? '');
+            $descripcion = trim($input['descripcion'] ?? '');
+            $precio_hora = floatval($input['precio_hora'] ?? 0);
             
             if (empty($nombre)) {
                 echo json_encode(['success' => false, 'message' => 'El nombre es requerido']);
                 return;
             }
             
+            if ($precio_hora < 0) {
+                echo json_encode(['success' => false, 'message' => 'El precio por hora debe ser mayor o igual a 0']);
+                return;
+            }
+            
             $db = \Database::connect();
             
-            // Verificar si ya existe un trabajo con el mismo nombre
-            $stmt = $db->prepare("SELECT id FROM trabajos WHERE nombre = ?");
-            $stmt->bind_param("s", $nombre);
+            // Verificar si ya existe un trabajo con el mismo nombre para este usuario
+            $stmt = $db->prepare("SELECT id FROM trabajos WHERE nombre = ? AND id_user = ?");
+            $stmt->bind_param("si", $nombre, $_SESSION['user_id']);
             $stmt->execute();
             $result = $stmt->get_result();
             if ($result->num_rows > 0) {
@@ -124,8 +136,8 @@ class TrabajosController extends BaseController
             }
             $stmt->close();
             
-            $stmt = $db->prepare("INSERT INTO trabajos (nombre, id_user) VALUES (?, ?)");
-            $stmt->bind_param("si", $nombre, $_SESSION['user_id']);
+            $stmt = $db->prepare("INSERT INTO trabajos (nombre, descripcion, precio_hora, id_user) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssdi", $nombre, $descripcion, $precio_hora, $_SESSION['user_id']);
             
             if ($stmt->execute()) {
                 echo json_encode(['success' => true, 'message' => 'Trabajo creado correctamente', 'id' => $db->insert_id]);
@@ -159,8 +171,8 @@ class TrabajosController extends BaseController
         
         try {
             $db = \Database::connect();
-            $stmt = $db->prepare("SELECT * FROM trabajos WHERE id = ?");
-            $stmt->bind_param("i", $id);
+            $stmt = $db->prepare("SELECT * FROM trabajos WHERE id = ? AND id_user = ?");
+            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
             $stmt->execute();
             $result = $stmt->get_result();
             
@@ -201,6 +213,8 @@ class TrabajosController extends BaseController
             
             $id = intval($input['id'] ?? 0);
             $nombre = trim($input['nombre'] ?? '');
+            $descripcion = trim($input['descripcion'] ?? '');
+            $precio_hora = floatval($input['precio_hora'] ?? 0);
             
             if ($id <= 0) {
                 echo json_encode(['success' => false, 'message' => 'ID no válido']);
@@ -212,11 +226,16 @@ class TrabajosController extends BaseController
                 return;
             }
             
+            if ($precio_hora < 0) {
+                echo json_encode(['success' => false, 'message' => 'El precio por hora debe ser mayor o igual a 0']);
+                return;
+            }
+            
             $db = \Database::connect();
             
-            // Verificar si ya existe otro trabajo con el mismo nombre
-            $stmt = $db->prepare("SELECT id FROM trabajos WHERE nombre = ? AND id != ?");
-            $stmt->bind_param("si", $nombre, $id);
+            // Verificar si ya existe otro trabajo con el mismo nombre para este usuario
+            $stmt = $db->prepare("SELECT id FROM trabajos WHERE nombre = ? AND id != ? AND id_user = ?");
+            $stmt->bind_param("sii", $nombre, $id, $_SESSION['user_id']);
             $stmt->execute();
             $result = $stmt->get_result();
             if ($result->num_rows > 0) {
@@ -225,8 +244,8 @@ class TrabajosController extends BaseController
             }
             $stmt->close();
             
-            $stmt = $db->prepare("UPDATE trabajos SET nombre = ? WHERE id = ?");
-            $stmt->bind_param("si", $nombre, $id);
+            $stmt = $db->prepare("UPDATE trabajos SET nombre = ?, descripcion = ?, precio_hora = ? WHERE id = ? AND id_user = ?");
+            $stmt->bind_param("ssdii", $nombre, $descripcion, $precio_hora, $id, $_SESSION['user_id']);
             
             if ($stmt->execute()) {
                 if ($stmt->affected_rows > 0) {

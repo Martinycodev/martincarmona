@@ -1,8 +1,7 @@
 <?php 
 $title = htmlspecialchars($parcela['nombre'] ?? 'Sin nombre');
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
-
+<div class="container">
 <!-- Información Principal de la Parcela -->
 <div class="parcela-detail-container">
     <div class="parcela-card">

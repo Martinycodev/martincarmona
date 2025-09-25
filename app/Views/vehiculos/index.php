@@ -1,7 +1,7 @@
 <?php 
 $title = 'Listado de Vehículos';
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
+<div class="container">
         <h1>🚗 Vehículos</h1>
         <table class="styled-table">
             <thead>

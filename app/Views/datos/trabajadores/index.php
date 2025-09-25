@@ -1,8 +1,7 @@
 <?php 
 $title = htmlspecialchars($trabajador['nombre'] ?? 'Sin nombre');
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
-
+<div class="container">
 <!-- Información Principal del Trabajador -->
 <div class="worker-detail-container">
     <div class="worker-card">

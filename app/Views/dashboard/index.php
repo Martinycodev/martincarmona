@@ -1,7 +1,7 @@
 <?php 
 $title = 'Datos - MartinCarmona.com';
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
+<div class="container">
         
     <div class="quick-actions">
             

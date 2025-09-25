@@ -1,7 +1,7 @@
 <?php 
-include BASE_PATH . '/app/Views/layouts/header.php'; 
+$title = 'Reportes - MartinCarmona.com';
 ?>
-
+<div class="container">
 <div class="reports-container">
     <!-- Header principal del panel de reportes -->
     <div class="reports-header">

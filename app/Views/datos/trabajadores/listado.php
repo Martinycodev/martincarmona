@@ -1,8 +1,7 @@
 <?php 
 $title = 'Listado de Trabajadores';
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
-
+<div class="container">
 <!-- Incluir estilos y scripts del buscador -->
 <link rel="stylesheet" href="<?= $this->url('/public/css/search.css') ?>">
 <script src="<?= $this->url('/public/js/search.js') ?>"></script>

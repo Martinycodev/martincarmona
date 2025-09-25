@@ -20,16 +20,14 @@ class Trabajo
     {
         try {
             $stmt = $this->db->prepare("
-                INSERT INTO trabajos (nombre, descripcion, categoria, precio_hora, estado, id_user, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, CURDATE(), CURDATE())
+                INSERT INTO trabajos (nombre, descripcion, precio_hora, id_user)
+                VALUES (?, ?, ?, ?)
             ");
             
-            $stmt->bind_param("sssdsi", 
+            $stmt->bind_param("ssdi", 
                 $data['nombre'],
                 $data['descripcion'],
-                $data['categoria'],
                 $data['precio_hora'],
-                $data['estado'],
                 $userId
             );
             
@@ -56,13 +54,11 @@ class Trabajo
                     id,
                     nombre,
                     descripcion,
-                    categoria,
                     precio_hora,
-                    estado,
                     created_at
                 FROM trabajos 
                 WHERE id_user = ?
-                ORDER BY categoria ASC, nombre ASC
+                ORDER BY nombre ASC
             ");
             $stmt->bind_param("i", $userId);
             $stmt->execute();
@@ -115,16 +111,14 @@ class Trabajo
         try {
             $stmt = $this->db->prepare("
                 UPDATE trabajos 
-                SET nombre = ?, descripcion = ?, categoria = ?, precio_hora = ?, estado = ?, updated_at = CURDATE()
+                SET nombre = ?, descripcion = ?, precio_hora = ?
                 WHERE id = ? AND id_user = ?
             ");
             
-            $stmt->bind_param("sssdii", 
+            $stmt->bind_param("ssdii", 
                 $data['nombre'],
                 $data['descripcion'],
-                $data['categoria'],
                 $data['precio_hora'],
-                $data['estado'],
                 $data['id'],
                 $userId
             );
@@ -170,10 +164,10 @@ class Trabajo
     {
         try {
             $stmt = $this->db->prepare("
-                SELECT id, nombre, categoria, precio_hora 
+                SELECT id, nombre, precio_hora 
                 FROM trabajos 
-                WHERE estado = 'activo' AND id_user = ?
-                ORDER BY categoria ASC, nombre ASC
+                WHERE id_user = ?
+                ORDER BY nombre ASC
             ");
             $stmt->bind_param("i", $userId);
             $stmt->execute();
@@ -202,10 +196,10 @@ class Trabajo
             $stmt = $this->db->prepare("
                 SELECT id, nombre, descripcion, precio_hora 
                 FROM trabajos 
-                WHERE categoria = ? AND estado = 'activo' AND id_user = ?
+                WHERE id_user = ?
                 ORDER BY nombre ASC
             ");
-            $stmt->bind_param("si", $categoria, $userId);
+            $stmt->bind_param("i", $userId);
             $stmt->execute();
             $result = $stmt->get_result();
             

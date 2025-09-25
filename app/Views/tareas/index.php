@@ -1,7 +1,7 @@
 <?php 
 $title = 'Gestión de Tareas';
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
+<div class="container">
         <div class="page-header">
             <h1>📝 Gestión de Tareas</h1>
             <div class="header-actions">

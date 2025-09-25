@@ -132,7 +132,8 @@ class Movimiento {
                     SUM(CASE WHEN tipo = 'ingreso' THEN importe ELSE -importe END) as saldo_total,
                     COUNT(CASE WHEN tipo = 'ingreso' THEN 1 END) as num_ingresos,
                     COUNT(CASE WHEN tipo = 'gasto' THEN 1 END) as num_gastos,
-                    COUNT(CASE WHEN estado = 'pendiente' THEN 1 END) as movimientos_pendientes
+                    COUNT(CASE WHEN estado = 'pendiente' THEN 1 END) as movimientos_pendientes,
+                    SUM(CASE WHEN estado = 'pendiente' THEN importe ELSE 0 END) as importe_pendiente
                 FROM movimientos";
         
         $result = $this->db->query($sql);

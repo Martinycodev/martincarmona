@@ -1,7 +1,7 @@
 <?php 
 $title = 'Listado de Herramientas';
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
+<div class="container">
         <h1>🔧 Herramientas</h1>
         <table class="styled-table">
             <thead>

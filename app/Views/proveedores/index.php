@@ -1,7 +1,7 @@
 <?php 
 $title = 'Listado de Proveedores';
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
+<div class="container">
         <h1>🚚 Proveedores</h1>
         <table class="styled-table">
             <thead>

@@ -6,21 +6,35 @@ class BaseController
 {
     protected function render($view, $data = [])
     {
-        // Extraer los datos para que estén disponibles en la vista
+        // Decidir si usar layout
+        $useLayout = true;
+
+        // Permitir desactivar layout desde la vista/controlador
+        if (isset($data['_layout']) && $data['_layout'] === false) {
+            $useLayout = false;
+        }
+
+        // No envolver vistas del propio layout ni la pantalla de login
+        if ($view === 'home' || substr($view, 0, 8) === 'layouts/') {
+            $useLayout = false;
+        }
+
+        // Hacer variables disponibles en la vista
         extract($data);
-        
-        // Incluir la vista usando la ruta absoluta
+
         $viewPath = BASE_PATH . "/app/Views/{$view}.php";
-        
-        // Debug: mostrar la ruta que estamos buscando
         if (!file_exists($viewPath)) {
             throw new \Exception("Vista no encontrada: {$view} en {$viewPath}. BASE_PATH: " . BASE_PATH);
         }
-        
-        ob_start();
+
+        if ($useLayout) {
+            include BASE_PATH . '/app/Views/layouts/header.php';
+            include $viewPath;
+            include BASE_PATH . '/app/Views/layouts/footer.php';
+            return;
+        }
+
         include $viewPath;
-        $content = ob_get_clean();
-        echo $content;
     }
 
     protected function json($data)

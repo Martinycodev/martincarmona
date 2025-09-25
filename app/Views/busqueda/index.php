@@ -1,7 +1,7 @@
 <?php 
 $title = 'Búsqueda Avanzada de Tareas';
-include BASE_PATH . '/app/Views/layouts/header.php'; 
 ?>
+<div class="container">
         <div class="search-page">
             <!-- Header con navegación -->
             <div class="search-header">
