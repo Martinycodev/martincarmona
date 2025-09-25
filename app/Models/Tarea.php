@@ -1042,7 +1042,7 @@ class Tarea
                     AND YEAR(fecha) = ? 
                     AND MONTH(fecha) = ?
                     AND tipo = 'gasto'
-                    AND categoria = 'gasto'";
+                    AND categoria = 'pago'";
             
             $stmt = $this->db->prepare($sql);
             $stmt->bind_param("iii", $trabajadorId, $year, $month);
@@ -1072,7 +1072,7 @@ class Tarea
                 $concepto = "Sueldo - " . date('F Y', strtotime($fechaInicioMes));
                 
                 $sql = "INSERT INTO movimientos (fecha, tipo, concepto, categoria, importe, trabajador_id, estado) 
-                        VALUES (?, 'gasto', ?, 'gasto', ?, ?, 'pendiente')";
+                        VALUES (?, 'gasto', ?, 'pago', ?, ?, 'pendiente')";
                 
                 $stmt = $this->db->prepare($sql);
                 $stmt->bind_param("ssdi", $fechaInicioMes, $concepto, $importe, $trabajadorId);

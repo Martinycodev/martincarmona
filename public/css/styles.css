@@ -3353,11 +3353,12 @@ textarea {
     border: 1px solid #2196F3;
 }
 
-.category-badge.category-gasto {
+.category-badge.category-pago {
     background: rgba(244, 67, 54, 0.2);
     color: #F44336;
     border: 1px solid #F44336;
 }
+
 
 .category-badge.category-impuestos {
     background: rgba(255, 152, 0, 0.2);
@@ -3442,6 +3443,10 @@ textarea {
 }
 
 .amount-cell.gasto {
+    color: #F44336;
+}
+
+.amount-cell.pago {
     color: #F44336;
 }
 

@@ -128,7 +128,7 @@ $title = 'Economía - MartinCarmona.com';
                                 <?= ucfirst($movimiento['categoria']) ?>
                             </span>
                         </td>
-                        <td class="amount-cell <?= $movimiento['tipo'] ?>">
+                        <td class="amount-cell <?= $movimiento['categoria'] === 'pago' ? 'pago' : $movimiento['tipo'] ?>">
                             <?= $movimiento['tipo'] === 'ingreso' ? '+' : '-' ?>
                             <?= number_format($movimiento['importe'], 2) ?> €
                         </td>
@@ -524,7 +524,7 @@ function renderMovementsTable() {
                     ${capitalizeFirst(mov.categoria)}
                 </span>
             </td>
-            <td class="amount-cell ${mov.tipo}">
+            <td class="amount-cell ${mov.categoria === 'pago' ? 'pago' : mov.tipo}">
                 ${mov.tipo === 'ingreso' ? '+' : '-'}
                 ${formatNumber(mov.importe)} €
             </td>
