@@ -27,8 +27,8 @@
   - [ ] Reportes con gráficos (Chart.js)
 
 - [ ] **1.4** Integrar economía con tareas
-  - [ ] Cálculo automático de costos por tarea
-  - [ ] Asignación de precios por tipo de trabajo
+  - [x] Cálculo automático de costos por tarea
+  - [x] Asignación de precios por tipo de trabajo
   - [ ] Generación de facturas/recibos
 
 ---
