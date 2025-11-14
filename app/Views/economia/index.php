@@ -289,6 +289,18 @@ document.addEventListener('DOMContentLoaded', function() {
     setupAutocomplete();
     setupFormHandlers();
     setupEventListeners();
+    
+    // Verificar si se debe abrir el modal automáticamente
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('openModal') === 'true') {
+        // Abrir el modal después de un pequeño delay para asegurar que todo esté cargado
+        setTimeout(function() {
+            openCreateModal();
+            // Limpiar el parámetro de la URL sin recargar la página
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+        }, 100);
+    }
 });
 
 // Configurar autocompletado

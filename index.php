@@ -34,6 +34,10 @@ $router->get('/', 'HomeController@index');
 $router->post('/login', 'AuthController@login');
 $router->get('/logout', 'AuthController@logout');
 
+// Rutas de perfil
+$router->get('/perfil', 'PerfilController@index');
+$router->post('/perfil/actualizarNombre', 'PerfilController@actualizarNombre');
+
 // Rutas protegidas (requieren login)
 $router->get('/datos/trabajadores', 'TrabajadoresController@index');
 $router->get('/datos/trabajos', 'TrabajosController@index');
