@@ -6,6 +6,9 @@ class BaseController
 {
     protected function render($view, $data = [])
     {
+        // Verificar si es una petición AJAX
+        $isAjax = $this->isAjaxRequest();
+        
         // Decidir si usar layout
         $useLayout = true;
 
@@ -16,6 +19,11 @@ class BaseController
 
         // No envolver vistas del propio layout ni la pantalla de login
         if ($view === 'home' || substr($view, 0, 8) === 'layouts/') {
+            $useLayout = false;
+        }
+
+        // Para peticiones AJAX, solo renderizar el contenido sin layout
+        if ($isAjax) {
             $useLayout = false;
         }
 
@@ -61,5 +69,17 @@ class BaseController
             return APP_BASE_PATH . $path;
         }
         return $path;
+    }
+    
+    protected function isAjaxRequest()
+    {
+        return (
+            isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
+        ) || (
+            isset($_SERVER['HTTP_ACCEPT']) && 
+            strpos($_SERVER['HTTP_ACCEPT'], 'text/html') !== false &&
+            isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+        );
     }
 }

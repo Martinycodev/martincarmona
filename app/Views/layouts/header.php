@@ -12,6 +12,7 @@
     <!-- Estilos -->
     <link rel="stylesheet" href="<?= $this->url('/public/css/styles.css') ?>">
     <link rel="stylesheet" href="<?= $this->url('/public/css/autocomplete.css') ?>">
+    
 </head>
 <body>
     <div class="header">
@@ -64,4 +65,8 @@
             }
         }
     </script>
+
+    <!-- Scripts principales -->
+    <script src="<?= $this->url('/public/js/modal-functions.js') ?>"></script>
+    <script src="<?= $this->url('/public/js/ajax-navigation.js') ?>"></script>
 

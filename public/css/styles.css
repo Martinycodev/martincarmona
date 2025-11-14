@@ -835,110 +835,10 @@ body {
     will-change: transform; /* Optimizar animaciones */
 }
 
-/* Loading Skeleton para el calendario */
-.calendar-skeleton {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-    background: #2a2a2a;
-    border-radius: 8px;
-    padding: 10px;
-    margin-top: 10px;
-}
-
-.skeleton-day {
-    background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
-    border-radius: 8px;
-    height: 60px;
-    position: relative;
-    overflow: hidden;
-}
-
-.skeleton-day-number {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    width: 20px;
-    height: 16px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-}
-
-.skeleton-task {
-    position: absolute;
-    left: 8px;
-    right: 8px;
-    height: 12px;
-    background: rgba(76, 175, 80, 0.3);
-    border-radius: 6px;
-    margin: 2px 0;
-}
-
-.skeleton-task:nth-child(2) {
-    top: 35px;
-    width: 80%;
-}
-
-.skeleton-task:nth-child(3) {
-    top: 52px;
-    width: 60%;
-}
-
-.skeleton-task:nth-child(4) {
-    top: 69px;
-    width: 90%;
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
-}
-
-.skeleton-loading {
-    opacity: 0.7;
-    pointer-events: none;
-}
-
 /* Transiciones suaves para el calendario */
 .calendar {
-    transition: all 0.5s ease-in-out;
+    transition: all 0.3s ease-in-out;
     transform: translateY(0);
-}
-
-.calendar.loading {
-    opacity: 0;
-    transform: translateY(0px);
-}
-
-.calendar-skeleton {
-    transition: all 1s ease-in-out;
-}
-
-.calendar-skeleton.hiding {
-    opacity: 0;
-    transform: translateY(-10px);
-}
-
-/* Animación de entrada para el calendario */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.calendar.show {
-    animation: fadeInUp 0.4s ease-out;
 }
 
 /* Estilos para las páginas de gestión de datos */
@@ -3576,6 +3476,275 @@ textarea {
 .status-inactivo {
     background-color: #f44336;
     color: white;
+}
+
+/* ===== ESTILOS PARA NAVEGACIÓN AJAX ===== */
+.ajax-loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(42, 42, 42, 0.95);
+    padding: 20px;
+    border-radius: 12px;
+    z-index: 10000;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    border: 1px solid #444;
+    backdrop-filter: blur(5px);
+}
+
+.ajax-loading .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.ajax-loading .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #444;
+    border-top: 3px solid #4CAF50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.ajax-loading p {
+    margin: 0;
+    color: #e0e0e0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Animaciones para transiciones de contenido */
+.container {
+    transition: opacity 0.3s ease-out;
+}
+
+.container.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Mejoras para el menú durante navegación AJAX */
+.nav-menu a {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-menu a:hover {
+    background-color: #3a3a3a;
+    transform: translateX(5px);
+}
+
+.nav-menu a.active {
+    background-color: #4CAF50;
+    color: white;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* Indicador de página activa */
+.nav-menu a.active::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: #4CAF50;
+    border-radius: 2px;
+}
+
+/* Mejoras para las tarjetas de acción */
+.action-card {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.action-card:hover::before {
+    left: 100%;
+}
+
+/* Mejoras para navegación rápida */
+.nav-card {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.nav-card:hover::after {
+    opacity: 1;
+}
+
+/* Animaciones de entrada para contenido nuevo */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Mejoras para notificaciones toast */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: -450px;
+    padding: 12px 20px;
+    border-radius: 6px;
+    color: white;
+    font-weight: 500;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(100%) scale(0.8);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    max-width: 400px;
+    min-width: 250px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.toast.show {
+    right: 20px;
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    pointer-events: auto;
+    visibility: visible;
+}
+
+.toast.hide {
+    right: -450px;
+    opacity: 0;
+    transform: translateX(100%) scale(0.8);
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.toast-success {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+}
+
+.toast-error {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+.toast-info {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+/* Responsive para navegación AJAX */
+@media (max-width: 768px) {
+    .ajax-loading {
+        padding: 15px;
+        margin: 0 20px;
+    }
+    
+    .ajax-loading .loading-spinner {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .ajax-loading p {
+        font-size: 13px;
+    }
+    
+    .toast {
+        top: 10px;
+        right: -350px;
+        left: auto;
+        max-width: 320px;
+        min-width: 280px;
+        margin: 0 10px;
+        font-size: 14px;
+    }
+    
+    .toast.show {
+        right: 10px;
+    }
+    
+    .toast.hide {
+        right: -350px;
+    }
+}
+
+@media (max-width: 480px) {
+    .toast {
+        top: 10px;
+        right: -100vw;
+        left: 10px;
+        max-width: calc(100vw - 20px);
+        min-width: calc(100vw - 40px);
+        margin: 0;
+        font-size: 13px;
+        padding: 10px 16px;
+    }
+    
+    .toast.show {
+        right: auto;
+        left: 10px;
+    }
+    
+    .toast.hide {
+        right: -100vw;
+        left: auto;
+    }
 }
 
 /* ===== ESTILOS PARA FORMULARIOS MEJORADOS ===== */

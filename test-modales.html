@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Modales</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prueba de Modales</h1>
+    
+    <button onclick="openModal('testModal')">Abrir Modal</button>
+    <button onclick="showToast('Prueba de toast', 'success')">Mostrar Toast</button>
+    
+    <!-- Modal de prueba -->
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('testModal')">&times;</span>
+            <h2>Modal de Prueba</h2>
+            <p>Este es un modal de prueba para verificar que las funciones funcionan correctamente.</p>
+            <input type="text" placeholder="Campo de prueba">
+            <button onclick="closeModal('testModal')">Cerrar</button>
+        </div>
+    </div>
+    
+    <!-- Toast de notificaciones -->
+    <div id="toast" class="toast"></div>
+    
+    <!-- Scripts -->
+    <script src="/public/js/modal-functions.js"></script>
+    
+    <script>
+        // Verificar que las funciones estén disponibles
+        console.log('Functions available:');
+        console.log('openModal:', typeof openModal);
+        console.log('closeModal:', typeof closeModal);
+        console.log('showToast:', typeof showToast);
+        console.log('reinitializeModals:', typeof reinitializeModals);
+    </script>
+</body>
+</html>
+
