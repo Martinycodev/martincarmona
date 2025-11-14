@@ -8,20 +8,26 @@ $title = 'Listado de Empresas';
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
-                    <th>CIF</th>
+                    <th>DNI</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($empresas as $empresa): ?>
+                <?php if (empty($empresas)): ?>
                 <tr>
-                    <td><?= htmlspecialchars($empresa['id']) ?></td>
-                    <td><?= htmlspecialchars($empresa['nombre']) ?></td>
-                    <td><?= htmlspecialchars($empresa['cif']) ?></td>
+                    <td colspan="3" style="text-align: center; padding: 20px;">
+                        No hay empresas registradas
+                    </td>
                 </tr>
-                <?php endforeach; ?>
+                <?php else: ?>
+                    <?php foreach ($empresas as $empresa): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($empresa['id']) ?></td>
+                        <td><?= htmlspecialchars($empresa['nombre'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($empresa['dni'] ?? '') ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
         <a href="<?= $this->url('/datos') ?>" class="btn">Volver</a>
     </div>
-</body>
-</html>

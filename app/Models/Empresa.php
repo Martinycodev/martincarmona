@@ -20,22 +20,13 @@ class Empresa
     {
         try {
             $stmt = $this->db->prepare("
-                INSERT INTO empresas (nombre, razon_social, cif, direccion, telefono, email, contacto_principal, sector, tipo_cliente, estado, notas, id_user, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), CURDATE())
+                INSERT INTO empresas (nombre, dni, id_user)
+                VALUES (?, ?, ?)
             ");
             
-            $stmt->bind_param("sssssssssssi", 
+            $stmt->bind_param("ssi", 
                 $data['nombre'],
-                $data['razon_social'],
-                $data['cif'],
-                $data['direccion'],
-                $data['telefono'],
-                $data['email'],
-                $data['contacto_principal'],
-                $data['sector'],
-                $data['tipo_cliente'],
-                $data['estado'],
-                $data['notas'],
+                $data['dni'],
                 $userId
             );
             
@@ -61,17 +52,7 @@ class Empresa
                 SELECT 
                     id,
                     nombre,
-                    razon_social,
-                    cif,
-                    direccion,
-                    telefono,
-                    email,
-                    contacto_principal,
-                    sector,
-                    tipo_cliente,
-                    estado,
-                    notas,
-                    created_at
+                    dni
                 FROM empresas 
                 WHERE id_user = ?
                 ORDER BY nombre ASC
@@ -127,22 +108,13 @@ class Empresa
         try {
             $stmt = $this->db->prepare("
                 UPDATE empresas 
-                SET nombre = ?, razon_social = ?, cif = ?, direccion = ?, telefono = ?, email = ?, contacto_principal = ?, sector = ?, tipo_cliente = ?, estado = ?, notas = ?, updated_at = CURDATE()
+                SET nombre = ?, dni = ?
                 WHERE id = ? AND id_user = ?
             ");
             
-            $stmt->bind_param("sssssssssssii", 
+            $stmt->bind_param("ssii", 
                 $data['nombre'],
-                $data['razon_social'],
-                $data['cif'],
-                $data['direccion'],
-                $data['telefono'],
-                $data['email'],
-                $data['contacto_principal'],
-                $data['sector'],
-                $data['tipo_cliente'],
-                $data['estado'],
-                $data['notas'],
+                $data['dni'],
                 $data['id'],
                 $userId
             );
@@ -182,76 +154,17 @@ class Empresa
     }
     
     /**
-     * Obtener empresas activas
+     * Buscar empresa por DNI
      */
-    public function getActivas($userId)
+    public function getByDNI($dni, $userId)
     {
         try {
             $stmt = $this->db->prepare("
-                SELECT id, nombre, sector, tipo_cliente, contacto_principal 
+                SELECT id, nombre, dni 
                 FROM empresas 
-                WHERE estado = 'activa' AND id_user = ?
-                ORDER BY nombre ASC
+                WHERE dni = ? AND id_user = ?
             ");
-            $stmt->bind_param("i", $userId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            $empresas = [];
-            while ($row = $result->fetch_assoc()) {
-                $empresas[] = $row;
-            }
-            
-            $stmt->close();
-            return $empresas;
-            
-        } catch (\Exception $e) {
-            error_log("Error obteniendo empresas activas: " . $e->getMessage());
-            return [];
-        }
-    }
-    
-    /**
-     * Obtener empresas por tipo de cliente
-     */
-    public function getByTipoCliente($tipoCliente, $userId)
-    {
-        try {
-            $stmt = $this->db->prepare("
-                SELECT id, nombre, sector, contacto_principal, telefono, email 
-                FROM empresas 
-                WHERE tipo_cliente = ? AND estado = 'activa' AND id_user = ?
-                ORDER BY nombre ASC
-            ");
-            $stmt->bind_param("si", $tipoCliente, $userId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            $empresas = [];
-            while ($row = $result->fetch_assoc()) {
-                $empresas[] = $row;
-            }
-            
-            $stmt->close();
-            return $empresas;
-            
-        } catch (\Exception $e) {
-            error_log("Error obteniendo empresas por tipo de cliente: " . $e->getMessage());
-            return [];
-        }
-    }
-    
-    /**
-     * Buscar empresa por CIF
-     */
-    public function getByCIF($cif, $userId)
-    {
-        try {
-            $stmt = $this->db->prepare("
-                SELECT * FROM empresas 
-                WHERE cif = ? AND id_user = ?
-            ");
-            $stmt->bind_param("si", $cif, $userId);
+            $stmt->bind_param("si", $dni, $userId);
             $stmt->execute();
             $result = $stmt->get_result();
             
@@ -261,7 +174,7 @@ class Empresa
             return $empresa;
             
         } catch (\Exception $e) {
-            error_log("Error buscando empresa por CIF: " . $e->getMessage());
+            error_log("Error buscando empresa por DNI: " . $e->getMessage());
             return false;
         }
     }
@@ -273,7 +186,7 @@ class Empresa
     {
         try {
             $stmt = $this->db->prepare("
-                SELECT id, nombre, sector, tipo_cliente, contacto_principal 
+                SELECT id, nombre, dni 
                 FROM empresas 
                 WHERE nombre LIKE ? AND id_user = ?
                 ORDER BY nombre ASC

@@ -1,21 +1,40 @@
 <?php
 namespace App\Controllers;
-require_once BASE_PATH . '/config/database.php';
+
+require_once BASE_PATH . '/app/Models/Empresa.php';
+
 class EmpresasController extends BaseController
 {
+    public function __construct()
+    {
+        // Iniciar sesión si no está iniciada
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    }
+
     public function index()
     {
-        $db = \Database::connect();
-        $result = $db->query("SELECT * FROM empresas");
-        $empresas = $result->fetch_all(MYSQLI_ASSOC);
-        $db->close();
+        // Verificar si el usuario está autenticado
+        if (!isset($_SESSION['user_id'])) {
+            $this->redirect('/');
+            return;
+        }
+
+        // Obtener empresas del usuario usando el modelo
+        $empresaModel = new \App\Models\Empresa();
+        $empresas = $empresaModel->getAll($_SESSION['user_id']);
+
         // Obtener información del usuario de la sesión
         $data = [
             'empresas' => $empresas,
             'user' => [
-                'name' => $_SESSION['user_name'] ?? 'Usuario'
+                'id' => $_SESSION['user_id'],
+                'name' => $_SESSION['user_name'] ?? 'Usuario',
+                'email' => $_SESSION['user_email'] ?? ''
             ]
         ];
+        
         $this->render('empresas/index', $data);
     }
 }
