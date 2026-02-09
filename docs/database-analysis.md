@@ -17,7 +17,7 @@ La base de datos `u873002419_campo` es un sistema de gestión agrícola que perm
 
 ### 🌱 **Gestión de Parcelas**
 - **`parcelas`**: Información de parcelas agrícolas
-  - `id`, `nombre`, `olivos`, `ubicacion`, `empresa`, `dueño`, `hidrante`, `descripcion`, `id_user`
+  - `id`, `nombre`, `olivos`, `ubicacion`, `empresa`, `propietario`, `hidrante`, `descripcion`, `id_user`
   - **Datos actuales**: 41 parcelas registradas
 
 ### ⚙️ **Gestión de Trabajos y Tareas**
@@ -350,7 +350,7 @@ CREATE INDEX idx_tareas_fecha ON tareas(fecha);
 CREATE INDEX idx_movimientos_fecha ON movimientos(fecha);
 CREATE INDEX idx_tarea_trabajadores_trabajador ON tarea_trabajadores(trabajador_id);
 CREATE INDEX idx_tarea_parcelas_parcela ON tarea_parcelas(parcela_id);
-CREATE INDEX idx_parcelas_dueño ON parcelas(dueño);
+CREATE INDEX idx_parcelas_propietario ON parcelas(propietario);
 CREATE INDEX idx_trabajadores_nombre ON trabajadores(nombre);
 ```
 
