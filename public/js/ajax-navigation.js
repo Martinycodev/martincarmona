@@ -14,16 +14,16 @@ class AjaxNavigation {
     init() {
         // Crear contenedor para el contenido dinámico
         this.createContentContainer();
-        
+
         // Crear indicador de carga
         this.createLoadingIndicator();
-        
+
         // Interceptar clics en enlaces de navegación
         this.interceptNavigationLinks();
-        
+
         // Manejar navegación del navegador (botones atrás/adelante)
         this.handleBrowserNavigation();
-        
+
         // Cargar contenido inicial
         this.loadInitialContent();
     }
@@ -121,10 +121,10 @@ class AjaxNavigation {
     async navigateTo(url) {
         // Actualizar la URL en el navegador sin recargar la página
         history.pushState({ url: url }, '', url);
-        
+
         // Cargar el nuevo contenido
         await this.loadContent(url, true);
-        
+
         // Actualizar la URL actual
         this.currentUrl = url;
     }
@@ -149,21 +149,21 @@ class AjaxNavigation {
             }
 
             const html = await response.text();
-            
+
             // Extraer solo el contenido del contenedor principal
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            
+
             // Buscar el contenido principal en la respuesta
             const newContent = doc.querySelector('.container') || doc.querySelector('main') || doc.body;
-            
+
             if (newContent) {
                 // Actualizar el contenido con animación suave
                 await this.updateContentWithAnimation(newContent.innerHTML);
-                
+
                 // Re-interceptar enlaces en el nuevo contenido
                 this.interceptNavigationLinks();
-                
+
                 // Ejecutar scripts del nuevo contenido
                 this.executeScripts(newContent);
             }
@@ -193,11 +193,14 @@ class AjaxNavigation {
             this.contentContainer.innerHTML = '';
             this.contentContainer.appendChild(tempContainer);
 
+            // Resetear scroll al inicio
+            window.scrollTo(0, 0);
+
             // Animar entrada
             requestAnimationFrame(() => {
                 tempContainer.style.opacity = '1';
                 tempContainer.style.transform = 'translateY(0)';
-                
+
                 setTimeout(() => {
                     // Limpiar estilos de animación
                     tempContainer.style.cssText = '';
@@ -222,10 +225,10 @@ class AjaxNavigation {
                 document.head.removeChild(newScript);
             }
         });
-        
+
         // Inicializar modales y funcionalidades específicas
         this.initializeModals(container);
-        
+
         // Llamar a la función global de reinicialización de modales
         if (typeof window.reinitializeModals === 'function') {
             console.log('Reinitializing modals after AJAX load...');
@@ -234,7 +237,7 @@ class AjaxNavigation {
             console.warn('reinitializeModals function not found');
         }
     }
-    
+
     loadExternalScript(src) {
         // Verificar si el script ya está cargado
         const existingScript = document.querySelector(`script[src="${src}"]`);
@@ -242,7 +245,7 @@ class AjaxNavigation {
             console.log('Script already loaded:', src);
             return;
         }
-        
+
         console.log('Loading external script:', src);
         const script = document.createElement('script');
         script.src = src;
@@ -254,23 +257,23 @@ class AjaxNavigation {
         };
         document.head.appendChild(script);
     }
-    
+
     initializeModals(container) {
         // Reinicializar event listeners para modales
         this.initializeModalEventListeners(container);
-        
+
         // Reinicializar formularios
         this.initializeForms(container);
-        
+
         // Reinicializar botones de acción
         this.initializeActionButtons(container);
     }
-    
+
     initializeModalEventListeners(container) {
         // Event listeners para cerrar modales al hacer clic fuera
         const modals = container.querySelectorAll('.modal');
         modals.forEach(modal => {
-            modal.addEventListener('click', function(e) {
+            modal.addEventListener('click', function (e) {
                 if (e.target === this) {
                     // Buscar función de cerrar modal específica
                     const closeFunction = this.getAttribute('data-close-function') || 'closeModal';
@@ -282,11 +285,11 @@ class AjaxNavigation {
                 }
             });
         });
-        
+
         // Event listeners para botones de cerrar
         const closeButtons = container.querySelectorAll('.close, .close-btn');
         closeButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const modal = this.closest('.modal');
                 if (modal) {
                     const closeFunction = modal.getAttribute('data-close-function') || 'closeModal';
@@ -299,7 +302,7 @@ class AjaxNavigation {
             });
         });
     }
-    
+
     initializeForms(container) {
         // Reinicializar formularios de crear
         const createForms = container.querySelectorAll('form[id$="Form"]');
@@ -309,13 +312,13 @@ class AjaxNavigation {
             form.parentNode.replaceChild(newForm, form);
         });
     }
-    
+
     initializeActionButtons(container) {
         // Reinicializar botones de acción (editar, eliminar, etc.)
         const actionButtons = container.querySelectorAll('button[onclick], a[onclick]');
         actionButtons.forEach(button => {
             // Los botones con onclick ya funcionan, pero podemos agregar validaciones adicionales
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', function (e) {
                 // Asegurar que las funciones globales estén disponibles
                 const onclickAttr = this.getAttribute('onclick');
                 if (onclickAttr && onclickAttr.includes('(')) {
@@ -359,9 +362,9 @@ class AjaxNavigation {
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             animation: slideInRight 0.3s ease-out;
         `;
-        
+
         document.body.appendChild(errorToast);
-        
+
         // Remover después de 5 segundos
         setTimeout(() => {
             errorToast.style.animation = 'slideOutRight 0.3s ease-out';

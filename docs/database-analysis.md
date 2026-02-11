@@ -57,8 +57,7 @@ La base de datos `u873002419_campo` es un sistema de gestión agrícola que perm
 
 ## 🔗 Relaciones Principales
 
-```mermaid
-erDiagram
+```mermaiderDiagram
     usuarios ||--o{ trabajadores : "tiene"
     usuarios ||--o{ parcelas : "posee"
     usuarios ||--o{ tareas : "crea"
@@ -184,19 +183,6 @@ ALTER TABLE tareas ADD COLUMN prioridad ENUM('baja', 'media', 'alta', 'urgente')
 ALTER TABLE tareas ADD COLUMN observaciones TEXT;
 ```
 
-#### 🎯 **Sistema de Objetivos**
-```sql
-CREATE TABLE objetivos_tareas (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    tarea_id INT NOT NULL,
-    objetivo VARCHAR(255),
-    cantidad_objetivo DECIMAL(10,2),
-    unidad VARCHAR(50),
-    cantidad_realizada DECIMAL(10,2) DEFAULT 0,
-    fecha_objetivo DATE,
-    FOREIGN KEY (tarea_id) REFERENCES tareas(id) ON DELETE CASCADE
-);
-```
 
 ### 5. **Sistema Financiero Avanzado**
 

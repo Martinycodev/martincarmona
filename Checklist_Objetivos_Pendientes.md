@@ -4,6 +4,16 @@
 
 ## 🚨 **PRIORIDAD ALTA - Objetivos Críticos**
 
+### 💰 **Dashboard** 
+*Dashboard que muestra un calendario de tareas y botones de accion rápida.*
+
+- [ ] **1.1** Dar toques de UX
+  - [] En el calendario al pulsar sobre una tarea tiene que aparece solo la vista de detalle de tareas, no la edición.
+  - [ ] Añadir la opción de añadir imágenes a las tareas.
+  - [ ] En la selección del trabajador aparece mucha info debajo como ss y dni. con el nombre es suficiente.
+  - [ ] en la vista de detalle de tarea tiene que aparecer un boton de edición por si quieres cambiar algo. y que te lleve a la edición.
+  - [ ] en el calendario puede mostrar los días que rellenen los huecos del mes pasado y el siguiente para dejarlo relleno y que se vea con menos opacidad u otro tono.
+ 
 ### 💰 **Módulo de Economía** 
 *Sistema financiero completo para gestión de costos y ingresos*
 
