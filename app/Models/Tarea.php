@@ -7,12 +7,12 @@ require_once BASE_PATH . '/config/database.php';
 class Tarea
 {
     private $db;
-    
+
     public function __construct()
     {
         $this->db = \Database::connect();
     }
-    
+
     /**
      * Crear una nueva tarea (compatible con múltiples trabajadores)
      */
@@ -20,12 +20,12 @@ class Tarea
     {
         try {
             $this->db->begin_transaction();
-            
+
             // Validar datos
             if (!isset($data['horas']) || $data['horas'] === '') {
                 $data['horas'] = 0;
             }
-            
+
             // Manejar compatibilidad: trabajadores múltiples vs trabajador único
             $trabajadores = [];
             if (isset($data['trabajadores']) && is_array($data['trabajadores']) && !empty($data['trabajadores'])) {
@@ -39,33 +39,34 @@ class Tarea
             } else {
                 $trabajadorPrincipal = null;
             }
-            
+
             // Crear la tarea principal (solo campos esenciales)
             $stmt = $this->db->prepare("
                 INSERT INTO tareas (fecha, descripcion, horas, id_user, created_at, updated_at)
                 VALUES (?, ?, ?, ?, NOW(), NOW())
             ");
-            
-            $stmt->bind_param("ssdi", 
+
+            $stmt->bind_param(
+                "ssdi",
                 $data['fecha'],
                 $data['descripcion'],
                 $data['horas'],
                 $userId
             );
-            
+
             $result = $stmt->execute();
             $tareaId = $this->db->insert_id;
             $stmt->close();
-            
+
             if (!$result) {
                 throw new \Exception("Error insertando tarea principal");
             }
-            
+
             // Insertar trabajadores en la tabla de relaciones N:N
             if (!empty($trabajadores)) {
                 $this->insertarTrabajadores($tareaId, $trabajadores, $data['horas']);
             }
-            
+
             // Insertar parcelas en la tabla de relaciones N:N (si existen)
             if (isset($data['parcelas']) && is_array($data['parcelas']) && !empty($data['parcelas'])) {
                 // Modo múltiple: array de IDs de parcelas
@@ -74,28 +75,28 @@ class Tarea
                 // Modo único: una sola parcela (compatibilidad)
                 $this->insertarParcelas($tareaId, [$data['parcela']]);
             }
-            
+
             // Insertar trabajo en la tabla de relaciones N:N (si existe)
             if (isset($data['trabajo']) && $data['trabajo'] > 0) {
                 $this->insertarTrabajos($tareaId, [$data['trabajo']], $data['horas']);
             }
-            
+
             // ===== NUEVA LÓGICA: ACTUALIZAR MOVIMIENTOS MENSUALES =====
             // Solo procesar si hay trabajadores y trabajo asignado
             if (!empty($trabajadores) && isset($data['trabajo']) && $data['trabajo'] > 0) {
                 $this->actualizarMovimientosMensuales($trabajadores, $data['trabajo'], $data['horas'], $data['fecha']);
             }
-            
+
             $this->db->commit();
             return $tareaId;
-            
+
         } catch (\Exception $e) {
             $this->db->rollback();
             error_log("Error creando tarea: " . $e->getMessage());
             return false;
         }
     }
-    
+
     /**
      * Insertar trabajadores en la tabla de relaciones
      */
@@ -106,17 +107,17 @@ class Tarea
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE horas_asignadas = VALUES(horas_asignadas)
         ");
-        
+
         foreach ($trabajadores as $trabajadorId) {
             if ($trabajadorId > 0) {
                 $stmt->bind_param("iid", $tareaId, $trabajadorId, $horasDefault);
                 $stmt->execute();
             }
         }
-        
+
         $stmt->close();
     }
-    
+
     /**
      * Insertar parcelas en la tabla de relaciones
      */
@@ -127,17 +128,17 @@ class Tarea
             VALUES (?, ?)
             ON DUPLICATE KEY UPDATE parcela_id = VALUES(parcela_id)
         ");
-        
+
         foreach ($parcelas as $parcelaId) {
             if ($parcelaId > 0) {
                 $stmt->bind_param("ii", $tareaId, $parcelaId);
                 $stmt->execute();
             }
         }
-        
+
         $stmt->close();
     }
-    
+
     /**
      * Insertar trabajos en la tabla de relaciones
      */
@@ -148,17 +149,17 @@ class Tarea
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE horas_trabajo = VALUES(horas_trabajo)
         ");
-        
+
         foreach ($trabajos as $trabajoId) {
             if ($trabajoId > 0) {
                 $stmt->bind_param("iid", $tareaId, $trabajoId, $horasDefault);
                 $stmt->execute();
             }
         }
-        
+
         $stmt->close();
     }
-    
+
     /**
      * Obtener estadísticas básicas del usuario
      */
@@ -175,15 +176,15 @@ class Tarea
             $stmt->bind_param("i", $userId);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             $stats = $result->fetch_assoc();
             $stmt->close();
-            
+
             return [
                 'total_tareas' => $stats['total'] ?? 0,
                 'total_horas' => $stats['total_horas'] ?? 0
             ];
-            
+
         } catch (\Exception $e) {
             error_log("Error obteniendo estadísticas: " . $e->getMessage());
             return [
@@ -192,7 +193,7 @@ class Tarea
             ];
         }
     }
-    
+
     /**
      * Obtener todas las tareas del usuario con trabajadores, parcelas y trabajos relacionados
      * OPTIMIZADO: Evita N+1 queries usando consultas agrupadas
@@ -205,7 +206,7 @@ class Tarea
         try {
             // Calcular offset
             $offset = ($page - 1) * $limit;
-            
+
             // Obtener tareas del usuario con paginación
             $stmt = $this->db->prepare("
                 SELECT 
@@ -223,10 +224,10 @@ class Tarea
             $stmt->bind_param("iii", $userId, $limit, $offset);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             $tareas = [];
             $tareaIds = [];
-            
+
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['id']] = $row;
                 $tareas[$row['id']]['trabajadores'] = [];
@@ -235,20 +236,20 @@ class Tarea
                 $tareaIds[] = $row['id'];
             }
             $stmt->close();
-            
+
             // Si hay tareas, cargar datos relacionados
             if (!empty($tareaIds)) {
                 $this->cargarDatosRelacionadosPaginado($tareas, $tareaIds);
             }
-            
+
             return array_values($tareas);
-            
+
         } catch (\Exception $e) {
             error_log("Error obteniendo tareas paginadas: " . $e->getMessage());
             return [];
         }
     }
-    
+
     /**
      * Obtener total de tareas para paginación
      */
@@ -265,9 +266,9 @@ class Tarea
             $result = $stmt->get_result();
             $row = $result->fetch_assoc();
             $stmt->close();
-            
-            return (int)$row['total'];
-            
+
+            return (int) $row['total'];
+
         } catch (\Exception $e) {
             error_log("Error obteniendo total de tareas: " . $e->getMessage());
             return 0;
@@ -292,10 +293,10 @@ class Tarea
             $stmt->bind_param("i", $userId);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             $tareas = [];
             $tareaIds = [];
-            
+
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['id']] = $row;
                 $tareas[$row['id']]['trabajadores'] = [];
@@ -304,13 +305,13 @@ class Tarea
                 $tareaIds[] = $row['id'];
             }
             $stmt->close();
-            
+
             if (empty($tareaIds)) {
                 return [];
             }
-            
+
             $placeholders = str_repeat('?,', count($tareaIds) - 1) . '?';
-            
+
             // Obtener todos los trabajadores en una sola consulta
             $stmt = $this->db->prepare("
                 SELECT 
@@ -326,7 +327,7 @@ class Tarea
             $stmt->bind_param(str_repeat('i', count($tareaIds)), ...$tareaIds);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['tarea_id']]['trabajadores'][] = [
                     'id' => $row['id'],
@@ -335,7 +336,7 @@ class Tarea
                 ];
             }
             $stmt->close();
-            
+
             // Obtener todas las parcelas en una sola consulta
             $stmt = $this->db->prepare("
                 SELECT 
@@ -350,7 +351,7 @@ class Tarea
             $stmt->bind_param(str_repeat('i', count($tareaIds)), ...$tareaIds);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['tarea_id']]['parcelas'][] = [
                     'id' => $row['id'],
@@ -358,7 +359,7 @@ class Tarea
                 ];
             }
             $stmt->close();
-            
+
             // Obtener todos los trabajos en una sola consulta
             $stmt = $this->db->prepare("
                 SELECT 
@@ -373,7 +374,7 @@ class Tarea
             $stmt->bind_param(str_repeat('i', count($tareaIds)), ...$tareaIds);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['tarea_id']]['trabajos'][] = [
                     'id' => $row['id'],
@@ -381,12 +382,12 @@ class Tarea
                 ];
             }
             $stmt->close();
-            
+
             // Procesar datos para compatibilidad con la interfaz
             foreach ($tareas as &$tarea) {
                 // Trabajadores
                 if (!empty($tarea['trabajadores'])) {
-                    $trabajadoresNombres = array_map(function($t) {
+                    $trabajadoresNombres = array_map(function ($t) {
                         return $t['nombre'];
                     }, $tarea['trabajadores']);
                     $tarea['trabajador_nombre'] = implode(', ', $trabajadoresNombres);
@@ -395,7 +396,7 @@ class Tarea
                     $tarea['trabajador_nombre'] = '';
                     $tarea['trabajador'] = null;
                 }
-                
+
                 // Parcelas
                 if (!empty($tarea['parcelas'])) {
                     $tarea['parcela_nombre'] = $tarea['parcelas'][0]['nombre'];
@@ -404,7 +405,7 @@ class Tarea
                     $tarea['parcela_nombre'] = '';
                     $tarea['parcela'] = null;
                 }
-                
+
                 // Trabajos
                 if (!empty($tarea['trabajos'])) {
                     $tarea['trabajo_nombre'] = $tarea['trabajos'][0]['nombre'];
@@ -414,16 +415,16 @@ class Tarea
                     $tarea['trabajo'] = null;
                 }
             }
-            
+
             // Convertir array asociativo a indexado manteniendo el orden
             return array_values($tareas);
-            
+
         } catch (\Exception $e) {
             error_log("Error obteniendo tareas: " . $e->getMessage());
             return [];
         }
     }
-    
+
     /**
      * Obtener tareas de un mes específico (OPTIMIZADO para calendario)
      * @param int $userId ID del usuario
@@ -437,7 +438,7 @@ class Tarea
             // Calcular primer y último día del mes
             $firstDay = sprintf('%04d-%02d-01', $year, $month);
             $lastDay = date('Y-m-t', strtotime($firstDay)); // último día del mes
-            
+
             // Obtener tareas del mes específico
             $stmt = $this->db->prepare("
                 SELECT 
@@ -454,10 +455,10 @@ class Tarea
             $stmt->bind_param("iss", $userId, $firstDay, $lastDay);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             $tareas = [];
             $tareaIds = [];
-            
+
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['id']] = $row;
                 $tareas[$row['id']]['trabajadores'] = [];
@@ -466,13 +467,13 @@ class Tarea
                 $tareaIds[] = $row['id'];
             }
             $stmt->close();
-            
+
             if (empty($tareaIds)) {
                 return [];
             }
-            
+
             $placeholders = str_repeat('?,', count($tareaIds) - 1) . '?';
-            
+
             // Obtener todos los trabajadores en una sola consulta
             $stmt = $this->db->prepare("
                 SELECT 
@@ -488,7 +489,7 @@ class Tarea
             $stmt->bind_param(str_repeat('i', count($tareaIds)), ...$tareaIds);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['tarea_id']]['trabajadores'][] = [
                     'id' => $row['id'],
@@ -497,7 +498,7 @@ class Tarea
                 ];
             }
             $stmt->close();
-            
+
             // Obtener todas las parcelas en una sola consulta
             $stmt = $this->db->prepare("
                 SELECT 
@@ -512,7 +513,7 @@ class Tarea
             $stmt->bind_param(str_repeat('i', count($tareaIds)), ...$tareaIds);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['tarea_id']]['parcelas'][] = [
                     'id' => $row['id'],
@@ -520,7 +521,7 @@ class Tarea
                 ];
             }
             $stmt->close();
-            
+
             // Obtener todos los trabajos en una sola consulta
             $stmt = $this->db->prepare("
                 SELECT 
@@ -535,7 +536,7 @@ class Tarea
             $stmt->bind_param(str_repeat('i', count($tareaIds)), ...$tareaIds);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['tarea_id']]['trabajos'][] = [
                     'id' => $row['id'],
@@ -543,12 +544,12 @@ class Tarea
                 ];
             }
             $stmt->close();
-            
+
             // Procesar datos para compatibilidad con la interfaz
             foreach ($tareas as &$tarea) {
                 // Trabajadores
                 if (!empty($tarea['trabajadores'])) {
-                    $trabajadoresNombres = array_map(function($t) {
+                    $trabajadoresNombres = array_map(function ($t) {
                         return $t['nombre'];
                     }, $tarea['trabajadores']);
                     $tarea['trabajador_nombre'] = implode(', ', $trabajadoresNombres);
@@ -557,7 +558,7 @@ class Tarea
                     $tarea['trabajador_nombre'] = '';
                     $tarea['trabajador'] = null;
                 }
-                
+
                 // Parcelas
                 if (!empty($tarea['parcelas'])) {
                     $tarea['parcela_nombre'] = $tarea['parcelas'][0]['nombre'];
@@ -566,7 +567,7 @@ class Tarea
                     $tarea['parcela_nombre'] = '';
                     $tarea['parcela'] = null;
                 }
-                
+
                 // Trabajos
                 if (!empty($tarea['trabajos'])) {
                     $tarea['trabajo_nombre'] = $tarea['trabajos'][0]['nombre'];
@@ -576,10 +577,10 @@ class Tarea
                     $tarea['trabajo'] = null;
                 }
             }
-            
+
             // Convertir array asociativo a indexado manteniendo el orden
             return array_values($tareas);
-            
+
         } catch (\Exception $e) {
             error_log("Error obteniendo tareas del mes: " . $e->getMessage());
             return [];
@@ -605,21 +606,21 @@ class Tarea
             $stmt->bind_param("i", $tareaId);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             $trabajadores = [];
             while ($row = $result->fetch_assoc()) {
                 $trabajadores[] = $row;
             }
-            
+
             $stmt->close();
             return $trabajadores;
-            
+
         } catch (\Exception $e) {
             error_log("Error obteniendo trabajadores de tarea: " . $e->getMessage());
             return [];
         }
     }
-    
+
     /**
      * Obtener parcelas asignadas a una tarea específica
      */
@@ -640,21 +641,21 @@ class Tarea
             $stmt->bind_param("i", $tareaId);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             $parcelas = [];
             while ($row = $result->fetch_assoc()) {
                 $parcelas[] = $row;
             }
-            
+
             $stmt->close();
             return $parcelas;
-            
+
         } catch (\Exception $e) {
             error_log("Error obteniendo parcelas de tarea: " . $e->getMessage());
             return [];
         }
     }
-    
+
     /**
      * Obtener trabajos asignados a una tarea específica
      */
@@ -675,21 +676,21 @@ class Tarea
             $stmt->bind_param("i", $tareaId);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             $trabajos = [];
             while ($row = $result->fetch_assoc()) {
                 $trabajos[] = $row;
             }
-            
+
             $stmt->close();
             return $trabajos;
-            
+
         } catch (\Exception $e) {
             error_log("Error obteniendo trabajos de tarea: " . $e->getMessage());
             return [];
         }
     }
-    
+
     /**
      * Actualizar una tarea existente (compatible con múltiples trabajadores)
      */
@@ -697,12 +698,12 @@ class Tarea
     {
         try {
             $this->db->begin_transaction();
-            
+
             // Validar datos
             if (!isset($data['horas']) || $data['horas'] === '') {
                 $data['horas'] = 0;
             }
-            
+
             // Manejar compatibilidad: trabajadores múltiples vs trabajador único
             $trabajadores = [];
             if (isset($data['trabajadores']) && is_array($data['trabajadores']) && !empty($data['trabajadores'])) {
@@ -716,35 +717,36 @@ class Tarea
             } else {
                 $trabajadorPrincipal = null;
             }
-            
+
             // Actualizar la tarea principal (solo campos esenciales)
             $stmt = $this->db->prepare("
                 UPDATE tareas 
                 SET fecha = ?, descripcion = ?, horas = ?, updated_at = CURDATE()
                 WHERE id = ? AND id_user = ?
             ");
-            
-            $stmt->bind_param("ssdii", 
+
+            $stmt->bind_param(
+                "ssdii",
                 $data['fecha'],
                 $data['descripcion'],
                 $data['horas'],
                 $data['id'],
                 $userId
             );
-            
+
             $result = $stmt->execute();
             $stmt->close();
-            
+
             if (!$result) {
                 throw new \Exception("Error actualizando tarea principal");
             }
-            
+
             // Actualizar trabajadores: eliminar los existentes y agregar los nuevos
             $this->eliminarRelacionesTarea($data['id'], 'trabajadores');
             if (!empty($trabajadores)) {
                 $this->insertarTrabajadores($data['id'], $trabajadores, $data['horas']);
             }
-            
+
             // Actualizar parcelas en tabla de relaciones
             $this->eliminarRelacionesTarea($data['id'], 'parcelas');
             if (isset($data['parcelas']) && is_array($data['parcelas']) && !empty($data['parcelas'])) {
@@ -754,23 +756,23 @@ class Tarea
                 // Modo único: una sola parcela (compatibilidad)
                 $this->insertarParcelas($data['id'], [$data['parcela']]);
             }
-            
+
             // Actualizar trabajo en tabla de relaciones
             $this->eliminarRelacionesTarea($data['id'], 'trabajos');
             if (isset($data['trabajo']) && $data['trabajo'] > 0) {
                 $this->insertarTrabajos($data['id'], [$data['trabajo']], $data['horas']);
             }
-            
+
             $this->db->commit();
             return true;
-            
+
         } catch (\Exception $e) {
             $this->db->rollback();
             error_log("Error actualizando tarea: " . $e->getMessage());
             return false;
         }
     }
-    
+
     /**
      * Eliminar relaciones existentes de una tarea
      */
@@ -790,15 +792,113 @@ class Tarea
             default:
                 return false;
         }
-        
+
         $stmt = $this->db->prepare("DELETE FROM {$tabla} WHERE tarea_id = ?");
         $stmt->bind_param("i", $tareaId);
         $stmt->execute();
         $stmt->close();
-        
+
         return true;
     }
-    
+
+    /**
+     * Agregar una imagen a la tarea
+     */
+    public function addImage($tareaId, $data)
+    {
+        try {
+            $stmt = $this->db->prepare("
+                INSERT INTO tarea_imagenes (tarea_id, filename, original_filename, file_path, file_size, mime_type)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
+
+            $stmt->bind_param(
+                "isssis",
+                $tareaId,
+                $data['filename'],
+                $data['original_filename'],
+                $data['file_path'],
+                $data['file_size'],
+                $data['mime_type']
+            );
+
+            $result = $stmt->execute();
+            $imageId = $this->db->insert_id;
+            $stmt->close();
+
+            return $result ? $imageId : false;
+        } catch (\Exception $e) {
+            error_log("Error agregando imagen: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Obtener todas las imágenes de una tarea
+     */
+    public function getImages($tareaId)
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT * FROM tarea_imagenes 
+                WHERE tarea_id = ? 
+                ORDER BY uploaded_at DESC
+            ");
+            $stmt->bind_param("i", $tareaId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $images = [];
+            while ($row = $result->fetch_assoc()) {
+                $images[] = $row;
+            }
+            $stmt->close();
+
+            return $images;
+        } catch (\Exception $e) {
+            error_log("Error obteniendo imágenes: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Obtener una imagen por su ID
+     */
+    public function getImageById($imageId)
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT * FROM tarea_imagenes WHERE id = ?");
+            $stmt->bind_param("i", $imageId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $image = $result->fetch_assoc();
+            $stmt->close();
+
+            return $image;
+        } catch (\Exception $e) {
+            error_log("Error obteniendo imagen: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Eliminar una imagen de la base de datos
+     */
+    public function deleteImage($imageId)
+    {
+        try {
+            $stmt = $this->db->prepare("DELETE FROM tarea_imagenes WHERE id = ?");
+            $stmt->bind_param("i", $imageId);
+            $result = $stmt->execute();
+            $stmt->close();
+
+            return $result;
+        } catch (\Exception $e) {
+            error_log("Error eliminando imagen: " . $e->getMessage());
+            return false;
+        }
+    }
+
     /**
      * Eliminar una tarea y todas sus relaciones
      */
@@ -806,51 +906,89 @@ class Tarea
     {
         try {
             $this->db->begin_transaction();
-            
+
             // Verificar que la tarea pertenezca al usuario
             $stmt = $this->db->prepare("SELECT id FROM tareas WHERE id = ? AND id_user = ?");
             $stmt->bind_param("ii", $taskId, $userId);
             $stmt->execute();
             $result = $stmt->get_result();
             $stmt->close();
-            
+
             if ($result->num_rows === 0) {
                 throw new \Exception("Tarea no encontrada o sin permisos");
             }
-            
+
             // Eliminar relaciones (se eliminan automáticamente por CASCADE en las FK)
             // Pero las incluimos explícitamente por si no están configuradas
             $this->eliminarRelacionesTarea($taskId, 'trabajadores');
             $this->eliminarRelacionesTarea($taskId, 'parcelas');
             $this->eliminarRelacionesTarea($taskId, 'trabajos');
-            
+
             // Eliminar la tarea principal
             $stmt = $this->db->prepare("DELETE FROM tareas WHERE id = ? AND id_user = ?");
             $stmt->bind_param("ii", $taskId, $userId);
             $result = $stmt->execute();
             $stmt->close();
-            
+
             if (!$result) {
                 throw new \Exception("Error eliminando tarea principal");
             }
-            
+
             $this->db->commit();
             return true;
-            
+
         } catch (\Exception $e) {
             $this->db->rollback();
             error_log("Error eliminando tarea: " . $e->getMessage());
             return false;
         }
     }
-    
+
+    /**
+     * Actualizar un campo individual de una tarea
+     */
+    public function updateSingleField($taskId, $column, $value, $userId)
+    {
+        // Lista de columnas permitidas para actualización directa
+        $allowedColumns = ['fecha', 'descripcion', 'horas'];
+        if (!in_array($column, $allowedColumns)) {
+            return false;
+        }
+
+        try {
+            $stmt = $this->db->prepare("
+                UPDATE tareas 
+                SET {$column} = ?, updated_at = NOW() 
+                WHERE id = ? AND id_user = ?
+            ");
+
+            if ($column === 'horas') {
+                $val = floatval($value);
+                $stmt->bind_param("dii", $val, $taskId, $userId);
+            } else {
+                $stmt->bind_param("sii", $value, $taskId, $userId);
+            }
+
+            $result = $stmt->execute();
+            $stmt->close();
+
+            // Si se actualizan las horas o la fecha, podría ser necesario recalcular movimientos mensuales
+            // Pero para el MVP "edit-in-place" nos centraremos en la persistencia básica primero
+            
+            return $result;
+        } catch (\Exception $e) {
+            error_log("Error actualizando campo individual: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public function __destruct()
     {
         if ($this->db) {
             $this->db->close();
         }
     }
-    
+
     /**
      * Cargar datos relacionados para tareas paginadas
      */
@@ -859,9 +997,9 @@ class Tarea
         if (empty($tareaIds)) {
             return;
         }
-        
+
         $placeholders = str_repeat('?,', count($tareaIds) - 1) . '?';
-        
+
         // Obtener todos los trabajadores en una sola consulta
         $stmt = $this->db->prepare("
             SELECT 
@@ -877,7 +1015,7 @@ class Tarea
         $stmt->bind_param(str_repeat('i', count($tareaIds)), ...$tareaIds);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         while ($row = $result->fetch_assoc()) {
             $tareas[$row['tarea_id']]['trabajadores'][] = [
                 'id' => $row['id'],
@@ -886,7 +1024,7 @@ class Tarea
             ];
         }
         $stmt->close();
-        
+
         // Obtener todas las parcelas en una sola consulta
         $stmt = $this->db->prepare("
             SELECT 
@@ -902,7 +1040,7 @@ class Tarea
         $stmt->bind_param(str_repeat('i', count($tareaIds)), ...$tareaIds);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         while ($row = $result->fetch_assoc()) {
             $tareas[$row['tarea_id']]['parcelas'][] = [
                 'id' => $row['id'],
@@ -911,7 +1049,7 @@ class Tarea
             ];
         }
         $stmt->close();
-        
+
         // Obtener todos los trabajos en una sola consulta
         $stmt = $this->db->prepare("
             SELECT 
@@ -927,7 +1065,7 @@ class Tarea
         $stmt->bind_param(str_repeat('i', count($tareaIds)), ...$tareaIds);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         while ($row = $result->fetch_assoc()) {
             $tareas[$row['tarea_id']]['trabajos'][] = [
                 'id' => $row['id'],
@@ -937,13 +1075,14 @@ class Tarea
         }
         $stmt->close();
     }
-    
+
     /**
      * Obtener el precio por hora de un trabajo
      * @param int $trabajoId ID del trabajo
      * @return float Precio por hora del trabajo
      */
-    private function getPrecioHoraTrabajo($trabajoId) {
+    private function getPrecioHoraTrabajo($trabajoId)
+    {
         try {
             // Obtener precio_hora del trabajo desde la tabla trabajos
             $stmt = $this->db->prepare("
@@ -956,31 +1095,32 @@ class Tarea
             $result = $stmt->get_result();
             $row = $result->fetch_assoc();
             $stmt->close();
-            
+
             if ($row && $row['precio_hora'] !== null) {
                 return (float) $row['precio_hora'];
             }
-            
+
             // Si no hay precio_hora en la tabla trabajos, usar precio por defecto
             return 15.0; // Precio por defecto de 15€/hora
-            
+
         } catch (\Exception $e) {
             error_log("Error obteniendo precio del trabajo: " . $e->getMessage());
             return 15.0; // Precio por defecto en caso de error
         }
     }
-    
+
     /**
      * Calcular el total de una tarea
      * @param int $trabajoId ID del trabajo
      * @param float $horas Horas trabajadas
      * @return float Total calculado (precio * horas)
      */
-    private function calcularTotalTarea($trabajoId, $horas) {
+    private function calcularTotalTarea($trabajoId, $horas)
+    {
         $precioHora = $this->getPrecioHoraTrabajo($trabajoId);
         return $precioHora * $horas;
     }
-    
+
     /**
      * Actualizar movimientos mensuales para todos los trabajadores de una tarea
      * @param array $trabajadores Array de IDs de trabajadores
@@ -989,24 +1129,25 @@ class Tarea
      * @param string $fecha Fecha de la tarea
      * @return bool True si se actualizaron correctamente todos los movimientos
      */
-    private function actualizarMovimientosMensuales($trabajadores, $trabajoId, $horas, $fecha) {
+    private function actualizarMovimientosMensuales($trabajadores, $trabajoId, $horas, $fecha)
+    {
         try {
             // Calcular el total de la tarea (mismo para todos los trabajadores)
             $totalTarea = $this->calcularTotalTarea($trabajoId, $horas);
-            
+
             // Si el importe es 0, no crear/actualizar movimientos
             if ($totalTarea <= 0) {
                 $precioHora = $this->getPrecioHoraTrabajo($trabajoId);
                 error_log("Importe 0 para trabajo ID: $trabajoId, precio_hora: $precioHora, horas: $horas - No se crearán movimientos");
                 return true; // No es un error, simplemente no hay nada que procesar
             }
-            
+
             $todosExitosos = true;
-            
+
             foreach ($trabajadores as $trabajadorId) {
                 // Actualizar el movimiento mensual del trabajador
                 $resultado = $this->actualizarMovimientoMensualTrabajador($trabajadorId, $fecha, $totalTarea);
-                
+
                 if (!$resultado) {
                     $todosExitosos = false;
                     error_log("Error actualizando movimientos para trabajador ID: $trabajadorId");
@@ -1014,15 +1155,15 @@ class Tarea
                     error_log("Movimiento actualizado para trabajador ID: $trabajadorId, total: $totalTarea");
                 }
             }
-            
+
             return $todosExitosos;
-            
+
         } catch (\Exception $e) {
             error_log("Error en actualizarMovimientosMensuales: " . $e->getMessage());
             return false;
         }
     }
-    
+
     /**
      * Actualizar o crear movimiento mensual para un trabajador específico
      * @param int $trabajadorId ID del trabajador
@@ -1030,12 +1171,13 @@ class Tarea
      * @param float $importe Importe a sumar
      * @return bool True si se actualizó correctamente
      */
-    private function actualizarMovimientoMensualTrabajador($trabajadorId, $fecha, $importe) {
+    private function actualizarMovimientoMensualTrabajador($trabajadorId, $fecha, $importe)
+    {
         try {
             // Obtener año y mes de la fecha
             $year = date('Y', strtotime($fecha));
             $month = date('m', strtotime($fecha));
-            
+
             // Buscar movimiento existente para el trabajador en ese mes
             $sql = "SELECT * FROM movimientos 
                     WHERE trabajador_id = ? 
@@ -1043,45 +1185,45 @@ class Tarea
                     AND MONTH(fecha) = ?
                     AND tipo = 'gasto'
                     AND categoria = 'pago'";
-            
+
             $stmt = $this->db->prepare($sql);
             $stmt->bind_param("iii", $trabajadorId, $year, $month);
             $stmt->execute();
             $result = $stmt->get_result();
             $movimiento = $result->fetch_assoc();
             $stmt->close();
-            
+
             if ($movimiento) {
                 // Si existe, sumar el importe al existente
                 $nuevoImporte = $movimiento['importe'] + $importe;
-                
+
                 $sql = "UPDATE movimientos 
                         SET importe = ? 
                         WHERE id = ?";
-                
+
                 $stmt = $this->db->prepare($sql);
                 $stmt->bind_param("di", $nuevoImporte, $movimiento['id']);
                 $resultado = $stmt->execute();
                 $stmt->close();
-                
+
                 return $resultado;
             } else {
                 // Si no existe, crear uno nuevo
                 $fechaInicioMes = sprintf('%04d-%02d-01', $year, $month);
                 setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'es');
                 $concepto = "Sueldo - " . date('F Y', strtotime($fechaInicioMes));
-                
+
                 $sql = "INSERT INTO movimientos (fecha, tipo, concepto, categoria, importe, trabajador_id, estado) 
                         VALUES (?, 'gasto', ?, 'pago', ?, ?, 'pendiente')";
-                
+
                 $stmt = $this->db->prepare($sql);
                 $stmt->bind_param("ssdi", $fechaInicioMes, $concepto, $importe, $trabajadorId);
                 $resultado = $stmt->execute();
                 $stmt->close();
-                
+
                 return $resultado;
             }
-            
+
         } catch (\Exception $e) {
             error_log("Error actualizando movimiento mensual del trabajador: " . $e->getMessage());
             return false;

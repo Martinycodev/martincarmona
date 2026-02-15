@@ -53,6 +53,7 @@ $router->get('/tareas/crear', 'TareasController@crear');
 $router->post('/tareas/crear', 'TareasController@crear');
 $router->get('/tareas/obtener', 'TareasController@obtener');
 $router->post('/tareas/actualizar', 'TareasController@actualizar');
+$router->post('/tareas/actualizarCampo', 'TareasController@actualizarCampo');
 $router->post('/tareas/eliminar', 'TareasController@eliminar');
 $router->get('/tareas/obtenerPorMes', 'TareasController@obtenerPorMes');
 
@@ -114,7 +115,7 @@ $router->post('/trabajos/actualizar', 'TrabajosController@actualizar');
 $router->post('/trabajos/eliminar', 'TrabajosController@eliminar');
 
 // Configurar página 404
-$router->notFound(function() {
+$router->notFound(function () {
     http_response_code(404);
     echo '<!DOCTYPE html>
     <html lang="es">

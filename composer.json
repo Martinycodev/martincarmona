@@ -1,0 +1,12 @@
+{
+    "name": "martin/martincarmona",
+    "authors": [
+        {
+            "name": "Martinycodev",
+            "email": "martin.carmona.lopez@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

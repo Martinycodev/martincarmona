@@ -6,7 +6,7 @@
 // Función para obtener la ruta base de la aplicación
 function getBaseUrl() {
     console.log('getBaseUrl called, current pathname:', window.location.pathname);
-    
+
     // Obtener la ruta base desde el elemento base o calcularla
     const baseElement = document.querySelector('base');
     if (baseElement && baseElement.href) {
@@ -14,22 +14,22 @@ function getBaseUrl() {
         console.log('Base element found:', basePath);
         return basePath;
     }
-    
+
     // Si no hay elemento base, calcular desde la URL actual
     const path = window.location.pathname;
     const pathParts = path.split('/');
     console.log('Path parts:', pathParts);
-    
+
     // Buscar 'martincarmona' en la ruta
     const martincarmonaIndex = pathParts.indexOf('martincarmona');
     console.log('martincarmona index:', martincarmonaIndex);
-    
+
     if (martincarmonaIndex !== -1) {
         const basePath = '/' + pathParts.slice(1, martincarmonaIndex + 1).join('/');
         console.log('Calculated base path:', basePath);
         return basePath;
     }
-    
+
     // Fallback: usar la ruta actual
     console.log('Using fallback path:', path);
     return path;
@@ -45,7 +45,7 @@ function buildUrl(path) {
     if (!path.startsWith('/')) {
         path = '/' + path;
     }
-    
+
     // Combinar base URL con path
     const fullUrl = window.APP_BASE_URL + path;
     console.log('buildUrl called with path:', path, 'result:', fullUrl);
@@ -62,23 +62,23 @@ function showToast(message, type = 'info') {
         toast.className = 'toast';
         document.body.appendChild(toast);
     }
-    
+
     toast.textContent = message;
-    
+
     // Limpiar clases previas
     toast.className = `toast toast-${type}`;
-    
+
     // Forzar reflow para reiniciar animación
     toast.offsetHeight;
-    
+
     // Mostrar con animación de entrada
     toast.classList.add('show');
-    
+
     // Ocultar con animación de salida después de 3 segundos
     setTimeout(() => {
         toast.classList.remove('show');
         toast.classList.add('hide');
-        
+
         // Limpiar clase hide después de la animación
         setTimeout(() => {
             toast.classList.remove('hide');
@@ -90,22 +90,22 @@ function showToast(message, type = 'info') {
 function positionModalInViewport(modal) {
     const modalContent = modal.querySelector('.modal-content');
     if (!modalContent) return;
-    
+
     // Obtener dimensiones del viewport
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const windowHeight = window.innerHeight;
-    
+
     // Calcular posición Y para centrar en el viewport actual
     // Dejar espacio para que el modal sea completamente visible
     const modalHeight = Math.min(windowHeight * 0.8, 600); // Máximo 80% del viewport o 600px
     const targetY = scrollTop + (windowHeight - modalHeight) / 2;
-    
+
     // Asegurar que el modal esté completamente visible
     const minY = scrollTop + 20; // 20px desde el top del viewport
     const maxY = scrollTop + windowHeight - modalHeight - 20; // 20px desde el bottom
-    
+
     const finalY = Math.max(minY, Math.min(targetY, maxY));
-    
+
     // Aplicar posicionamiento dinámico
     modalContent.classList.add('dynamic-position');
     modalContent.style.top = finalY + 'px';
@@ -118,7 +118,7 @@ function openModal(modalId, buttonElement = null) {
     if (modal) {
         modal.style.display = 'block';
         positionModalInViewport(modal);
-        
+
         // Enfocar el primer input si existe
         const firstInput = modal.querySelector('input, textarea, select');
         if (firstInput) {
@@ -136,15 +136,15 @@ function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         const modalContent = modal.querySelector('.modal-content');
-        
+
         modal.style.display = 'none';
-        
+
         // Limpiar posicionamiento dinámico
         if (modalContent) {
             modalContent.classList.remove('dynamic-position');
             modalContent.style.top = '';
         }
-        
+
         // Limpiar formularios
         const forms = modal.querySelectorAll('form');
         forms.forEach(form => form.reset());
@@ -159,7 +159,7 @@ function openCreateSection() {
     const createSection = document.getElementById('createSection');
     if (createSection) {
         createSection.style.display = 'block';
-        
+
         // Enfocar el primer input
         const firstInput = createSection.querySelector('input, textarea, select');
         if (firstInput) {
@@ -173,7 +173,7 @@ function closeCreateSection() {
     const createSection = document.getElementById('createSection');
     if (createSection) {
         createSection.style.display = 'none';
-        
+
         // Limpiar formularios
         const forms = createSection.querySelectorAll('form');
         forms.forEach(form => form.reset());
@@ -184,17 +184,17 @@ function closeCreateSection() {
 function validarDNI(dni) {
     // Expresión regular: 8 dígitos + 1 letra mayúscula
     const regexDNI = /^[0-9]{8}[A-Z]$/;
-    
+
     if (!regexDNI.test(dni)) {
         return false;
     }
-    
+
     // Validar la letra del DNI (opcional pero recomendado)
     const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
     const numero = parseInt(dni.substring(0, 8));
     const letra = dni.charAt(8);
     const letraCorrecta = letras.charAt(numero % 23);
-    
+
     return letra === letraCorrecta;
 }
 
@@ -221,7 +221,7 @@ function handleApiResponse(response, context = 'operación') {
 function updateTableAfterOperation(operation, data) {
     if (data.success) {
         showToast(`${operation} realizado correctamente`, 'success');
-        
+
         // Si hay una función de recarga específica, usarla
         if (typeof window.reloadTable === 'function') {
             window.reloadTable();
@@ -242,7 +242,7 @@ function confirmDelete(itemName, itemType = 'elemento') {
 }
 
 // Inicializar modales cuando se carga el DOM
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('Modal functions loaded and initializing...');
     initializeGlobalModals();
 });
@@ -250,9 +250,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // Función para inicializar modales globales
 function initializeGlobalModals() {
     console.log('Initializing global modals...');
-    
+
     // Event listeners para cerrar modales al hacer clic fuera
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.classList.contains('modal')) {
             const modalId = e.target.id;
             console.log('Clicked on modal:', modalId);
@@ -261,9 +261,9 @@ function initializeGlobalModals() {
             }
         }
     });
-    
+
     // Event listeners para botones de cerrar
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.classList.contains('close') || e.target.classList.contains('close-btn')) {
             const modal = e.target.closest('.modal');
             console.log('Clicked on close button, modal:', modal);
@@ -272,7 +272,7 @@ function initializeGlobalModals() {
             }
         }
     });
-    
+
     console.log('Global modals initialized');
 }
 
@@ -303,4 +303,53 @@ console.log('Functions exported to window:', {
     openModal: typeof window.openModal,
     closeModal: typeof window.closeModal,
     reinitializeModals: typeof window.reinitializeModals
+});
+
+// ====== SISTEMA DE EDICIÓN DIRECTA (EDIT-IN-PLACE) ======
+document.addEventListener('blur', async function (e) {
+    if (e.target.classList.contains('editable')) {
+        const element = e.target;
+        const id = element.dataset.id;
+        const campo = element.dataset.field;
+        const valor = element.innerText.trim();
+
+        // Evitar guardar si no hay cambios (opcional, requeriría guardar valor inicial)
+
+        try {
+            const response = await fetch(buildUrl('/tareas/actualizarCampo'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ id, campo, valor })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                element.classList.add('save-success');
+                setTimeout(() => element.classList.remove('save-success'), 1000);
+                showToast('Cambio guardado automáticamente', 'success');
+
+                // Si el cambio afecta a datos que se muestran en la tabla, recargar al cerrar modal
+                window.needsReload = true;
+            } else {
+                showToast('Error al guardar: ' + data.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error auto-guardado:', error);
+            showToast('Error de conexión', 'error');
+        }
+    }
+}, true); // Usar captura para interceptar blur en contenteditable
+
+// Manejar tecla Enter para perder el foco y disparar el blur
+document.addEventListener('keydown', function (e) {
+    if (e.target.classList.contains('editable') && e.key === 'Enter') {
+        if (e.target.dataset.field !== 'descripcion') { // No evitar Enter en descripción si es textarea-like
+            e.preventDefault();
+            e.target.blur();
+        }
+    }
 });

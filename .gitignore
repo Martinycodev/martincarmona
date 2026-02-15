@@ -1,6 +1,14 @@
 # Archivos de configuración local
 config/local.php
 .env
+.env.backup
+
+# Librerías de Composer
+vendor/
+
+# Archivos temporales
+*.log
+*.tmp
 
 # Archivos de log
 *.log
@@ -9,16 +17,10 @@ config/local.php
 *.tmp
 *.temp
 
-# Archivos del sistema
-.DS_Store
-Thumbs.db
-
 # Archivos de IDE
 .vscode/
 .idea/
 
-# Archivos de MAMP (si los hay)
-mysql remoto
 
 # Archivos de prueba
 test/

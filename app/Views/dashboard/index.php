@@ -122,6 +122,18 @@ $title = 'Datos - MartinCarmona.com';
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label>📸 Imágenes:</label>
+                    <div id="editTaskImagenesList" class="detail-images-gallery" style="margin-bottom: 10px;">
+                        <!-- Las imágenes existentes se cargarán aquí -->
+                    </div>
+
+                    <label for="editTaskImagenes" style="margin-top: 10px; display: block;">Añadir nuevas:</label>
+                    <input type="file" id="editTaskImagenes" name="imagenes[]" multiple accept="image/*"
+                        class="form-control">
+                    <small class="form-text text-muted">Formatos: JPG, PNG, GIF, WEBP</small>
+                </div>
+
                 <div class="modal-buttons">
                     <button type="button" class="btn-modal btn-danger" onclick="deleteTask()">🗑️ Eliminar</button>
                     <button type="button" class="btn-modal btn-secondary" onclick="closeModal('editTaskModal')">❌
@@ -204,12 +216,37 @@ $title = 'Datos - MartinCarmona.com';
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="createTaskImagenes">📸 Adjuntar Imágenes:</label>
+                    <input type="file" id="createTaskImagenes" name="imagenes[]" multiple accept="image/*"
+                        class="form-control">
+                    <small class="form-text text-muted">Formatos: JPG, PNG, GIF, WEBP</small>
+                </div>
+
                 <div class="modal-buttons">
                     <button type="button" class="btn-modal btn-secondary" onclick="closeModal('createTaskModal')">❌
                         Cancelar</button>
                     <button type="submit" class="btn-modal btn-primary">➕ Crear Tarea</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal para Ver Detalle de Tarea -->
+    <div id="taskDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📋 Detalle de Tarea</h3>
+                <span class="close" onclick="closeModal('taskDetailModal')">&times;</span>
+            </div>
+            <div id="taskDetailContent">
+                <!-- El contenido se cargará dinámicamente -->
+            </div>
+
+            <div class="modal-buttons">
+                <button type="button" class="btn-modal btn-secondary" onclick="closeModal('taskDetailModal')">❌
+                    Cerrar</button>
+            </div>
         </div>
     </div>
 
@@ -236,9 +273,8 @@ $title = 'Datos - MartinCarmona.com';
     </div>
 
 
-
 </div>
-
+<script src="<?= $this->url('/public/js/task-details-view.js') ?>"></script>
 <script>
     // Cache de tareas por mes para optimizar rendimiento
     const tareasCache = new Map();
@@ -305,17 +341,23 @@ $title = 'Datos - MartinCarmona.com';
 
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
 
         const calendar = document.getElementById("calendar");
         calendar.innerHTML = "";
 
         // Espacios en blanco antes del día 1 (ajustado para que la semana empiece en lunes)
         const startOffset = firstDay === 0 ? 6 : firstDay - 1;
-        for (let i = 0; i < startOffset; i++) {
-            calendar.innerHTML += `<div></div>`;
+
+        // Renderizar días del mes anterior
+        for (let i = startOffset - 1; i >= 0; i--) {
+            const prevMonthDay = daysInPrevMonth - i;
+            calendar.innerHTML += `<div class="day other-month">
+                    <div class="day-number">${prevMonthDay}</div>
+                </div>`;
         }
 
-        // Días del mes
+        // Días del mes actual
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isToday = dateStr === new Date().toISOString().split('T')[0];
@@ -327,12 +369,23 @@ $title = 'Datos - MartinCarmona.com';
             if (tasksData[dateStr]) {
                 tasksData[dateStr].forEach((tarea, index) => {
                     const displayText = tarea.trabajo_nombre || tarea.descripcion || 'Sin descripción';
-                    dayHTML += `<div class="task" onclick="editTask('${dateStr}', ${index})" title="${tarea.descripcion || ''}">${displayText.length > 20 ? displayText.substring(0, 20) + '...' : displayText}</div>`;
+                    dayHTML += `<div class="task" onclick="viewTaskDetail('${dateStr}', ${index})" title="${tarea.descripcion || ''}">${displayText.length > 20 ? displayText.substring(0, 20) + '...' : displayText}</div>`;
                 });
             }
 
             dayHTML += `</div>`;
             calendar.innerHTML += dayHTML;
+        }
+
+        // Calcular cuántos días del siguiente mes se necesitan para completar la cuadrícula
+        const totalCells = startOffset + daysInMonth;
+        const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+
+        // Renderizar días del siguiente mes
+        for (let day = 1; day <= remainingCells; day++) {
+            calendar.innerHTML += `<div class="day other-month">
+                    <div class="day-number">${day}</div>
+                </div>`;
         }
     }
 
@@ -343,6 +396,12 @@ $title = 'Datos - MartinCarmona.com';
 
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = 'none';
+
+        // Recargar si hubo cambios directos al cerrar el modal de detalle
+        if (modalId === 'taskDetailModal' && window.needsReload) {
+            window.needsReload = false;
+            cargarYRenderizarCalendario();
+        }
     }
 
     function openCreateTaskModal(fecha) {
@@ -471,8 +530,13 @@ $title = 'Datos - MartinCarmona.com';
             body: JSON.stringify(taskData)
         })
             .then(response => response.json())
-            .then(data => {
+            .then(async data => {
                 if (data.success) {
+                    // Subir imágenes si existen
+                    if (data.id) {
+                        await uploadImages(data.id, 'createTaskImagenes');
+                    }
+
                     closeModal('createTaskModal');
                     // Invalidar cache del mes actual y recargar con skeleton
                     const year = currentDate.getFullYear();
@@ -515,8 +579,11 @@ $title = 'Datos - MartinCarmona.com';
             body: JSON.stringify(taskData)
         })
             .then(response => response.json())
-            .then(data => {
+            .then(async data => {
                 if (data.success) {
+                    // Subir nuevas imágenes si existen
+                    await uploadImages(taskData.id, 'editTaskImagenes');
+
                     closeModal('editTaskModal');
                     // Invalidar cache del mes actual y recargar
                     const year = currentDate.getFullYear();
@@ -924,8 +991,6 @@ $title = 'Datos - MartinCarmona.com';
                                      data-index="${index}"
                                      onclick="${isSelected ? '' : `this.multiSelector.selectWorker(${worker.id}, '${worker.nombre.replace(/'/g, "\\'")}')`}">
                                     <strong>${worker.nombre}</strong>
-                                    ${worker.dni ? `<br><small>DNI: ${worker.dni}</small>` : ''}
-                                    ${worker.ss ? `<br><small>SS: ${worker.ss}</small>` : ''}
                                 </div>
                             `;
                     }).join('');
@@ -1098,6 +1163,10 @@ $title = 'Datos - MartinCarmona.com';
         document.getElementById('createTaskFecha').value = fecha;
         createWorkerSelector.clearAll();
         createParcelaSelector.clearAll();
+        // Limpiar input de imágenes
+        const imgInput = document.getElementById('createTaskImagenes');
+        if (imgInput) imgInput.value = '';
+
         openModal('createTaskModal');
     }
 
@@ -1134,9 +1203,44 @@ $title = 'Datos - MartinCarmona.com';
                 }]);
             }
 
+            // Cargar imágenes existentes
+            loadTaskImages(tarea.id, 'editTaskImagenesList', true);
+            // Limpiar input de nuevas imágenes
+            const imgInput = document.getElementById('editTaskImagenes');
+            if (imgInput) imgInput.value = '';
+
             openModal('editTaskModal');
         }
     }
+
+    // Variable global para almacenar los datos de la tarea actual en vista detalle
+    let currentTaskData = null;
+
+    // Función para ver detalle de tarea (solo lectura)
+    function viewTaskDetail(fecha, index) {
+        const tarea = tasksData[fecha][index];
+        if (tarea) {
+            // Guardar datos de la tarea para poder editarla después
+            currentTaskData = { fecha, index, tarea };
+
+            // Renderizar contenido HTML usando el componente compartido
+            if (typeof renderTaskDetailHtml === 'function') {
+                document.getElementById('taskDetailContent').innerHTML = renderTaskDetailHtml(tarea);
+            } else {
+                console.error('renderTaskDetailHtml no está definido');
+                document.getElementById('taskDetailContent').innerHTML = '<div class="alert alert-danger">Error al cargar el componente de visualización</div>';
+            }
+
+            // Cargar imágenes (lógica específica del dashboard ya que no vienen en el json inicial de tareas)
+            // El componente renderTaskDetailHtml crea el div id="detailImagenes" si no hay imágenes, o usamos el que crea
+            // En este caso, renderTaskDetailHtml creará el div vacio si no hay imagenes en el objeto tarea
+            loadTaskImages(tarea.id, 'detailImagenes', false);
+
+            openModal('taskDetailModal');
+        }
+    }
+
+    // Función para abrir el modal de edición desde el modal de detalle
 
 
 
@@ -1181,6 +1285,98 @@ $title = 'Datos - MartinCarmona.com';
     // Inicializar autocompletado para trabajos
     setupTrabajoAutocomplete('createTaskTrabajo', 'trabajoResults', 'createTaskTrabajoId');
     setupTrabajoAutocomplete('editTaskTrabajo', 'editTrabajoResults', 'editTaskTrabajoId');
+
+    // ==========================================
+    // GESTIÓN DE IMÁGENES
+    // ==========================================
+
+    async function uploadImages(taskId, fileInputId) {
+        const fileInput = document.getElementById(fileInputId);
+        if (!fileInput || fileInput.files.length === 0) return true;
+
+        const formData = new FormData();
+        formData.append('tarea_id', taskId);
+
+        for (let i = 0; i < fileInput.files.length; i++) {
+            formData.append('imagenes[]', fileInput.files[i]);
+        }
+
+        try {
+            const response = await fetch('<?= $this->url("/tareas/subirImagen") ?>', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await response.json();
+            return data.success;
+        } catch (error) {
+            console.error('Error subiendo imágenes:', error);
+            return false;
+        }
+    }
+
+    async function loadTaskImages(taskId, containerId, allowDelete = false) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = '<div style="text-align:center; padding:10px; color:#999;">Cargando imágenes...</div>';
+
+        try {
+            const response = await fetch(`<?= $this->url("/tareas/obtener") ?>?id=${taskId}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await response.json();
+
+            if (data.success && data.tarea.imagenes && data.tarea.imagenes.length > 0) {
+                container.innerHTML = '';
+                data.tarea.imagenes.forEach(img => {
+                    const div = document.createElement('div');
+                    div.className = 'image-item';
+
+                    let html = `<a href="${img.file_path}" target="_blank">
+                        <img src="${img.file_path}" alt="${img.original_filename}" title="${img.original_filename}">
+                    </a>`;
+
+                    if (allowDelete) {
+                        html += `<button type="button" class="image-delete-btn" onclick="deleteImage(${img.id}, ${taskId}, '${containerId}')" title="Eliminar imagen">×</button>`;
+                    }
+
+                    div.innerHTML = html;
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:10px; color:#999;">No hay imágenes adjuntas</div>';
+            }
+        } catch (error) {
+            console.error('Error cargando imágenes:', error);
+            container.innerHTML = '<div style="color: #dc3545; padding:10px;">Error al cargar imágenes</div>';
+        }
+    }
+
+    async function deleteImage(imageId, taskId, containerId) {
+        if (!confirm('¿Estás seguro de eliminar esta imagen?')) return;
+
+        try {
+            const response = await fetch('<?= $this->url("/tareas/eliminarImagen") ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ id: imageId })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                loadTaskImages(taskId, containerId, true);
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error eliminando imagen:', error);
+            alert('Error al eliminar la imagen');
+        }
+    }
 
 
 </script>
