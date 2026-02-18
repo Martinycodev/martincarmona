@@ -95,15 +95,17 @@ class TrabajosController extends BaseController
     public function crear()
     {
         header('Content-Type: application/json');
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
         }
-        
+
+        $this->validateCsrf();
+
         try {
             $input = json_decode(file_get_contents('php://input'), true);
-            
+
             if (!$input) {
                 echo json_encode(['success' => false, 'message' => 'Datos no válidos']);
                 return;
@@ -197,15 +199,17 @@ class TrabajosController extends BaseController
     public function actualizar()
     {
         header('Content-Type: application/json');
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
         }
-        
+
+        $this->validateCsrf();
+
         try {
             $input = json_decode(file_get_contents('php://input'), true);
-            
+
             if (!$input) {
                 echo json_encode(['success' => false, 'message' => 'Datos no válidos']);
                 return;
@@ -272,15 +276,17 @@ class TrabajosController extends BaseController
     public function eliminar()
     {
         header('Content-Type: application/json');
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
         }
-        
+
+        $this->validateCsrf();
+
         try {
             $input = json_decode(file_get_contents('php://input'), true);
-            
+
             if (!$input) {
                 echo json_encode(['success' => false, 'message' => 'Datos no válidos']);
                 return;

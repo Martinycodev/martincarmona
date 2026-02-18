@@ -35,20 +35,20 @@
   - [x] Agregados comentarios explicativos
   - [x] Mejorado manejo de errores (desarrollo vs producción)
 
-- [ ] **Paso 4:** Probar que todo funciona ⏸️ PAUSADO AQUÍ
-  - [ ] Crear `test-env.php`
-  - [ ] Ejecutar `php test-env.php`
-  - [ ] Probar en navegador (http://localhost/martincarmona)
-  - [ ] Verificar login funciona
+- [x] **Paso 4:** Probar que todo funciona ✅
+  - [x] Crear `test-env.php`
+  - [x] Ejecutar `php test-env.php`
+  - [x] Probar en navegador (http://localhost/martincarmona)
+  - [x] Verificar login funciona
 
-- [ ] **Paso 5:** Limpiar archivos temporales
-  - [ ] Eliminar `test-env.php`
+- [x] **Paso 5:** Limpiar archivos temporales ✅
+  - [x] Eliminar `test-env.php`
 
-- [ ] **Paso 6:** Hacer commit a Git
-  - [ ] `git status` (verificar que .env NO aparece)
-  - [ ] `git add` archivos necesarios
-  - [ ] `git commit` con mensaje descriptivo
-  - [ ] Verificar con `git log -1 --stat`
+- [x] **Paso 6:** Hacer commit a Git ✅
+  - [x] `git status` (verificar que .env NO aparece)
+  - [x] `git add` archivos necesarios
+  - [x] `git commit` con mensaje descriptivo
+  - [x] Verificar con `git log -1 --stat`
 
 ---
 
@@ -56,29 +56,34 @@
 
 ### **Día 3-4: Protección CSRF**
 
-- [ ] **Paso 7:** Crear clase CsrfMiddleware
-  - [ ] Crear archivo `core/CsrfMiddleware.php`
-  - [ ] Implementar generación de tokens
-  - [ ] Implementar validación de tokens
+- [x] **Paso 7:** Crear clase CsrfMiddleware
+  - [x] Crear archivo `core/CsrfMiddleware.php`
+  - [x] Implementar generación de tokens
+  - [x] Implementar validación de tokens
 
-- [ ] **Paso 8:** Actualizar BaseController
-  - [ ] Añadir método `validateCsrf()`
-  - [ ] Actualizar método `render()` para incluir token
+- [x] **Paso 8:** Actualizar BaseController
+  - [x] Añadir método `validateCsrf()`
+  - [x] Actualizar método `render()` para incluir token
 
-- [ ] **Paso 9:** Proteger controladores POST
-  - [ ] TareasController
-  - [ ] TrabajadoresController
-  - [ ] ParcelasController
-  - [ ] AuthController
-  - [ ] Otros controladores con POST
+- [x] **Paso 9:** Proteger controladores POST ✅
+  - [x] TareasController (crear, actualizar, eliminar, actualizarCampo, subirImagen, eliminarImagen + 5 inline)
+  - [x] TrabajadoresController (crear, actualizar, eliminar)
+  - [x] ParcelasController (crear, actualizar, eliminar)
+  - [x] AuthController (login)
+  - [x] TrabajosController (crear, actualizar, eliminar)
+  - [x] EconomiaController (crear, editar, eliminar)
+  - [x] DatosParcelasController (eliminar)
+  - [x] DatosTrabajadoresController (actualizar)
+  - [x] PerfilController (actualizarNombre)
 
-- [ ] **Paso 10:** Actualizar formularios HTML
-  - [ ] Añadir `<?= CsrfMiddleware::getTokenField() ?>`
-  - [ ] Añadir meta tag en layout
+- [x] **Paso 10:** Actualizar formularios HTML ✅
+  - [x] Meta tag CSRF en layout (header.php)
+  - [x] home.php - formulario de login
+  - [x] tareas/crear.php - formulario de creación
 
-- [ ] **Paso 11:** Actualizar peticiones AJAX
-  - [ ] Modificar `modal-functions.js`
-  - [ ] Añadir header `X-CSRF-TOKEN`
+- [x] **Paso 11:** Actualizar peticiones AJAX ✅
+  - [x] Interceptor global en modal-functions.js
+  - [x] Todas las peticiones POST incluyen X-CSRF-TOKEN automáticamente
 
 ### **Día 5: Session Hardening**
 
@@ -115,26 +120,6 @@
    - Para guía técnica completa: `MEJORAS_TECNICAS.md`
 4. **Decirle a Claude**: "Estoy en el Paso X del PROGRESO_SEGURIDAD.md, continuemos"
 
-### **Comandos útiles para recordar dónde estás:**
-
-```bash
-# Ver últimos commits
-git log --oneline -5
-
-# Ver archivos modificados sin commit
-git status
-
-# Ver qué archivos están en .gitignore
-cat .gitignore
-
-# Verificar que .env existe
-ls -la .env
-
-# Probar que la app funciona
-php test-env.php  # (si existe)
-```
-
----
 
 ## 📝 **NOTAS Y APRENDIZAJES**
 
@@ -172,14 +157,9 @@ martincarmona/
 ## 🎯 **PARA LA PRÓXIMA SESIÓN**
 
 **IMPORTANTE:** Antes de continuar, completar:
-- [ ] Paso 4: Probar con `test-env.php`
-- [ ] Paso 5: Limpiar archivos temporales
-- [ ] Paso 6: Hacer commit a Git
-
-**Luego continuar con:**
 - Paso 7: Protección CSRF (tokens en formularios)
 
 ---
 
 *Última actualización: 15 de febrero de 2026*
-*Próxima sesión: Completar Paso 4-6, luego empezar CSRF*
+*Próxima sesión: empezar CSRF*

@@ -52,6 +52,8 @@ class EconomiaController extends BaseController {
     
     public function crear() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->validateCsrf();
+
             try {
                 $data = [
                     'fecha' => $_POST['fecha'],
@@ -90,6 +92,8 @@ class EconomiaController extends BaseController {
     
     public function editar() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->validateCsrf();
+
             $id = $_POST['id'];
             $data = [
                 'fecha' => $_POST['fecha'],
@@ -117,6 +121,8 @@ class EconomiaController extends BaseController {
     
     public function eliminar() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->validateCsrf();
+
             $id = $_POST['id'];
             
             if ($this->movimientoModel->delete($id)) {

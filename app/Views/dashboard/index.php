@@ -1226,6 +1226,10 @@ $title = 'Datos - MartinCarmona.com';
             // Renderizar contenido HTML usando el componente compartido
             if (typeof renderTaskDetailHtml === 'function') {
                 document.getElementById('taskDetailContent').innerHTML = renderTaskDetailHtml(tarea);
+                // Cargar opciones de los selects de edición inline (trabajadores, parcelas, trabajos)
+                if (typeof cargarOpcionesModal === 'function') {
+                    cargarOpcionesModal(tarea.id);
+                }
             } else {
                 console.error('renderTaskDetailHtml no está definido');
                 document.getElementById('taskDetailContent').innerHTML = '<div class="alert alert-danger">Error al cargar el componente de visualización</div>';

@@ -3,6 +3,40 @@
  * Compatible con navegación AJAX
  */
 
+// =====================================================================
+// INTERCEPTOR CSRF
+// Sobrescribe fetch() globalmente para añadir el token CSRF
+// automáticamente en todas las peticiones POST/PUT/DELETE/PATCH.
+// Así no hay que modificar cada llamada fetch individualmente.
+// =====================================================================
+(function () {
+    const _fetch = window.fetch;
+
+    window.fetch = function (url, options = {}) {
+        const method = (options.method || 'GET').toUpperCase();
+
+        // Solo añadir el token en peticiones que modifican datos
+        if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+            // Obtener el token del meta tag añadido por CsrfMiddleware::getMetaTag()
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            const token = meta ? meta.getAttribute('content') : null;
+
+            if (token) {
+                options.headers = options.headers || {};
+
+                // Si headers es un objeto plano, añadir directamente
+                if (typeof options.headers === 'object' && !(options.headers instanceof Headers)) {
+                    options.headers['X-CSRF-TOKEN'] = token;
+                } else if (options.headers instanceof Headers) {
+                    options.headers.set('X-CSRF-TOKEN', token);
+                }
+            }
+        }
+
+        return _fetch.call(this, url, options);
+    };
+})();
+
 // Función para obtener la ruta base de la aplicación
 function getBaseUrl() {
     console.log('getBaseUrl called, current pathname:', window.location.pathname);

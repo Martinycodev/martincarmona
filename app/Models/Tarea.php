@@ -161,6 +161,97 @@ class Tarea
     }
 
     /**
+     * Añade un trabajador a una tarea existente
+     */
+    public function agregarTrabajador($tareaId, $trabajadorId, $horas = 0)
+    {
+        $stmt = $this->db->prepare("
+            INSERT INTO tarea_trabajadores (tarea_id, trabajador_id, horas_asignadas)
+            VALUES (?, ?, ?)
+            ON DUPLICATE KEY UPDATE horas_asignadas = VALUES(horas_asignadas)
+        ");
+        $stmt->bind_param("iid", $tareaId, $trabajadorId, $horas);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    /**
+     * Quita un trabajador de una tarea existente
+     */
+    public function quitarTrabajador($tareaId, $trabajadorId)
+    {
+        $stmt = $this->db->prepare("
+            DELETE FROM tarea_trabajadores WHERE tarea_id = ? AND trabajador_id = ?
+        ");
+        $stmt->bind_param("ii", $tareaId, $trabajadorId);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    /**
+     * Añade una parcela a una tarea existente
+     */
+    public function agregarParcela($tareaId, $parcelaId)
+    {
+        $stmt = $this->db->prepare("
+            INSERT INTO tarea_parcelas (tarea_id, parcela_id)
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE parcela_id = VALUES(parcela_id)
+        ");
+        $stmt->bind_param("ii", $tareaId, $parcelaId);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    /**
+     * Quita una parcela de una tarea existente
+     */
+    public function quitarParcela($tareaId, $parcelaId)
+    {
+        $stmt = $this->db->prepare("
+            DELETE FROM tarea_parcelas WHERE tarea_id = ? AND parcela_id = ?
+        ");
+        $stmt->bind_param("ii", $tareaId, $parcelaId);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    /**
+     * Cambia el tipo de trabajo de una tarea (reemplaza el anterior)
+     */
+    public function cambiarTrabajo($tareaId, $trabajoId, $horas = 0)
+    {
+        $this->db->begin_transaction();
+        try {
+            // Eliminar el trabajo anterior
+            $stmt = $this->db->prepare("DELETE FROM tarea_trabajos WHERE tarea_id = ?");
+            $stmt->bind_param("i", $tareaId);
+            $stmt->execute();
+            $stmt->close();
+
+            // Insertar el nuevo trabajo
+            $stmt = $this->db->prepare("
+                INSERT INTO tarea_trabajos (tarea_id, trabajo_id, horas_trabajo)
+                VALUES (?, ?, ?)
+            ");
+            $stmt->bind_param("iid", $tareaId, $trabajoId, $horas);
+            $stmt->execute();
+            $stmt->close();
+
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->db->rollback();
+            error_log("Error cambiando trabajo: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Obtener estadísticas básicas del usuario
      */
     public function getStats($userId)

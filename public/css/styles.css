@@ -917,6 +917,70 @@ body {
     border-radius: 6px;
 }
 
+/* Botón × para quitar trabajador/parcela de una card */
+.btn-quitar-item {
+    background: none;
+    border: none;
+    color: #777;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.15s, background-color 0.15s;
+    flex-shrink: 0;
+}
+
+.btn-quitar-item:hover {
+    color: #ff6b6b;
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+/* Fila con select + botón de confirmación para añadir items */
+.inline-add-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #444;
+}
+
+/* Select desplegable para elegir trabajador/parcela/trabajo */
+.inline-select {
+    flex: 1;
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.inline-select:focus {
+    outline: none;
+    border-color: #4a9eff;
+}
+
+/* Botón ✓ para confirmar la selección */
+.btn-inline-add {
+    background-color: #1a6b3a;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    flex-shrink: 0;
+}
+
+.btn-inline-add:hover {
+    background-color: #22883f;
+}
+
 .detail-meta-footer {
     display: flex;
     justify-content: space-between;

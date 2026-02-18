@@ -459,6 +459,10 @@ $title = 'Gestión de Tareas';
                 // Renderizar contenido HTML usando el componente compartido
                 if (typeof renderTaskDetailHtml === 'function') {
                     document.getElementById('tareaDetails').innerHTML = renderTaskDetailHtml(data.tarea);
+                    // Cargar opciones de los selects de edición inline (trabajadores, parcelas, trabajos)
+                    if (typeof cargarOpcionesModal === 'function') {
+                        cargarOpcionesModal(data.tarea.id);
+                    }
                 } else {
                     console.error('renderTaskDetailHtml no está definido');
                     document.getElementById('tareaDetails').innerHTML = '<div class="alert alert-danger">Error al cargar el componente de visualización</div>';

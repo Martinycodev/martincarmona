@@ -65,6 +65,8 @@ class TareasController extends BaseController
         $userId = $_SESSION['user_id'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->validateCsrf();
+
             // Verificar si es una petición AJAX
             $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
                 strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
@@ -160,6 +162,8 @@ class TareasController extends BaseController
         $userId = $_SESSION['user_id'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->validateCsrf();
+
             // Verificar si es una petición AJAX
             $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
                 strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
@@ -231,6 +235,8 @@ class TareasController extends BaseController
             return;
         }
 
+        $this->validateCsrf();
+
         $userId = $_SESSION['user_id'];
         $input = json_decode(file_get_contents('php://input'), true);
 
@@ -256,6 +262,8 @@ class TareasController extends BaseController
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
         }
+
+        $this->validateCsrf();
 
         $userId = $_SESSION['user_id'];
         $input = json_decode(file_get_contents('php://input'), true);
@@ -446,6 +454,8 @@ class TareasController extends BaseController
             return;
         }
 
+        $this->validateCsrf();
+
         $userId = $_SESSION['user_id'];
         $tareaId = $_POST['tarea_id'] ?? 0;
 
@@ -543,6 +553,8 @@ class TareasController extends BaseController
             return;
         }
 
+        $this->validateCsrf();
+
         $input = json_decode(file_get_contents('php://input'), true);
         $imageId = $input['id'] ?? 0;
 
@@ -571,5 +583,183 @@ class TareasController extends BaseController
         } else {
             echo json_encode(['success' => false, 'message' => 'Error al eliminar la imagen de la base de datos']);
         }
+    }
+
+    /**
+     * Añade un trabajador a una tarea (desde el modal de detalle)
+     * Recibe: { tarea_id, trabajador_id }
+     */
+    public function agregarTrabajador()
+    {
+        header('Content-Type: application/json');
+        $this->validateCsrf();
+        $userId = $_SESSION['user_id'];
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $tareaId    = intval($input['tarea_id'] ?? 0);
+        $trabajadorId = intval($input['trabajador_id'] ?? 0);
+
+        if (!$tareaId || !$trabajadorId) {
+            echo json_encode(['success' => false, 'message' => 'Datos incompletos']);
+            return;
+        }
+
+        // Obtener horas de la tarea para asignarlas al trabajador
+        $stmt = $this->db->prepare("SELECT horas FROM tareas WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $tareaId, $userId);
+        $stmt->execute();
+        $tarea = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$tarea) {
+            echo json_encode(['success' => false, 'message' => 'Tarea no encontrada']);
+            return;
+        }
+
+        $result = $this->tareaModel->agregarTrabajador($tareaId, $trabajadorId, $tarea['horas']);
+        echo json_encode(['success' => $result, 'message' => $result ? 'Trabajador añadido' : 'Error al añadir trabajador']);
+    }
+
+    /**
+     * Quita un trabajador de una tarea (desde el modal de detalle)
+     * Recibe: { tarea_id, trabajador_id }
+     */
+    public function quitarTrabajador()
+    {
+        header('Content-Type: application/json');
+        $this->validateCsrf();
+        $userId = $_SESSION['user_id'];
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $tareaId      = intval($input['tarea_id'] ?? 0);
+        $trabajadorId = intval($input['trabajador_id'] ?? 0);
+
+        if (!$tareaId || !$trabajadorId) {
+            echo json_encode(['success' => false, 'message' => 'Datos incompletos']);
+            return;
+        }
+
+        $result = $this->tareaModel->quitarTrabajador($tareaId, $trabajadorId);
+        echo json_encode(['success' => $result, 'message' => $result ? 'Trabajador quitado' : 'Error al quitar trabajador']);
+    }
+
+    /**
+     * Añade una parcela a una tarea (desde el modal de detalle)
+     * Recibe: { tarea_id, parcela_id }
+     */
+    public function agregarParcela()
+    {
+        header('Content-Type: application/json');
+        $this->validateCsrf();
+        $userId = $_SESSION['user_id'];
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $tareaId  = intval($input['tarea_id'] ?? 0);
+        $parcelaId = intval($input['parcela_id'] ?? 0);
+
+        if (!$tareaId || !$parcelaId) {
+            echo json_encode(['success' => false, 'message' => 'Datos incompletos']);
+            return;
+        }
+
+        $result = $this->tareaModel->agregarParcela($tareaId, $parcelaId);
+        echo json_encode(['success' => $result, 'message' => $result ? 'Parcela añadida' : 'Error al añadir parcela']);
+    }
+
+    /**
+     * Quita una parcela de una tarea (desde el modal de detalle)
+     * Recibe: { tarea_id, parcela_id }
+     */
+    public function quitarParcela()
+    {
+        header('Content-Type: application/json');
+        $this->validateCsrf();
+        $userId = $_SESSION['user_id'];
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $tareaId  = intval($input['tarea_id'] ?? 0);
+        $parcelaId = intval($input['parcela_id'] ?? 0);
+
+        if (!$tareaId || !$parcelaId) {
+            echo json_encode(['success' => false, 'message' => 'Datos incompletos']);
+            return;
+        }
+
+        $result = $this->tareaModel->quitarParcela($tareaId, $parcelaId);
+        echo json_encode(['success' => $result, 'message' => $result ? 'Parcela quitada' : 'Error al quitar parcela']);
+    }
+
+    /**
+     * Cambia el tipo de trabajo de una tarea (desde el modal de detalle)
+     * Recibe: { tarea_id, trabajo_id }
+     */
+    public function cambiarTrabajo()
+    {
+        header('Content-Type: application/json');
+        $this->validateCsrf();
+        $userId = $_SESSION['user_id'];
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $tareaId  = intval($input['tarea_id'] ?? 0);
+        $trabajoId = intval($input['trabajo_id'] ?? 0);
+
+        if (!$tareaId || !$trabajoId) {
+            echo json_encode(['success' => false, 'message' => 'Datos incompletos']);
+            return;
+        }
+
+        // Obtener horas de la tarea
+        $stmt = $this->db->prepare("SELECT horas FROM tareas WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $tareaId, $userId);
+        $stmt->execute();
+        $tarea = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$tarea) {
+            echo json_encode(['success' => false, 'message' => 'Tarea no encontrada']);
+            return;
+        }
+
+        $result = $this->tareaModel->cambiarTrabajo($tareaId, $trabajoId, $tarea['horas']);
+        echo json_encode(['success' => $result, 'message' => $result ? 'Trabajo actualizado' : 'Error al cambiar trabajo']);
+    }
+
+    /**
+     * Devuelve todos los trabajadores, parcelas y trabajos disponibles para
+     * llenar los selects de edición inline del modal de detalle de tarea.
+     */
+    public function opcionesModal()
+    {
+        header('Content-Type: application/json');
+
+        $trabajadores = [];
+        $res = $this->db->query("SELECT id, nombre FROM trabajadores ORDER BY nombre");
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $trabajadores[] = $row;
+            }
+        }
+
+        $parcelas = [];
+        $res = $this->db->query("SELECT id, nombre FROM parcelas ORDER BY nombre");
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $parcelas[] = $row;
+            }
+        }
+
+        $trabajos = [];
+        $res = $this->db->query("SELECT id, nombre FROM trabajos ORDER BY nombre");
+        if ($res) {
+            while ($row = $res->fetch_assoc()) {
+                $trabajos[] = $row;
+            }
+        }
+
+        echo json_encode([
+            'trabajadores' => $trabajadores,
+            'parcelas'     => $parcelas,
+            'trabajos'     => $trabajos,
+        ]);
     }
 }

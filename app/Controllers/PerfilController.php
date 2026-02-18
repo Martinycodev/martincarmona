@@ -59,6 +59,8 @@ class PerfilController extends BaseController
             return;
         }
 
+        $this->validateCsrf();
+
         // Obtener datos del cuerpo de la petición
         $input = json_decode(file_get_contents('php://input'), true);
         $nuevoNombre = trim($input['nombre'] ?? '');

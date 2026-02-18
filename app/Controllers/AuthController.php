@@ -36,6 +36,8 @@ class AuthController extends BaseController
     public function login()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->validateCsrf();
+
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
             

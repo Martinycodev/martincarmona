@@ -138,12 +138,14 @@ class DatosParcelasController extends BaseController
     public function eliminar()
     {
         header('Content-Type: application/json');
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
         }
-        
+
+        $this->validateCsrf();
+
         try {
             $input = json_decode(file_get_contents('php://input'), true);
             $id = $input['id'] ?? null;

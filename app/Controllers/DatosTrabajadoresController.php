@@ -185,12 +185,14 @@ class DatosTrabajadoresController extends BaseController
     public function actualizar()
     {
         header('Content-Type: application/json');
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
         }
-        
+
+        $this->validateCsrf();
+
         try {
             $input = json_decode(file_get_contents('php://input'), true);
             

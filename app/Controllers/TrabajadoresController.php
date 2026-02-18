@@ -98,12 +98,14 @@ class TrabajadoresController extends BaseController
     public function crear()
     {
         header('Content-Type: application/json');
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
         }
-        
+
+        $this->validateCsrf();
+
         try {
             $input = json_decode(file_get_contents('php://input'), true);
             
@@ -198,12 +200,14 @@ class TrabajadoresController extends BaseController
     public function actualizar()
     {
         header('Content-Type: application/json');
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
         }
-        
+
+        $this->validateCsrf();
+
         try {
             error_log("Método actualizar llamado");
             $input = json_decode(file_get_contents('php://input'), true);
@@ -286,12 +290,14 @@ class TrabajadoresController extends BaseController
     public function eliminar()
     {
         header('Content-Type: application/json');
-        
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
         }
-        
+
+        $this->validateCsrf();
+
         try {
             $input = json_decode(file_get_contents('php://input'), true);
             

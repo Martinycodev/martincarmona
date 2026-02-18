@@ -99,6 +99,7 @@
         <h1><?= $titulo ?></h1>
         
         <form method="POST" action="<?= $this->url('/tareas/crear') ?>">
+            <?= \Core\CsrfMiddleware::getTokenField() ?>
             <div class="form-group">
                 <label for="titulo">Título de la Tarea:</label>
                 <input type="text" id="titulo" name="titulo" required>

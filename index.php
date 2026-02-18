@@ -83,6 +83,14 @@ $router->get('/economia/obtenerVehiculos', 'EconomiaController@obtenerVehiculos'
 $router->get('/economia/obtenerParcelas', 'EconomiaController@obtenerParcelas');
 $router->get('/economia/obtenerResumen', 'EconomiaController@obtenerResumen');
 
+// Rutas para edición inline de relaciones en el modal de tareas
+$router->post('/tareas/agregarTrabajador', 'TareasController@agregarTrabajador');
+$router->post('/tareas/quitarTrabajador', 'TareasController@quitarTrabajador');
+$router->post('/tareas/agregarParcela', 'TareasController@agregarParcela');
+$router->post('/tareas/quitarParcela', 'TareasController@quitarParcela');
+$router->post('/tareas/cambiarTrabajo', 'TareasController@cambiarTrabajo');
+$router->get('/tareas/opcionesModal', 'TareasController@opcionesModal');
+
 // Ruta para el autocompletado de parcelas
 $router->get('/parcelas/buscar', 'ParcelasController@buscar');
 $router->post('/parcelas/crear', 'ParcelasController@crear');

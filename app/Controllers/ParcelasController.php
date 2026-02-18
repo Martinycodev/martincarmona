@@ -83,6 +83,8 @@ class ParcelasController extends BaseController
             return;
         }
 
+        $this->validateCsrf();
+
         try {
             $input = json_decode(file_get_contents('php://input'), true);
 
@@ -185,6 +187,8 @@ class ParcelasController extends BaseController
             return;
         }
 
+        $this->validateCsrf();
+
         try {
             $input = json_decode(file_get_contents('php://input'), true);
 
@@ -259,6 +263,8 @@ class ParcelasController extends BaseController
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
         }
+
+        $this->validateCsrf();
 
         try {
             $input = json_decode(file_get_contents('php://input'), true);
