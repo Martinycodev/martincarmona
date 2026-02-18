@@ -323,7 +323,6 @@ async function añadirTrabajador(tareaId) {
 
             // Resetear el select
             select.value = '';
-            showToast('Trabajador añadido', 'success');
             window.needsReload = true;
         } else {
             showToast(data.message || 'Error al añadir trabajador', 'error');
@@ -364,7 +363,6 @@ async function quitarTrabajador(tareaId, trabajadorId) {
                 container.innerHTML = `<div class="empty-state" id="empty-trabajadores-${tareaId}">No asignados</div>`;
             }
 
-            showToast('Trabajador quitado', 'success');
             window.needsReload = true;
         } else {
             showToast(data.message || 'Error al quitar trabajador', 'error');
@@ -419,7 +417,6 @@ async function añadirParcela(tareaId) {
             }
 
             select.value = '';
-            showToast('Parcela añadida', 'success');
             window.needsReload = true;
         } else {
             showToast(data.message || 'Error al añadir parcela', 'error');
@@ -458,7 +455,6 @@ async function quitarParcela(tareaId, parcelaId) {
                 container.innerHTML = `<div class="empty-state" id="empty-parcelas-${tareaId}">No asignadas</div>`;
             }
 
-            showToast('Parcela quitada', 'success');
             window.needsReload = true;
         } else {
             showToast(data.message || 'Error al quitar parcela', 'error');
@@ -505,7 +501,6 @@ async function cambiarTrabajo(tareaId, select) {
 
             // Resetear el select a la opción por defecto
             select.value = '';
-            showToast('Tipo de trabajo actualizado', 'success');
             window.needsReload = true;
         } else {
             showToast(data.message || 'Error al cambiar trabajo', 'error');

@@ -1216,30 +1216,40 @@ $title = 'Datos - MartinCarmona.com';
     // Variable global para almacenar los datos de la tarea actual en vista detalle
     let currentTaskData = null;
 
-    // Función para ver detalle de tarea (solo lectura)
-    function viewTaskDetail(fecha, index) {
+    // Función para ver detalle de tarea — siempre pide datos frescos al servidor
+    async function viewTaskDetail(fecha, index) {
         const tarea = tasksData[fecha][index];
-        if (tarea) {
-            // Guardar datos de la tarea para poder editarla después
-            currentTaskData = { fecha, index, tarea };
+        if (!tarea) return;
 
-            // Renderizar contenido HTML usando el componente compartido
+        try {
+            const response = await fetch(buildUrl('/tareas/obtener') + '?id=' + tarea.id, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await response.json();
+
+            if (data.success && data.tarea) {
+                // Actualizar el caché en memoria con los datos frescos
+                tasksData[fecha][index] = Object.assign({}, tasksData[fecha][index], data.tarea);
+                currentTaskData = { fecha, index, tarea: data.tarea };
+
+                if (typeof renderTaskDetailHtml === 'function') {
+                    document.getElementById('taskDetailContent').innerHTML = renderTaskDetailHtml(data.tarea);
+                    if (typeof cargarOpcionesModal === 'function') {
+                        cargarOpcionesModal(data.tarea.id);
+                    }
+                }
+                loadTaskImages(data.tarea.id, 'detailImagenes', false);
+                openModal('taskDetailModal');
+            }
+        } catch (err) {
+            console.error('Error cargando detalle de tarea:', err);
+            // Fallback: usar datos en caché si el fetch falla
+            currentTaskData = { fecha, index, tarea };
             if (typeof renderTaskDetailHtml === 'function') {
                 document.getElementById('taskDetailContent').innerHTML = renderTaskDetailHtml(tarea);
-                // Cargar opciones de los selects de edición inline (trabajadores, parcelas, trabajos)
-                if (typeof cargarOpcionesModal === 'function') {
-                    cargarOpcionesModal(tarea.id);
-                }
-            } else {
-                console.error('renderTaskDetailHtml no está definido');
-                document.getElementById('taskDetailContent').innerHTML = '<div class="alert alert-danger">Error al cargar el componente de visualización</div>';
+                if (typeof cargarOpcionesModal === 'function') cargarOpcionesModal(tarea.id);
             }
-
-            // Cargar imágenes (lógica específica del dashboard ya que no vienen en el json inicial de tareas)
-            // El componente renderTaskDetailHtml crea el div id="detailImagenes" si no hay imágenes, o usamos el que crea
-            // En este caso, renderTaskDetailHtml creará el div vacio si no hay imagenes en el objeto tarea
             loadTaskImages(tarea.id, 'detailImagenes', false);
-
             openModal('taskDetailModal');
         }
     }

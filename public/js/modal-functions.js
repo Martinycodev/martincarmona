@@ -364,8 +364,6 @@ document.addEventListener('blur', async function (e) {
             if (data.success) {
                 element.classList.add('save-success');
                 setTimeout(() => element.classList.remove('save-success'), 1000);
-                showToast('Cambio guardado automáticamente', 'success');
-
                 // Si el cambio afecta a datos que se muestran en la tabla, recargar al cerrar modal
                 window.needsReload = true;
             } else {
