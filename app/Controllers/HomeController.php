@@ -7,9 +7,6 @@ class HomeController extends BaseController
     public function index()
     {
         // Si el usuario tiene sesión activa, redirigir al dashboard
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
         if (isset($_SESSION['user_id'])) {
             $this->redirect('/dashboard');
             return;

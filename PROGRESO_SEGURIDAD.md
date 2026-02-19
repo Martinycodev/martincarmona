@@ -85,21 +85,21 @@
   - [x] Interceptor global en modal-functions.js
   - [x] Todas las peticiones POST incluyen X-CSRF-TOKEN automáticamente
 
-### **Día 5: Session Hardening**
+### **Día 5: Session Hardening** ✅
 
-- [ ] **Paso 12:** Crear SessionConfig
-  - [ ] Crear archivo `config/session.php`
-  - [ ] Configurar cookies seguras
-  - [ ] Implementar timeout de sesión
-  - [ ] Regeneración periódica de ID
+- [x] **Paso 12:** Crear SessionConfig (`config/session.php`)
+  - [x] Cookies seguras: `httponly=true`, `samesite=Lax`, `secure` dinámico según HTTPS
+  - [x] Nombre de sesión personalizado: `SESS_MC`
+  - [x] Timeout de inactividad: 2 horas (`TIMEOUT = 7200`)
+  - [x] Regeneración periódica de ID: cada 30 min (`REGEN_INTERVAL = 1800`)
 
-- [ ] **Paso 13:** Actualizar index.php
-  - [ ] Centralizar `session_start()`
-  - [ ] Cargar `SessionConfig::configure()`
+- [x] **Paso 13:** Actualizar `index.php`
+  - [x] `require_once 'config/session.php'` + `SessionConfig::configure()` como primera operación
 
-- [ ] **Paso 14:** Limpiar controladores
-  - [ ] Eliminar `session_start()` duplicado
-  - [ ] Usar `SessionConfig::isAuthenticated()`
+- [x] **Paso 14:** Limpiar controladores
+  - [x] Eliminado `session_start()` de 12 controladores (TareasController, TrabajadoresController, ParcelasController, TrabajosController, DashboardController, BusquedaController, DatosController, DatosParcelasController, DatosTrabajadoresController, EconomiaController, HomeController, EmpresasController, PerfilController)
+  - [x] AuthController login(): reemplazado `session_start()` por `session_regenerate_id(true)` (previene session fixation)
+  - [x] AuthController logout(): eliminado `session_start()` redundante
 
 ### **Semana 2: Input Validation**
 

@@ -9,9 +9,7 @@ class AuthController extends BaseController
     public function __construct()
     {
         // Restaurar sesión desde cookie si existe y no hay sesión activa
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        // (la sesión ya está iniciada por SessionConfig::configure() en index.php)
         if (!isset($_SESSION['user_id']) && isset($_COOKIE['user_id'])) {
             $userId = $_COOKIE['user_id'];
             try {
@@ -50,8 +48,8 @@ class AuthController extends BaseController
             $user = $this->authenticateUser($email, $password);
             
             if ($user) {
-                // Iniciar sesión
-                session_start();
+                // Regenerar ID para prevenir session fixation tras autenticación
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
                 $_SESSION['user_email'] = $user['email'];
@@ -73,7 +71,6 @@ class AuthController extends BaseController
     
     public function logout()
     {
-    session_start();
     session_destroy();
     // Eliminar la cookie
     setcookie('user_id', '', time() - 3600, "/");

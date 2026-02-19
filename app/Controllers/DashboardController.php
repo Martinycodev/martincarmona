@@ -9,8 +9,6 @@ class DashboardController extends BaseController
     public function index()
     {
         // Verificar si el usuario está autenticado
-        session_start();
-        
         if (!isset($_SESSION['user_id'])) {
             $this->redirect('/');
             return;

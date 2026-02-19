@@ -7,8 +7,6 @@ class DatosController extends BaseController
     public function index()
     {
         // Verificar si el usuario está autenticado
-        session_start();
-        
         if (!isset($_SESSION['user_id'])) {
             // Para debugging, mostrar información de la sesión
             /*echo "Sesión no iniciada. Contenido de \$_SESSION:<br>";

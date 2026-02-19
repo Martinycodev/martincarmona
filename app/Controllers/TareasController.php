@@ -13,7 +13,6 @@ class TareasController extends BaseController
     public function __construct()
     {
         // Verificar autenticación
-        session_start();
         if (!isset($_SESSION['user_id'])) {
             $this->redirect('/');
             return;

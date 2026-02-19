@@ -2,58 +2,13 @@
 
 ---
 
-## 🔴 **PRIORIDAD CRÍTICA - SEGURIDAD URGENTE**
-*⚠️ RESOLVER ESTA SEMANA - Riesgos de seguridad detectados*
-
-### 🛡️ **Seguridad Crítica**
-*Problemas de seguridad que deben resolverse inmediatamente*
-
-- [ ] **0.1** Proteger credenciales de base de datos
-  - [ ] Mover credenciales de `config/database.php` a archivo `.env`
-  - [ ] Instalar `vlucas/phpdotenv` con Composer
-  - [ ] Crear `.env.example` como plantilla
-  - [ ] Añadir `.env` a `.gitignore`
-  - [ ] **CRÍTICO**: Las credenciales están expuestas en el código (línea 8 de database.php)
-
-- [ ] **0.2** Implementar protección CSRF
-  - [ ] Crear clase `CsrfMiddleware` con generación de tokens
-  - [ ] Añadir tokens CSRF a todos los formularios
-  - [ ] Validar tokens en todas las peticiones POST
-  - [ ] **RIESGO**: Vulnerable a ataques Cross-Site Request Forgery
-
-- [ ] **0.3** Fortalecer gestión de sesiones
-  - [ ] Configurar `session.cookie_httponly = 1`
-  - [ ] Configurar `session.cookie_secure = 1` (solo HTTPS)
-  - [ ] Configurar `session.cookie_samesite = Strict`
-  - [ ] Implementar timeout de sesión (30-60 min)
-  - [ ] Regenerar session_id después del login
-  - [ ] Centralizar `session_start()` (actualmente duplicado en cada controlador)
-
-- [ ] **0.4** Validación y sanitización de inputs
-  - [ ] Crear clase `Validator` centralizada
-  - [ ] Validar tipos de datos en todos los endpoints
-  - [ ] Sanitizar inputs JSON y POST
-  - [ ] Implementar whitelist de valores permitidos
-  - [ ] Validar rangos numéricos (ej: horas 0-24)
-  - [ ] **RIESGO**: Inputs se usan directamente sin validación robusta
-
-- [ ] **0.5** Configuración de entorno
-  - [ ] Separar configuración desarrollo/producción
-  - [ ] Deshabilitar `display_errors` en producción
-  - [ ] Configurar logging en archivos (no en pantalla)
-  - [ ] Eliminar `console.log()` del JavaScript en producción
-
----
-
 ## 🚨 **PRIORIDAD ALTA - Objetivos Críticos**
 
 ### 💰 **Dashboard** 
 *Dashboard que muestra un calendario de tareas y botones de accion rápida.*
 
 - [ ] **1.1** Dar toques de UX
-  - [] en el popup de crear tarea tiene que aparecer un botón que añada automáticamente los trabajadores de la cuadrilla fija de la campaña de la recogida.
   - [] Me gustaría que el popup de ver la tarea saliese del lado derecho no ocupando toda la pantalla. haciendo que pinchando fuera se cierre.
-  - [] Además me gustaría saber si
   
 ### 💰 **Módulo de Economía** 
 *Sistema financiero completo para gestión de costos y ingresos*

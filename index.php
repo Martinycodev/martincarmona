@@ -11,6 +11,10 @@ define('BASE_PATH', __DIR__);
 $config = require_once BASE_PATH . '/config/config.php';
 define('APP_BASE_PATH', $config['base_path']);
 
+// Configurar e iniciar sesión de forma segura (timeout, cookies httponly, regeneración de ID)
+require_once BASE_PATH . '/config/session.php';
+SessionConfig::configure();
+
 // Cargar el autoloader
 require_once BASE_PATH . '/core/Autoloader.php';
 
