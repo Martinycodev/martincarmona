@@ -156,6 +156,31 @@ class TareasController extends BaseController
         $this->render('tareas/crear', $data);
     }
 
+    /**
+     * Crea una tarea vacía para el flujo "crear y editar en sidebar".
+     * Devuelve el ID para que el sidebar la abra inmediatamente.
+     */
+    public function crearVacio()
+    {
+        header('Content-Type: application/json');
+        $this->validateCsrf();
+
+        $userId = $_SESSION['user_id'];
+        $tareaData = [
+            'fecha'       => date('Y-m-d'),
+            'descripcion' => '',
+            'trabajo'     => 0,
+            'horas'       => 0,
+        ];
+
+        $result = $this->tareaModel->create($tareaData, $userId);
+        if ($result) {
+            echo json_encode(['success' => true, 'id' => $result]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al crear la tarea']);
+        }
+    }
+
     public function actualizar()
     {
         $userId = $_SESSION['user_id'];

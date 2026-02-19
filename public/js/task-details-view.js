@@ -520,3 +520,117 @@ window.quitarTrabajador    = quitarTrabajador;
 window.añadirParcela       = añadirParcela;
 window.quitarParcela       = quitarParcela;
 window.cambiarTrabajo      = cambiarTrabajo;
+
+
+// =====================================================================
+// GESTIÓN DE IMÁGENES (compartida con task-sidebar.js)
+// =====================================================================
+
+async function loadTaskImages(taskId, containerId, allowDelete = false) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = '<div style="text-align:center; padding:10px; color:#999;">Cargando imágenes...</div>';
+
+    try {
+        const response = await fetch(buildUrl('/tareas/obtener') + '?id=' + taskId, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json();
+
+        if (data.success && data.tarea.imagenes && data.tarea.imagenes.length > 0) {
+            container.innerHTML = '';
+            data.tarea.imagenes.forEach(img => {
+                const div = document.createElement('div');
+                div.className = 'image-item';
+
+                const imgUrl = buildUrl(img.file_path);
+                div.innerHTML = `<img src="${imgUrl}" alt="${img.original_filename}"
+                    title="${img.original_filename}" style="cursor:zoom-in;">`;
+
+                div.addEventListener('click', () =>
+                    openLightbox(img.id, imgUrl, img.original_filename, taskId, containerId, allowDelete)
+                );
+                container.appendChild(div);
+            });
+        } else {
+            container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:10px; color:#999;">No hay imágenes adjuntas</div>';
+        }
+    } catch (error) {
+        console.error('Error cargando imágenes:', error);
+        container.innerHTML = '<div style="color: #dc3545; padding:10px;">Error al cargar imágenes</div>';
+    }
+}
+
+async function deleteImage(imageId, taskId, containerId) {
+    if (!confirm('¿Estás seguro de eliminar esta imagen?')) return;
+
+    try {
+        const response = await fetch(buildUrl('/tareas/eliminarImagen'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ id: imageId })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            loadTaskImages(taskId, containerId, true);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error eliminando imagen:', error);
+        alert('Error al eliminar la imagen');
+    }
+}
+
+window.loadTaskImages = loadTaskImages;
+window.deleteImage    = deleteImage;
+
+
+// =====================================================================
+// LIGHTBOX
+// =====================================================================
+
+function openLightbox(imageId, imgUrl, altText, taskId, containerId, allowDelete) {
+    const lb        = document.getElementById('img-lightbox');
+    const img       = document.getElementById('img-lightbox-img');
+    const deleteBtn = document.getElementById('img-lightbox-delete');
+
+    img.src = imgUrl;
+    img.alt = altText;
+
+    if (allowDelete) {
+        deleteBtn.style.display = '';
+        deleteBtn.onclick = async (e) => {
+            e.stopPropagation();
+            await deleteImage(imageId, taskId, containerId);
+            closeLightbox();
+        };
+    } else {
+        deleteBtn.style.display = 'none';
+    }
+
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    const lb = document.getElementById('img-lightbox');
+    lb.classList.remove('open');
+    document.getElementById('img-lightbox-img').src = '';
+    document.body.style.overflow = '';
+}
+
+// Cerrar con Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('img-lightbox')?.classList.contains('open')) {
+        closeLightbox();
+    }
+});
+
+window.openLightbox  = openLightbox;
+window.closeLightbox = closeLightbox;
