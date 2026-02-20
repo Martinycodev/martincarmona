@@ -1,149 +1,154 @@
-# **Sistema de Gestión Agrícola**
+# Sistema de Gestión Agrícola
 
-## **📄 Descripción**
+Aplicación web para la digitalización de una explotación agrícola familiar. Centraliza la gestión de tareas de campo, trabajadores, maquinaria, parcelas y economía en una sola plataforma, sustituyendo el registro en papel.
 
-Sistema web integral diseñado para la digitalización y optimización de explotaciones agrícolas.
+---
 
-El objetivo principal de la aplicación es **informatizar y centralizar** toda la información que actualmente se gestiona en papel, permitiendo un análisis detallado de la productividad y rentabilidad del campo. El sistema actúa tanto como un diario de campo para el registro de trabajos diarios, como una herramienta de planificación y gestión financiera.
+## Propósito
 
-### **🎯 Propuesta de Valor**
+El objetivo principal es tener un **diario de campo digital** que permita:
 
-* **Gestión Centralizada:** Unifica tareas, economía, inventario y personal en una sola plataforma.  
-* **Análisis de Rentabilidad:** Permite conocer el beneficio real de cada parcela contrastando gastos (trabajadores, maquinaria, insumos) contra ingresos (cosecha).  
-* **Control de Riego:** Registro detallado de metros cúbicos y fechas para cumplimiento normativo.  
-* **Gestión de Cosecha:** Trazabilidad de tickets de pesaje, rendimientos grasos e industriales y seguimiento de precios del aceite.
+- Registrar qué trabajo se hizo, quién lo hizo, en qué parcela y cuántas horas
+- Calcular el coste real de cada tarea y su impacto económico por parcela
+- Controlar saldos y deudas de trabajadores
+- Gestionar el inventario de vehículos y herramientas con sus revisiones
+- Tener un historial trazable de toda la actividad de la explotación
 
-## **🚀 Capturas de Pantalla (Mockups)**
+---
 
-\<\!-- Cuando tengas la interfaz lista, sube las imágenes a una carpeta /assets/screenshots y enlázalas aquí \--\>
+## Módulos
 
-| Dashboard General | Gestión de Parcelas |
-| :---- | :---- |
-|  |  |
-| *Vista general de ingresos, gastos y tareas pendientes* | *Mapa y listado de parcelas con sus estados* |
+| Módulo | Estado | Descripción |
+|--------|--------|-------------|
+| Tareas | ✅ Completo | CRUD + calendario interactivo + buscador con filtros |
+| Trabajadores | ✅ Completo | Gestión completa de empleados |
+| Trabajos | ✅ Completo | Tipos de trabajo con precio/hora |
+| Parcelas | ✅ Completo | Fichas de parcelas con referencia catastral |
+| Vehículos | ✅ Completo | Control de maquinaria y alertas de mantenimiento |
+| Herramientas | ✅ Completo | Inventario de herramientas |
+| Empresas | ✅ Completo | Gestión de empresas colaboradoras |
+| Proveedores | ✅ Completo | Gestión de proveedores |
+| Economía | 🚧 En desarrollo | Dashboard financiero, gastos, ingresos, deudas |
 
-## **✨ Funcionalidades Principales**
+---
 
-### **🚜 Gestión de Campo**
+## Tech Stack
 
-* **Parcelas:** Ficha completa con referencia catastral, tipo (riego/secano), número de árboles y propietario.  
-* **Tareas:** Registro de fecha, trabajador, herramienta usada, tiempo invertido y coste imputado.  
-* **Riego:** Control de campañas de riego, lecturas de contadores y volúmenes cúbicos.  
-* **Cosecha (Aceituna):** Gestión de tickets de pesaje, rendimientos y precios de liquidación.
+**Backend**
+- PHP 8.2 con arquitectura MVC personalizada
+- MySQL (base de datos remota en producción)
+- Composer — gestión de dependencias
+- `vlucas/phpdotenv` — variables de entorno
 
-### **💰 Economía y Finanzas**
+**Frontend**
+- HTML5 / CSS3 (sin framework CSS)
+- JavaScript vanilla
+- Chart.js para gráficos
+- FullCalendar para el calendario de tareas
 
-* **Control de Costes:** Cálculo automático de costes por tarea basado en precio/hora de trabajadores y amortización de maquinaria.  
-* **Cuentas Trabajadores:** Gestión de saldos, deudas y pagos a empleados.  
-* **Inventario y Maquinaria:** Control de gastos de vehículos (ITV, Seguros, Reparaciones) y herramientas.  
-* **Reportes:** Balances de ingresos vs. gastos, productividad por parcela y trabajador.
+**Seguridad implementada**
+- Credenciales en `.env` (nunca en el código)
+- Protección CSRF en todos los formularios y peticiones AJAX
+- Sesiones endurecidas: `httponly`, `samesite=Lax`, timeout 2h, regeneración de ID
 
-### **🛠️ Administración**
+---
 
-* **Usuarios:** Sistema de login seguro.  
-* **Vehículos:** Alertas de mantenimiento y revisiones.
+## Instalación local
 
-## **📅 Estado del Proyecto (Roadmap)**
+### Requisitos
 
-El proyecto se encuentra en fase de desarrollo activo. A continuación se detalla el plan de trabajo:
+- PHP 8.0 o superior
+- MySQL / MariaDB
+- Apache (XAMPP recomendado en Windows)
+- Composer
 
-### **🚨 PRIORIDAD ALTA \- Objetivos Críticos**
+### Pasos
 
-* \[ \] **Módulo de Economía**  
-  * \[x\] Estructura de base de datos (precios\_trabajo, costos\_tarea).  
-  * \[ \] Controladores de Economía (Dashboard, Gastos, Ingresos).  
-  * \[ \] Vistas de reportes financieros y deudas de trabajadores.
+**1. Clonar el repositorio**
 
-### **🔧 PRIORIDAD MEDIA \- Mejoras Técnicas**
+```bash
+git clone https://github.com/tu-usuario/gestion-agricola.git
+cd gestion-agricola
+```
 
-* \[ \] **Seguridad:** Implementación de CSRF tokens, sanitización de inputs y encriptación de contraseñas.  
-* \[ \] **Optimización:** Refactorización a patrón MVC estricto, centralización de configuraciones.  
-* \[ \] **Testing:** Tests unitarios para modelos y de integración para controladores.
+**2. Instalar dependencias**
 
-### **🚀 PRIORIDAD BAJA \- Futuro**
+```bash
+composer install
+```
 
-* \[ \] **Gestión Multi-usuario:** Roles y permisos (Admin/Empleado).  
-* \[ \] **API REST:** Para futuras integraciones móviles.  
-* \[ \] **Reportes Avanzados:** Exportación a PDF/Excel y gráficos con Chart.js.
+**3. Configurar variables de entorno**
 
-## **🛠️ Tecnologías Utilizadas (Tech Stack)**
+```bash
+cp .env.example .env
+```
 
-### **Backend**
+Edita `.env` con tus datos:
 
-* **Lenguaje:** PHP (Arquitectura MVC personalizada).  
-* **Base de Datos:** MySQL.
+```env
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost/martincarmona
 
-### **Frontend**
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=
+DB_NAME=nombre_base_datos
 
-* **Estructura:** HTML5 / CSS3.  
-* **Interactividad:** JavaScript (Vanilla & Chart.js para reportes).  
-* **Diseño:** Responsivo (Mobile-first para uso en campo).
+SESSION_LIFETIME=7200
+SESSION_SECURE=false
+SESSION_SAMESITE=Lax
+```
 
-### **Herramientas**
+**4. Importar la base de datos**
 
-* **Control de Versiones:** Git.  
-* **Entorno Local:** XAMPP / Docker (Opcional).
+Importa el dump SQL más reciente desde `database/` en tu MySQL local.
 
-## **⚙️ Instalación y Configuración Local**
+**5. Configurar Apache**
 
-Sigue estos pasos para desplegar el proyecto en tu entorno local.
+Apunta el `DocumentRoot` a la carpeta raíz del proyecto o accede directamente desde XAMPP en:
 
-### **Prerrequisitos**
+```
+http://localhost/martincarmona
+```
 
-* Servidor Web (Apache/Nginx).  
-* PHP 8.0 o superior.  
-* MySQL / MariaDB.  
-* Composer (Opcional, si se usa para dependencias).
+---
 
-### **Pasos**
+## Estructura del Proyecto
 
-1. **Clonar el repositorio**  
-   git clone \[https://github.com/tu-usuario/gestion-agricola.git\](https://github.com/tu-usuario/gestion-agricola.git)  
-   cd gestion-agricola
+```
+martincarmona/
+├── app/
+│   ├── Controllers/    # Lógica de cada módulo (19 controladores)
+│   ├── Models/         # Acceso a base de datos (9 modelos)
+│   └── Views/          # Plantillas HTML/PHP
+├── config/
+│   ├── config.php      # Configuración general
+│   ├── database.php    # Conexión MySQL (usa .env)
+│   └── session.php     # Configuración segura de sesión
+├── core/
+│   ├── Autoloader.php  # PSR-4
+│   ├── Router.php      # Sistema de rutas
+│   └── CsrfMiddleware.php
+├── public/
+│   ├── css/
+│   ├── js/             # JavaScript vanilla (7 archivos)
+│   └── uploads/
+├── vendor/             # Dependencias Composer
+├── .env                # Variables de entorno (no en git)
+├── .env.example        # Plantilla de configuración
+├── index.php           # Entry point
+└── ROADMAP.md          # Objetivos y estado del proyecto
+```
 
-2. **Base de Datos**  
-   * Crea una base de datos vacía en MySQL (ej: db\_agricola).  
-   * Importa el archivo database/schema.sql (o el dump más reciente).  
-   * Configura la conexión en config/database.php o renombra .env.example a .env.
+---
 
-// Ejemplo de config  
-define('DB\_HOST', 'localhost');  
-define('DB\_USER', 'root');  
-define('DB\_PASS', '');  
-define('DB\_NAME', 'db\_agricola');
+## Planificación
 
-3. **Configurar Servidor**  
-   * Apunta tu servidor web a la carpeta public/ del proyecto.  
-   * Si usas el servidor interno de PHP para pruebas rápidas:
+Ver [ROADMAP.md](ROADMAP.md) para el estado detallado de objetivos pendientes, próximas funcionalidades y criterios de calidad.
 
-php \-S localhost:8000 \-t public
+---
 
-4. **Acceso**  
-   * Abre tu navegador en http://localhost:8000.  
-   * Credenciales por defecto (si aplica): admin / password.
+## Licencia
 
-## **📂 Estructura del Proyecto (MVC)**
-
-/gestion-agricola  
-  ├── /app  
-  │   ├── /Controllers  \# Lógica de negocio  
-  │   ├── /Models       \# Interacción con BD  
-  │   └── /Views        \# Plantillas HTML/PHP  
-  ├── /config           \# Configuración de BD y rutas  
-  ├── /public           \# Entry point (index.php), CSS, JS, Assets  
-  ├── /database         \# Scripts SQL y migraciones  
-  └── /vendor           \# Librerías externas
-
-## **🤝 Contribución**
-
-Este es un proyecto de uso interno, pero las sugerencias son bienvenidas.
-
-1. Haz un Fork.  
-2. Crea una rama (git checkout \-b feature/nueva-funcionalidad).  
-3. Commit (git commit \-m 'Add: Nueva funcionalidad').  
-4. Push (git push origin feature/nueva-funcionalidad).  
-5. Pull Request.
-
-## **📄 Licencia**
-
-Este proyecto es privado y para uso interno de la gestión agrícola.
+Proyecto privado de uso interno para gestión de explotación agrícola familiar.
