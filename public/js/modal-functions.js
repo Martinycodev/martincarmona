@@ -39,34 +39,26 @@
 
 // Función para obtener la ruta base de la aplicación
 function getBaseUrl() {
-    console.log('getBaseUrl called, current pathname:', window.location.pathname);
+    // Variable inyectada desde PHP en el layout (la más fiable)
+    if (typeof window._APP_BASE_PATH !== 'undefined') {
+        return window._APP_BASE_PATH;
+    }
 
-    // Obtener la ruta base desde el elemento base o calcularla
+    // Fallback: elemento <base> en el HTML
     const baseElement = document.querySelector('base');
     if (baseElement && baseElement.href) {
-        const basePath = new URL(baseElement.href).pathname;
-        console.log('Base element found:', basePath);
-        return basePath;
+        return new URL(baseElement.href).pathname;
     }
 
-    // Si no hay elemento base, calcular desde la URL actual
-    const path = window.location.pathname;
-    const pathParts = path.split('/');
-    console.log('Path parts:', pathParts);
-
-    // Buscar 'martincarmona' en la ruta
-    const martincarmonaIndex = pathParts.indexOf('martincarmona');
-    console.log('martincarmona index:', martincarmonaIndex);
-
-    if (martincarmonaIndex !== -1) {
-        const basePath = '/' + pathParts.slice(1, martincarmonaIndex + 1).join('/');
-        console.log('Calculated base path:', basePath);
-        return basePath;
+    // Fallback: buscar 'martincarmona' en la ruta (dev local con XAMPP)
+    const pathParts = window.location.pathname.split('/');
+    const idx = pathParts.indexOf('martincarmona');
+    if (idx !== -1) {
+        return '/' + pathParts.slice(1, idx + 1).join('/');
     }
 
-    // Fallback: usar la ruta actual
-    console.log('Using fallback path:', path);
-    return path;
+    // Último recurso: dominio raíz
+    return '';
 }
 
 // Variable global para la ruta base
