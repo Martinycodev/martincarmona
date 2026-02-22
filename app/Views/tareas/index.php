@@ -17,7 +17,7 @@ $title = 'Gestión de Tareas';
             <thead>
                 <tr>
                     <th>Fecha</th>
-                    <th>Descripción</th>
+                    <th>Título</th>
                     <th>Horas</th>
                     <th class="actions-column">Acciones</th>
                 </tr>
@@ -27,7 +27,7 @@ $title = 'Gestión de Tareas';
                     <?php foreach ($tareas as $tarea): ?>
                         <tr data-id="<?= $tarea['id'] ?>">
                             <td><?= htmlspecialchars(date('d/m/Y', strtotime($tarea['fecha']))) ?></td>
-                            <td class="description-cell"><?= htmlspecialchars($tarea['descripcion'] ?? 'Sin descripción') ?></td>
+                            <td class="description-cell"><?= htmlspecialchars($tarea['titulo'] ?: ($tarea['descripcion'] ?? 'Sin título')) ?></td>
                             <td><?= $tarea['horas'] ? number_format($tarea['horas'], 1) . 'h' : '0h' ?></td>
                             <td class="actions">
                                 <button class="btn-icon btn-info"
@@ -36,7 +36,7 @@ $title = 'Gestión de Tareas';
                                     👁️
                                 </button>
                                 <button class="btn-icon btn-delete"
-                                    onclick="deleteTarea(<?= $tarea['id'] ?>, '<?= htmlspecialchars($tarea['descripcion'] ?? 'Sin descripción', ENT_QUOTES) ?>')"
+                                    onclick="deleteTarea(<?= $tarea['id'] ?>, '<?= htmlspecialchars($tarea['titulo'] ?: ($tarea['descripcion'] ?? 'Sin título'), ENT_QUOTES) ?>')"
                                     title="Eliminar">
                                     🗑️
                                 </button>

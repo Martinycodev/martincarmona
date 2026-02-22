@@ -2,8 +2,8 @@
 
 // Configuración del proyecto
 return [
-    // Ruta base del proyecto (para MAMP: /martincarmona)
-    'base_path' => '/martincarmona',
+    // Ruta base del proyecto: vacío en producción (dominio raíz), /martincarmona en XAMPP local
+    'base_path' => $_ENV['APP_BASE_PATH'] ?? '',
     
     // Configuración de la base de datos (para más adelante)
     'database' => [

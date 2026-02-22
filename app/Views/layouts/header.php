@@ -49,9 +49,9 @@
             const navMenu = document.getElementById('navMenu');
             const overlay = document.getElementById('overlay');
             const spans = document.querySelectorAll('.hamburger-menu span');
-            
+
             navMenu.classList.toggle('active');
-            
+
             if (navMenu.classList.contains('active')) {
                 overlay.style.display = 'block';
                 // Animación del icono hamburguesa a X
@@ -66,6 +66,14 @@
                 spans[2].style.transform = 'none';
             }
         }
+
+        // Cerrar menú al pulsar cualquier enlace
+        document.getElementById('navMenu').querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                const navMenu = document.getElementById('navMenu');
+                if (navMenu.classList.contains('active')) toggleMenu();
+            });
+        });
     </script>
 
     <!-- Scripts principales -->

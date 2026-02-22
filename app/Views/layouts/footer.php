@@ -19,13 +19,13 @@
     <div id="task-sidebar-overlay" onclick="window.taskSidebar && window.taskSidebar.close()"></div>
 
     <div id="task-sidebar" role="dialog" aria-modal="true" aria-label="Editar tarea">
-        <!-- Header con descripción editable y estado de guardado -->
+        <!-- Header con título editable y estado de guardado -->
         <div class="sidebar-header">
-            <div class="sidebar-description-wrap">
-                <div id="sidebar-description"
+            <div class="sidebar-title-wrap">
+                <div id="sidebar-title"
                      contenteditable="true"
-                     data-field="descripcion"
-                     data-placeholder="Descripción de la tarea..."></div>
+                     data-field="titulo"
+                     data-placeholder="Título de la tarea..."></div>
             </div>
             <div class="sidebar-header-right">
                 <span id="sidebar-save-status" class="sidebar-save-status"></span>

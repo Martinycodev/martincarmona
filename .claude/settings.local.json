@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(ls:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(cmd.exe /c \"C:\\\\xampp\\\\mysql\\\\bin\\\\mysqladmin.exe\" -u root status)",
+      "Bash(grep:*)",
+      "Bash(/c/xampp/mysql/bin/mysql.exe:*)",
+      "Bash(tasklist:*)",
+      "Bash(/c/xampp/mysql/bin/mysqladmin.exe:*)"
     ]
   }
 }

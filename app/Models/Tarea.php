@@ -42,13 +42,14 @@ class Tarea
 
             // Crear la tarea principal (solo campos esenciales)
             $stmt = $this->db->prepare("
-                INSERT INTO tareas (fecha, descripcion, horas, id_user, created_at, updated_at)
-                VALUES (?, ?, ?, ?, NOW(), NOW())
+                INSERT INTO tareas (fecha, titulo, descripcion, horas, id_user, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, NOW(), NOW())
             ");
 
             $stmt->bind_param(
-                "ssdi",
+                "sssdi",
                 $data['fecha'],
+                $data['titulo'],
                 $data['descripcion'],
                 $data['horas'],
                 $userId
@@ -300,14 +301,15 @@ class Tarea
 
             // Obtener tareas del usuario con paginación
             $stmt = $this->db->prepare("
-                SELECT 
+                SELECT
                     id,
                     fecha,
+                    titulo,
                     descripcion,
                     horas,
                     created_at,
                     updated_at
-                FROM tareas 
+                FROM tareas
                 WHERE id_user = ?
                 ORDER BY fecha DESC, created_at DESC
                 LIMIT ? OFFSET ?
@@ -371,13 +373,14 @@ class Tarea
         try {
             // Obtener todas las tareas del usuario
             $stmt = $this->db->prepare("
-                SELECT 
+                SELECT
                     id,
                     fecha,
+                    titulo,
                     descripcion,
                     horas,
                     created_at
-                FROM tareas 
+                FROM tareas
                 WHERE id_user = ?
                 ORDER BY fecha DESC, created_at DESC
             ");
@@ -532,14 +535,15 @@ class Tarea
 
             // Obtener tareas del mes específico
             $stmt = $this->db->prepare("
-                SELECT 
+                SELECT
                     id,
                     fecha,
+                    titulo,
                     descripcion,
                     horas,
                     created_at
-                FROM tareas 
-                WHERE id_user = ? 
+                FROM tareas
+                WHERE id_user = ?
                 AND fecha BETWEEN ? AND ?
                 ORDER BY fecha DESC, created_at DESC
             ");
@@ -811,14 +815,15 @@ class Tarea
 
             // Actualizar la tarea principal (solo campos esenciales)
             $stmt = $this->db->prepare("
-                UPDATE tareas 
-                SET fecha = ?, descripcion = ?, horas = ?, updated_at = CURDATE()
+                UPDATE tareas
+                SET fecha = ?, titulo = ?, descripcion = ?, horas = ?, updated_at = CURDATE()
                 WHERE id = ? AND id_user = ?
             ");
 
             $stmt->bind_param(
-                "ssdii",
+                "sssdii",
                 $data['fecha'],
+                $data['titulo'],
                 $data['descripcion'],
                 $data['horas'],
                 $data['id'],
@@ -1041,7 +1046,7 @@ class Tarea
     public function updateSingleField($taskId, $column, $value, $userId)
     {
         // Lista de columnas permitidas para actualización directa
-        $allowedColumns = ['fecha', 'descripcion', 'horas'];
+        $allowedColumns = ['fecha', 'titulo', 'descripcion', 'horas'];
         if (!in_array($column, $allowedColumns)) {
             return false;
         }

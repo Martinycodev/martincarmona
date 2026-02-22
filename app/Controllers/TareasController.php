@@ -87,6 +87,7 @@ class TareasController extends BaseController
 
                 $tareaData = [
                     'fecha' => $input['fecha'] ?? date('Y-m-d'),
+                    'titulo' => $input['titulo'] ?? '',
                     'descripcion' => $input['descripcion'] ?? '',
                     'trabajo' => intval($input['trabajo'] ?? 0),
                     'horas' => floatval($input['horas'] ?? 0)
@@ -115,6 +116,7 @@ class TareasController extends BaseController
 
                 // Validar tipos de datos
                 $tareaData['fecha'] = (string) $tareaData['fecha'];
+                $tareaData['titulo'] = (string) $tareaData['titulo'];
                 $tareaData['descripcion'] = (string) $tareaData['descripcion'];
                 $tareaData['trabajo'] = (int) $tareaData['trabajo'];
                 $tareaData['horas'] = (float) $tareaData['horas'];
@@ -168,6 +170,7 @@ class TareasController extends BaseController
         $userId = $_SESSION['user_id'];
         $tareaData = [
             'fecha'       => date('Y-m-d'),
+            'titulo'      => '',
             'descripcion' => '',
             'trabajo'     => 0,
             'horas'       => 0,
@@ -206,6 +209,7 @@ class TareasController extends BaseController
                 $tareaData = [
                     'id' => $input['id'] ?? 0,
                     'fecha' => $input['fecha'] ?? date('Y-m-d'),
+                    'titulo' => $input['titulo'] ?? '',
                     'descripcion' => $input['descripcion'] ?? '',
                     'horas' => $input['horas'] ?? 0
                 ];
@@ -325,14 +329,15 @@ class TareasController extends BaseController
         try {
             // Obtener la tarea principal
             $stmt = $this->db->prepare("
-                SELECT 
+                SELECT
                     id,
                     fecha,
+                    titulo,
                     descripcion,
                     horas,
                     created_at,
                     updated_at
-                FROM tareas 
+                FROM tareas
                 WHERE id = ? AND id_user = ?
             ");
             $stmt->bind_param("ii", $id, $userId);

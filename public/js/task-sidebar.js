@@ -94,13 +94,13 @@ class TaskSidebar {
     }
 
     _render(tarea) {
-        // ── Header: descripción ──────────────────────────────────────────────
-        const desc = document.getElementById('sidebar-description');
-        desc.textContent = tarea.descripcion || '';
-        desc.dataset.id  = tarea.id;
+        // ── Header: título ───────────────────────────────────────────────────
+        const titleEl = document.getElementById('sidebar-title');
+        titleEl.textContent = tarea.titulo || '';
+        titleEl.dataset.id  = tarea.id;
 
-        // ── Bind autoguardado en descripción ────────────────────────────────
-        desc.oninput = () => this._autoSave('descripcion', desc.innerText.trim());
+        // ── Bind autoguardado en título ──────────────────────────────────────
+        titleEl.oninput = () => this._autoSave('titulo', titleEl.innerText.trim());
 
         // ── Construir cuerpo ─────────────────────────────────────────────────
         const body = document.getElementById('sidebar-body');
@@ -108,6 +108,7 @@ class TaskSidebar {
 
         body.appendChild(this._buildFechaSection(tarea));
         body.appendChild(this._buildHorasSection(tarea));
+        body.appendChild(this._buildDescripcionSection(tarea));
         body.appendChild(document.createElement('hr')).className = 'sidebar-divider';
 
         body.appendChild(this._buildTrabajadoresSection(tarea));
@@ -146,6 +147,19 @@ class TaskSidebar {
             this._autoSaveImmediate('horas', input.value);
         });
         wrap.appendChild(input);
+        return wrap;
+    }
+
+    _buildDescripcionSection(tarea) {
+        const wrap = this._makeSectionEl('📝 Descripción', 'descripcion');
+        const ta = document.createElement('textarea');
+        ta.id          = 'sidebar-desc-textarea';
+        ta.className   = 'sidebar-desc-textarea';
+        ta.placeholder = 'Descripción detallada (opcional)...';
+        ta.rows        = 4;
+        ta.value       = tarea.descripcion || '';
+        ta.addEventListener('input', () => this._autoSave('descripcion', ta.value));
+        wrap.appendChild(ta);
         return wrap;
     }
 

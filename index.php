@@ -1,11 +1,19 @@
 <?php
 
-// Configuración de errores para desarrollo
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 // Definir la ruta base del proyecto
 define('BASE_PATH', __DIR__);
+
+// Cargar Composer y .env antes que nada (así config.php ya tiene acceso a $_ENV)
+require_once BASE_PATH . '/vendor/autoload.php';
+if (file_exists(BASE_PATH . '/.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(BASE_PATH);
+    $dotenv->load();
+}
+
+// Mostrar errores solo en desarrollo
+ini_set('display_errors', ($_ENV['APP_ENV'] ?? 'production') === 'development' ? 1 : 0);
 
 // Cargar configuración
 $config = require_once BASE_PATH . '/config/config.php';
@@ -169,7 +177,7 @@ $router->notFound(function () {
         <div class="container">
             <h1>404 - Página no encontrada</h1>
             <p>La página que buscas no existe.</p>
-            <a href="/martincarmona" class="btn">Volver al inicio</a>
+            <a href="<?php echo APP_BASE_PATH; ?>/" class="btn">Volver al inicio</a>
         </div>
     </body>
     </html>';

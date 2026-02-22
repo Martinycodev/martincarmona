@@ -5,48 +5,22 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
 
-# Configuración de seguridad básica (comentada durante desarrollo)
-# <Files "*.php">
-#     # Permitir acceso solo desde el servidor web
-#     Order Deny,Allow
-#     Deny from all
-#     Allow from 127.0.0.1
-#     Allow from ::1
-# </Files>
+# Denegar acceso directo a directorios sensibles
+RewriteRule ^(app|config|core|migrations|vendor)(/|$) - [F,L]
 
-# Permitir acceso a index.php
+# Bloquear acceso a archivos de configuración y entorno
+<FilesMatch "^(\.env|composer\.json|composer\.lock)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Bloquear acceso directo a archivos PHP salvo el punto de entrada
+<FilesMatch "\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
 <Files "index.php">
-    Order Allow,Deny
-    Allow from all
-</Files>
-
-# Permitir acceso a archivos de prueba durante desarrollo
-<Files "test.php">
-    Order Allow,Deny
-    Allow from all
-</Files>
-
-<Files "test_db.php">
-    Order Allow,Deny
-    Allow from all
-</Files>
-
-<Files "test_db_detailed.php">
-    Order Allow,Deny
-    Allow from all
-</Files>
-
-<Files "test_db_alternatives.php">
-    Order Allow,Deny
-    Allow from all
-</Files>
-
-<Files "test_password.php">
-    Order Allow,Deny
-    Allow from all
-</Files>
-
-<Files "create_user.php">
     Order Allow,Deny
     Allow from all
 </Files>

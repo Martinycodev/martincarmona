@@ -11,19 +11,6 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 
 ---
 
-## Seguridad Completada
-
-Estos ítems ya están implementados. Se listan para referencia.
-
-| Item | Implementación |
-|------|----------------|
-| ✅ Credenciales fuera del código | `.env` con `vlucas/phpdotenv`. `config/database.php` usa `$_ENV` |
-| ✅ Protección CSRF | `core/CsrfMiddleware.php`. Todos los POST lo validan. AJAX incluye `X-CSRF-TOKEN` |
-| ✅ Session Hardening | `config/session.php` con `SessionConfig`. Cookies `httponly`, `samesite=Lax`, timeout 2h, regeneración de ID cada 30min |
-| ✅ `session_start()` centralizado | Eliminado de los 12+ controladores. Solo se llama una vez desde `index.php` |
-
----
-
 ## Checklist de Objetivos Pendientes
 
 ---
@@ -52,6 +39,7 @@ Estos ítems ya están implementados. Se listan para referencia.
 - [ ] Crear tabla `cuentas_bancarias` (nombre, tipo, saldo\_actual)
   > Permite saber en cada momento cuánto dinero hay en banco vs efectivo
 
+
 **Backend:**
 
 - [ ] Crear `EconomiaController` con métodos:
@@ -73,7 +61,9 @@ Estos ítems ya están implementados. Se listan para referencia.
 
 - [ ] Calcular coste real de cada tarea: `horas × precio_hora_trabajo`
   > Ya existe `precios_trabajo` en BD. Conectar con el resumen económico
-- [ ] Mostrar coste acumulado por parcela en el módulo de parcelas
+- [ ] Mostrar coste acumulado por parcela en el módulo de parcelas.
+-  Valorar qué ocurre si este precio cambia.
+
 
 ---
 
@@ -196,14 +186,21 @@ Estos ítems ya están implementados. Se listan para referencia.
 
 ---
 
-## Documentos a eliminar
 
-Una vez confirmado que este ROADMAP los sustituye, los siguientes archivos pueden borrarse:
-
-| Archivo | Motivo |
-|---------|--------|
-| `Resumen_Estado_Web.md` | Superseded por este documento |
-| `Checklist_Objetivos_Pendientes.md` | Superseded por este documento |
-| `PROGRESO_SEGURIDAD.md` | La seguridad ya está completada; referencia innecesaria |
-| `QUICK_START_SEGURIDAD.md` | Guía de implementación ya ejecutada |
-| `MEJORAS_TECNICAS.md` | Guía técnica con código de ejemplo; útil como referencia pero no como checklist activo |
+## IDEAS SUELTAS
+- [ ] añadir imagen a cada trabajador y parcela como foto de perfil
+- [ ] Crear vista individual de trabajador, parcela, empresa, vehículo con información relevante de cada uno.
+- [ ] añadir una vista de "campaña" que muestre una visión general de la tarea de "recoger aceituna" separada por fechas que empiecen en noviembre poniendo "campaña 25/26" por ejemplo.
+- [ ] Añadir la opción de subir documentos a cada parcela (escritura y catastro), vehículos (documentación relevante).
+- [ ] Dar importancia a la economía de los trabajadores y servicios a empresas externas.
+- [ ] Añadir el campo "Alta en Seguridad social" para los trabajadores. y otro campo que sea "Cuadrilla" para añadirlo directamente en grupo a una tarea.
+- [ ] Mostrar trabajadores, vehículos, empresas en cajas en lugar de tabla. (ya que no van a ser muchos)
+- [ ] Valorar el concepto de Propietario, Empresa.
+- [ ] Crear el módulo de Riego, Inventario, Fitosanitarios, Herramientas y Proveedores.
+- [ ] Exportar cuentas de cada trabajador al final del mes.
+- [ ] Añadir la posibilidad de Tareas sin realizar que aparezcan en el calendario fechadas para preveerlas. Por ejemplo pasar itv, sabes la fecha pero aún no la has hecho.
+- [ ] Añadir la vista de enlaces de interes, en el footer por ejemplo.
+- [ ] Añadir tareas pendientes que aún no estén agendadas.
+- [ ] dar la posibilidad de hacer "drag and drop" con las tareas en el calendario.
+- [ ] eliminar el botón del ojo en las tablas sustituyendolo por el click encima del campo.
+ 

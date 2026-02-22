@@ -25,3 +25,9 @@ vendor/
 # Archivos de prueba
 test/
 test_*.php
+
+# Archivos subidos por usuarios (no van a git)
+public/uploads/*
+!public/uploads/.gitkeep
+public/uploads/tareas/*
+!public/uploads/tareas/.gitkeep
