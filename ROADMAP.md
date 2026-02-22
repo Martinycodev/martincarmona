@@ -188,14 +188,14 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 
 
 ## IDEAS SUELTAS
-- [ ] añadir imagen a cada trabajador y parcela como foto de perfil
+- [ ] añadir imagen a cada trabajador como foto de perfil.
+- [ ] Añadir el campo "Alta en Seguridad social" para los trabajadores. y otro campo que sea "Cuadrilla" para añadirlo directamente en grupo a una tarea.
 - [ ] Crear vista individual de trabajador, parcela, empresa, vehículo con información relevante de cada uno.
 - [ ] añadir una vista de "campaña" que muestre una visión general de la tarea de "recoger aceituna" separada por fechas que empiecen en noviembre poniendo "campaña 25/26" por ejemplo.
 - [ ] Añadir la opción de subir documentos a cada parcela (escritura y catastro), vehículos (documentación relevante).
 - [ ] Dar importancia a la economía de los trabajadores y servicios a empresas externas.
-- [ ] Añadir el campo "Alta en Seguridad social" para los trabajadores. y otro campo que sea "Cuadrilla" para añadirlo directamente en grupo a una tarea.
 - [ ] Mostrar trabajadores, vehículos, empresas en cajas en lugar de tabla. (ya que no van a ser muchos)
-- [ ] Valorar el concepto de Propietario, Empresa.
+- [ ] Valorar la diferencia entre el concepto de Propietario, Empresa.
 - [ ] Crear el módulo de Riego, Inventario, Fitosanitarios, Herramientas y Proveedores.
 - [ ] Exportar cuentas de cada trabajador al final del mes.
 - [ ] Añadir la posibilidad de Tareas sin realizar que aparezcan en el calendario fechadas para preveerlas. Por ejemplo pasar itv, sabes la fecha pero aún no la has hecho.

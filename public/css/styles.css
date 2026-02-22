@@ -4426,6 +4426,22 @@ textarea {
 
 .sidebar-btn-add:hover { background: #226e38; }
 
+/* Botón cuadrilla en sidebar */
+.sidebar-cuadrilla-btn {
+    margin-top: 8px;
+    background: #17a2b8;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    width: 100%;
+    text-align: center;
+}
+.sidebar-cuadrilla-btn:hover { background: #138496; }
+
 /* Separador entre secciones */
 .sidebar-divider {
     border: none;

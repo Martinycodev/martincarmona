@@ -673,6 +673,67 @@ class TareasController extends BaseController
     }
 
     /**
+     * Asigna todos los trabajadores de la cuadrilla a una tarea de una vez
+     * Recibe: { tarea_id }
+     */
+    public function asignarCuadrilla()
+    {
+        header('Content-Type: application/json');
+        $this->validateCsrf();
+        $userId = $_SESSION['user_id'];
+        $input  = json_decode(file_get_contents('php://input'), true);
+
+        $tareaId = intval($input['tarea_id'] ?? 0);
+        if (!$tareaId) {
+            echo json_encode(['success' => false, 'message' => 'ID de tarea no válido']);
+            return;
+        }
+
+        // Verificar que la tarea pertenece al usuario
+        $stmt = $this->db->prepare("SELECT horas FROM tareas WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $tareaId, $userId);
+        $stmt->execute();
+        $tarea = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$tarea) {
+            echo json_encode(['success' => false, 'message' => 'Tarea no encontrada']);
+            return;
+        }
+
+        // Obtener todos los trabajadores de la cuadrilla
+        $stmt = $this->db->prepare("SELECT id, nombre FROM trabajadores WHERE cuadrilla = 1 AND id_user = ?");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result       = $stmt->get_result();
+        $cuadrilla    = [];
+        while ($row = $result->fetch_assoc()) {
+            $cuadrilla[] = $row;
+        }
+        $stmt->close();
+
+        if (empty($cuadrilla)) {
+            echo json_encode(['success' => false, 'message' => 'No hay trabajadores en la cuadrilla']);
+            return;
+        }
+
+        $added   = 0;
+        $skipped = 0;
+        foreach ($cuadrilla as $trabajador) {
+            $ok = $this->tareaModel->agregarTrabajador($tareaId, $trabajador['id'], $tarea['horas']);
+            $ok ? $added++ : $skipped++;
+        }
+
+        $nombres = array_column($cuadrilla, 'nombre');
+        echo json_encode([
+            'success'  => true,
+            'message'  => "$added trabajador(es) añadido(s)" . ($skipped ? ", $skipped ya estaban asignados" : ''),
+            'nombres'  => $nombres,
+            'added'    => $added,
+        ]);
+    }
+
+    /**
      * Añade una parcela a una tarea (desde el modal de detalle)
      * Recibe: { tarea_id, parcela_id }
      */

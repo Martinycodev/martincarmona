@@ -101,6 +101,7 @@ $router->get('/economia/obtenerResumen', 'EconomiaController@obtenerResumen');
 // Rutas para edición inline de relaciones en el modal de tareas
 $router->post('/tareas/agregarTrabajador', 'TareasController@agregarTrabajador');
 $router->post('/tareas/quitarTrabajador', 'TareasController@quitarTrabajador');
+$router->post('/tareas/asignarCuadrilla', 'TareasController@asignarCuadrilla');
 $router->post('/tareas/agregarParcela', 'TareasController@agregarParcela');
 $router->post('/tareas/quitarParcela', 'TareasController@quitarParcela');
 $router->post('/tareas/cambiarTrabajo', 'TareasController@cambiarTrabajo');
@@ -119,6 +120,8 @@ $router->post('/trabajadores/crear', 'TrabajadoresController@crear');
 $router->get('/trabajadores/obtener', 'TrabajadoresController@obtener');
 $router->post('/trabajadores/actualizar', 'TrabajadoresController@actualizar');
 $router->post('/trabajadores/eliminar', 'TrabajadoresController@eliminar');
+$router->post('/trabajadores/subirFoto', 'TrabajadoresController@subirFoto');
+$router->get('/trabajadores/cuadrilla', 'TrabajadoresController@obtenerCuadrilla');
 
 // Rutas para datos detallados de trabajadores
 $router->get('/datos/trabajadores', 'DatosTrabajadoresController@index');

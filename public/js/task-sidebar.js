@@ -178,9 +178,44 @@ class TaskSidebar {
             () => this._agregarTrabajador(tags)
         );
 
+        // Botón "Añadir cuadrilla"
+        const cuadrillaBtn = document.createElement('button');
+        cuadrillaBtn.type      = 'button';
+        cuadrillaBtn.className = 'sidebar-cuadrilla-btn';
+        cuadrillaBtn.title     = 'Añadir toda la cuadrilla a esta tarea';
+        cuadrillaBtn.innerHTML = '👷 Añadir cuadrilla';
+        cuadrillaBtn.addEventListener('click', () => this._asignarCuadrilla(tags));
+
         wrap.appendChild(tags);
         wrap.appendChild(addRow);
+        wrap.appendChild(cuadrillaBtn);
         return wrap;
+    }
+
+    async _asignarCuadrilla(tagsContainer) {
+        try {
+            const res  = await fetch(buildUrl('/tareas/asignarCuadrilla'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ tarea_id: this.taskId })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast(data.message, 'success');
+                // Recargar los tags de trabajadores
+                await this._reloadTrabajadores(tagsContainer);
+                this._markSaved('trabajadores');
+                window.needsReload = true;
+            } else {
+                showToast(data.message || 'Error al asignar cuadrilla', 'error');
+            }
+        } catch (e) {
+            showToast('Error de conexión', 'error');
+        }
     }
 
     _buildParcelasSection(tarea) {
