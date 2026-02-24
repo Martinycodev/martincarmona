@@ -23,6 +23,28 @@ define('APP_BASE_PATH', $config['base_path']);
 require_once BASE_PATH . '/config/session.php';
 SessionConfig::configure();
 
+// Restaurar sesión desde cookie "Recuérdame" si existe y no hay sesión activa
+if (!isset($_SESSION['user_id']) && isset($_COOKIE['user_id'])) {
+    require_once BASE_PATH . '/config/database.php';
+    $userId = (int) $_COOKIE['user_id'];
+    try {
+        $db = \Database::connect();
+        $stmt = $db->prepare("SELECT id, name, email FROM usuarios WHERE id = ?");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_email'] = $user['email'];
+        }
+        $stmt->close();
+    } catch (\Throwable $e) {
+        error_log("Error restaurando sesión desde cookie: " . $e->getMessage());
+    }
+}
+
 // Cargar el autoloader
 require_once BASE_PATH . '/core/Autoloader.php';
 

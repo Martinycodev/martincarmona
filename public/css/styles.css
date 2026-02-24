@@ -536,11 +536,26 @@ body {
     font-weight: bold;
     word-wrap: break-word;
     line-height: 1.2;
+    cursor: grab;
 }
 
 .task:hover {
     background-color: #45a049;
     transform: scale(1.02);
+}
+
+/* Drag & Drop */
+.task.dragging {
+    opacity: 0.35;
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+.day.drag-over {
+    background-color: #1a3a1a;
+    border-color: #4CAF50;
+    border-style: dashed;
+    border-width: 2px;
 }
 
 .today {

@@ -160,14 +160,14 @@ $title = 'Datos - MartinCarmona.com';
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isToday = dateStr === new Date().toISOString().split('T')[0];
 
-            let dayHTML = `<div class="day ${isToday ? 'today' : ''}" style="position: relative;">
+            let dayHTML = `<div class="day ${isToday ? 'today' : ''}" data-date="${dateStr}" style="position: relative;">
                     <div class="day-number">${day}</div>
                     <button class="add-task-btn" onclick="window.taskSidebar && window.taskSidebar.open()" title="Nueva tarea">+</button>`;
 
             if (tasksData[dateStr]) {
                 tasksData[dateStr].forEach((tarea, index) => {
                     const displayText = tarea.trabajo_nombre || tarea.descripcion || 'Sin descripción';
-                    dayHTML += `<div class="task" onclick="window.taskSidebar && window.taskSidebar.open(${tarea.id})" title="${tarea.descripcion || ''}">${displayText.length > 20 ? displayText.substring(0, 20) + '...' : displayText}</div>`;
+                    dayHTML += `<div class="task" draggable="true" data-id="${tarea.id}" data-fecha="${dateStr}" onclick="window.taskSidebar && window.taskSidebar.open(${tarea.id})" title="${tarea.descripcion || ''}">${displayText.length > 20 ? displayText.substring(0, 20) + '...' : displayText}</div>`;
                 });
             }
 
@@ -215,9 +215,94 @@ $title = 'Datos - MartinCarmona.com';
         }
     }
 
+    // ── Drag & Drop ────────────────────────────────────────────────────────────
+    let _dragTareaId   = null;
+    let _dragFechaOrig = null;
+
+    function initDragDrop() {
+        const calendar = document.getElementById('calendar');
+
+        calendar.addEventListener('dragstart', function (e) {
+            const task = e.target.closest('.task[draggable]');
+            if (!task) return;
+            _dragTareaId   = task.dataset.id;
+            _dragFechaOrig = task.dataset.fecha;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', _dragTareaId);
+            setTimeout(() => task.classList.add('dragging'), 0);
+        });
+
+        calendar.addEventListener('dragend', function (e) {
+            const task = e.target.closest('.task');
+            if (task) task.classList.remove('dragging');
+            calendar.querySelectorAll('.day.drag-over').forEach(d => d.classList.remove('drag-over'));
+        });
+
+        calendar.addEventListener('dragover', function (e) {
+            const day = e.target.closest('.day');
+            if (!day || day.classList.contains('other-month')) return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            calendar.querySelectorAll('.day.drag-over').forEach(d => d.classList.remove('drag-over'));
+            day.classList.add('drag-over');
+        });
+
+        calendar.addEventListener('dragleave', function (e) {
+            const day = e.target.closest('.day');
+            if (day && !day.contains(e.relatedTarget)) {
+                day.classList.remove('drag-over');
+            }
+        });
+
+        calendar.addEventListener('drop', async function (e) {
+            e.preventDefault();
+            const day = e.target.closest('.day');
+            calendar.querySelectorAll('.day.drag-over').forEach(d => d.classList.remove('drag-over'));
+
+            if (!day || day.classList.contains('other-month') || !_dragTareaId) return;
+
+            const newDate  = day.dataset.date;
+            const tareaId  = _dragTareaId;
+            const oldDate  = _dragFechaOrig;
+
+            if (!newDate || newDate === oldDate) return;
+
+            try {
+                const res = await fetch('<?= $this->url("/tareas/actualizarCampo") ?>', {
+                    method:  'POST',
+                    headers: {
+                        'Content-Type':     'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ id: tareaId, campo: 'fecha', valor: newDate })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    // Invalidar cache de los meses afectados
+                    tareasCache.delete(oldDate.substring(0, 7));
+                    tareasCache.delete(newDate.substring(0, 7));
+                    await cargarYRenderizarCalendario();
+                } else {
+                    console.error('Error al mover tarea:', data.message);
+                }
+            } catch (err) {
+                console.error('Error en drag & drop:', err);
+            }
+        });
+    }
+    // ───────────────────────────────────────────────────────────────────────────
+
+    // Exponer para que el sidebar pueda refrescar sin recargar la página
+    window.refreshCalendar = async function() {
+        tareasCache.clear();
+        await cargarYRenderizarCalendario();
+    };
+
     // Inicializar el calendario con datos del mes actual
     document.addEventListener('DOMContentLoaded', async function () {
         await cargarYRenderizarCalendario();
+        initDragDrop();
     });
 
 

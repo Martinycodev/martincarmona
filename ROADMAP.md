@@ -69,22 +69,6 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 
 ### PRIORIDAD MEDIA
 
----
-
-#### Base de Datos — Correcciones y Optimización
-
-> **Motivo:** Hay errores de tipo de datos heredados del diseño inicial que pueden causar fallos al guardar nombres o DNIs largos. Los índices ausentes hacen que las búsquedas sean lentas a medida que crece la cantidad de datos.
-
-- [ ] `ALTER TABLE empresas MODIFY nombre VARCHAR(255)` (actualmente es INT — error de diseño)
-- [ ] `ALTER TABLE empresas MODIFY dni VARCHAR(20)` (mismo motivo)
-- [ ] Añadir índices en columnas de búsqueda frecuente:
-  - [ ] `CREATE INDEX idx_tareas_fecha ON tareas(fecha)`
-  - [ ] `CREATE INDEX idx_tarea_trabajadores_trabajador ON tarea_trabajadores(trabajador_id)`
-  - [ ] `CREATE INDEX idx_parcelas_propietario ON parcelas(propietario)`
-  - [ ] `CREATE INDEX idx_movimientos_fecha ON movimientos(fecha)`
-- [ ] Revisar si faltan `timestamps` (`created_at`, `updated_at`) en tablas principales
-
----
 
 #### Arquitectura Backend — Limpieza de Deuda Técnica
 
@@ -179,7 +163,6 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 ## Criterios de Calidad
 
 - [ ] Todos los formularios POST validan y sanitizan inputs
-- [ ] No hay credenciales en el código fuente (solo en `.env`)
 - [ ] Tiempo de respuesta < 2 segundos en operaciones normales
 - [ ] La aplicación es usable en móvil (uso en campo)
 - [ ] Un cambio de código no rompe funcionalidad existente (tests)
@@ -201,6 +184,6 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 - [ ] Añadir la posibilidad de Tareas sin realizar que aparezcan en el calendario fechadas para preveerlas. Por ejemplo pasar itv, sabes la fecha pero aún no la has hecho.
 - [ ] Añadir la vista de enlaces de interes, en el footer por ejemplo.
 - [ ] Añadir tareas pendientes que aún no estén agendadas.
-- [ ] dar la posibilidad de hacer "drag and drop" con las tareas en el calendario.
+
 - [ ] eliminar el botón del ojo en las tablas sustituyendolo por el click encima del campo.
  

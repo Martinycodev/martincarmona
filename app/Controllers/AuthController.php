@@ -6,31 +6,6 @@ require_once BASE_PATH . '/config/database.php';
 
 class AuthController extends BaseController
 {
-    public function __construct()
-    {
-        // Restaurar sesión desde cookie si existe y no hay sesión activa
-        // (la sesión ya está iniciada por SessionConfig::configure() en index.php)
-        if (!isset($_SESSION['user_id']) && isset($_COOKIE['user_id'])) {
-            $userId = $_COOKIE['user_id'];
-            try {
-                $db = \Database::connect();
-                $stmt = $db->prepare("SELECT id, name, email FROM usuarios WHERE id = ?");
-                $stmt->bind_param("i", $userId);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                if ($result->num_rows === 1) {
-                    $user = $result->fetch_assoc();
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['user_name'] = $user['name'];
-                    $_SESSION['user_email'] = $user['email'];
-                }
-                $stmt->close();
-                $db->close();
-            } catch (\Exception $e) {
-                error_log("Error restaurando sesión desde cookie: " . $e->getMessage());
-            }
-        }
-    }
     public function login()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -94,16 +69,14 @@ class AuthController extends BaseController
                 // Verificar contraseña (hash bcrypt)
                 if (password_verify($password, $user['password'])) {
                     $stmt->close();
-                    $db->close();
                     return $user;
                 }
             }
-            
+
             $stmt->close();
-            $db->close();
             return false;
-            
-        } catch (\Exception $e) {
+
+        } catch (\Throwable $e) {
             error_log("Error en autenticación: " . $e->getMessage());
             return false;
         }

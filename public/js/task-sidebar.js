@@ -52,7 +52,11 @@ class TaskSidebar {
         this._hide();
         if (window.needsReload) {
             window.needsReload = false;
-            window.location.reload();
+            if (typeof window.refreshCalendar === 'function') {
+                window.refreshCalendar();
+            } else {
+                window.location.reload();
+            }
         }
     }
 
