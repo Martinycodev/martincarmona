@@ -216,6 +216,4 @@ class Trabajo
             return [];
         }
     }
-    
-    }
 }

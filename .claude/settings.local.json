@@ -7,7 +7,17 @@
       "Bash(grep:*)",
       "Bash(/c/xampp/mysql/bin/mysql.exe:*)",
       "Bash(tasklist:*)",
-      "Bash(/c/xampp/mysql/bin/mysqladmin.exe:*)"
+      "Bash(/c/xampp/mysql/bin/mysqladmin.exe:*)",
+      "Bash(php -l app/Models/Tarea.php)",
+      "Bash(php -l app/Models/Empresa.php)",
+      "Bash(php -l app/Models/Proveedor.php)",
+      "Bash(php -l app/Models/Trabajo.php)",
+      "Bash(php -l app/Models/Herramienta.php)",
+      "Bash(php -l app/Models/Trabajador.php)",
+      "Bash(php -l app/Models/Vehiculo.php)",
+      "Bash(php -l app/Models/Parcela.php)",
+      "Bash(php -l app/Models/Movimiento.php)",
+      "Bash(php -l app/Models/PagoMensual.php)"
     ]
   }
 }

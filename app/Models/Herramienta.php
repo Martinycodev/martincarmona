@@ -295,6 +295,4 @@ class Herramienta
             return [];
         }
     }
-    
-    }
 }

@@ -1078,8 +1078,6 @@ class Tarea
         }
     }
 
-    }
-
     /**
      * Cargar datos relacionados para tareas paginadas
      */
