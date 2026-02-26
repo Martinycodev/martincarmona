@@ -38,16 +38,16 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 > Motor financiero de la aplicación. Sin él no se puede controlar deudas de trabajadores ni calcular rentabilidad.
 
 **Base de datos:**
-- [ ] Añadir campo `cuenta` ENUM('banco','efectivo') a tabla `movimientos`
-- [ ] Crear tabla `pagos_mensuales_trabajadores` (trabajador_id, mes, año, importe_total, pagado, fecha_pago)
+- [x] Añadir campo `cuenta` ENUM('banco','efectivo') a tabla `movimientos`
+- [x] Crear tabla `pagos_mensuales_trabajadores` (trabajador_id, mes, año, importe_total, pagado, fecha_pago)
 
 **Backend — `EconomiaController`:**
-- [ ] `index()` — Dashboard financiero: saldo banco, saldo efectivo, deuda total trabajadores
-- [ ] `gastos()` — CRUD de gastos con categoría (compras, reparaciones, inversiones, seguros, impuestos, gestoría) y cuenta (banco/efectivo)
-- [ ] `ingresos()` — CRUD de ingresos con categoría (labores a terceros, subvenciones, liquidación aceite) y cuenta
-- [ ] `deudas_trabajadores()` — Deuda acumulada por trabajador (suma de tareas del mes)
-- [ ] `cerrar_mes()` — Genera registro mensual de deuda por trabajador y lo marca como pendiente de pago
-- [ ] `registrar_pago()` — Marca el pago mensual como pagado, deuda → cero
+- [x] `index()` — Dashboard financiero: saldo banco, saldo efectivo, deuda total trabajadores
+- [x] `gastos()` — CRUD de gastos con categoría (compras, reparaciones, inversiones, seguros, impuestos, gestoría) y cuenta (banco/efectivo)
+- [x] `ingresos()` — CRUD de ingresos con categoría (labores a terceros, subvenciones, liquidación aceite) y cuenta
+- [x] `deudas_trabajadores()` — Deuda acumulada por trabajador (suma de tareas del mes)
+- [x] `cerrar_mes()` — Genera registro mensual de deuda por trabajador y lo marca como pendiente de pago
+- [x] `registrar_pago()` — Marca el pago mensual como pagado, deuda → cero
 
 **Integración con tareas:**
 - [ ] Calcular coste real al crear tarea: `horas_asignadas × precio_hora_trabajo` → acumular en deuda del trabajador

@@ -3,193 +3,263 @@
 namespace App\Controllers;
 
 use App\Models\Movimiento;
+use App\Models\PagoMensual;
 use App\Models\Proveedor;
 use App\Models\Trabajador;
 use App\Models\Vehiculo;
 use App\Models\Parcela;
 
-class EconomiaController extends BaseController {
-    private $movimientoModel;
-    private $proveedorModel;
-    private $trabajadorModel;
-    private $vehiculoModel;
-    private $parcelaModel;
-    
-    public function __construct() {
-        // Verificar autenticación
+class EconomiaController extends BaseController
+{
+    private Movimiento  $movimiento;
+    private PagoMensual $pagoMensual;
+    private Proveedor   $proveedor;
+    private Trabajador  $trabajador;
+    private Vehiculo    $vehiculo;
+    private Parcela     $parcela;
+
+    public function __construct()
+    {
         if (!isset($_SESSION['user_id'])) {
             $this->redirect('/');
             return;
         }
-        
-        $this->movimientoModel = new Movimiento();
-        $this->proveedorModel = new Proveedor();
-        $this->trabajadorModel = new Trabajador();
-        $this->vehiculoModel = new Vehiculo();
-        $this->parcelaModel = new Parcela();
+
+        $this->movimiento  = new Movimiento();
+        $this->pagoMensual = new PagoMensual();
+        $this->proveedor   = new Proveedor();
+        $this->trabajador  = new Trabajador();
+        $this->vehiculo    = new Vehiculo();
+        $this->parcela     = new Parcela();
     }
-    
-    private function getUserId() {
-        return $_SESSION['user_id'];
+
+    private function userId(): int
+    {
+        return (int) $_SESSION['user_id'];
     }
-    
-    public function index() {
-        $resumen = $this->movimientoModel->getResumenFinanciero();
-        $movimientosRecientes = $this->movimientoModel->getMovimientosRecientes(20);
-        $movimientosPorCategoria = $this->movimientoModel->getMovimientosPorCategoria();
-        
+
+    private function userName(): string
+    {
+        return $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'Usuario';
+    }
+
+    private function user(): array
+    {
+        return ['id' => $this->userId(), 'name' => $this->userName()];
+    }
+
+    // ─── Vistas ───────────────────────────────────────────────────────────────
+
+    /**
+     * Dashboard: saldo banco, saldo efectivo, deuda total trabajadores
+     */
+    public function index(): void
+    {
+        $resumen        = $this->movimiento->getResumen();
+        $deudaPendiente = $this->pagoMensual->getTotalPendiente($this->userId());
+        $ultimosGastos  = array_slice($this->movimiento->getAllGastos(), 0, 5);
+        $ultimosIngresos = array_slice($this->movimiento->getAllIngresos(), 0, 5);
+
         $this->render('economia/index', [
-            'resumen' => $resumen,
-            'movimientosRecientes' => $movimientosRecientes,
-            'movimientosPorCategoria' => $movimientosPorCategoria,
-            'user' => [
-                'id' => $_SESSION['user_id'],
-                'name' => $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'Usuario'
-            ]
+            'title'          => 'Economía — Dashboard',
+            'user'           => $this->user(),
+            'resumen'        => $resumen,
+            'deudaPendiente' => $deudaPendiente,
+            'ultimosGastos'  => $ultimosGastos,
+            'ultimosIngresos' => $ultimosIngresos,
         ]);
     }
-    
-    public function crear() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->validateCsrf();
 
-            try {
-                $data = [
-                    'fecha' => $_POST['fecha'],
-                    'tipo' => $_POST['tipo'],
-                    'concepto' => $_POST['concepto'],
-                    'categoria' => $_POST['categoria'],
-                    'importe' => $_POST['importe'],
-                    'proveedor_id' => !empty($_POST['proveedor_id']) ? $_POST['proveedor_id'] : null,
-                    'trabajador_id' => !empty($_POST['trabajador_id']) ? $_POST['trabajador_id'] : null,
-                    'vehiculo_id' => !empty($_POST['vehiculo_id']) ? $_POST['vehiculo_id'] : null,
-                    'parcela_id' => !empty($_POST['parcela_id']) ? $_POST['parcela_id'] : null,
-                    'estado' => $_POST['estado']
-                ];
-                
-                // Log para depuración
-                error_log("Datos del movimiento: " . json_encode($data));
-                
-                $result = $this->movimientoModel->create($data);
-                
-                if ($result) {
-                    header('Content-Type: application/json');
-                    echo json_encode(['success' => true, 'message' => 'Movimiento creado correctamente']);
-                } else {
-                    header('Content-Type: application/json');
-                    http_response_code(500);
-                    echo json_encode(['success' => false, 'message' => 'Error al crear el movimiento']);
-                }
-            } catch (\Exception $e) {
-                error_log("Error en crear movimiento: " . $e->getMessage());
-                header('Content-Type: application/json');
-                http_response_code(500);
-                echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
-            }
-        }
-    }
-    
-    public function editar() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->validateCsrf();
+    /**
+     * CRUD de gastos
+     */
+    public function gastos(): void
+    {
+        $gastos      = $this->movimiento->getAllGastos();
+        $proveedores = $this->proveedor->getAll($this->userId());
+        $vehiculos   = $this->vehiculo->getAll($this->userId());
+        $parcelas    = $this->parcela->getAll($this->userId());
 
-            $id = $_POST['id'];
-            $data = [
-                'fecha' => $_POST['fecha'],
-                'tipo' => $_POST['tipo'],
-                'concepto' => $_POST['concepto'],
-                'categoria' => $_POST['categoria'],
-                'importe' => $_POST['importe'],
-                'proveedor_id' => !empty($_POST['proveedor_id']) ? $_POST['proveedor_id'] : null,
-                'trabajador_id' => !empty($_POST['trabajador_id']) ? $_POST['trabajador_id'] : null,
-                'vehiculo_id' => !empty($_POST['vehiculo_id']) ? $_POST['vehiculo_id'] : null,
-                'parcela_id' => !empty($_POST['parcela_id']) ? $_POST['parcela_id'] : null,
-                'estado' => $_POST['estado']
-            ];
-            
-            if ($this->movimientoModel->update($id, $data)) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => true, 'message' => 'Movimiento actualizado correctamente']);
-            } else {
-                header('Content-Type: application/json');
-                http_response_code(500);
-                echo json_encode(['success' => false, 'message' => 'Error al actualizar el movimiento']);
-            }
-        }
+        $this->render('economia/gastos', [
+            'title'      => 'Economía — Gastos',
+            'user'       => $this->user(),
+            'gastos'     => $gastos,
+            'proveedores'=> $proveedores,
+            'vehiculos'  => $vehiculos,
+            'parcelas'   => $parcelas,
+            'categorias' => Movimiento::CATEGORIAS_GASTO,
+            'labels'     => Movimiento::LABELS_CATEGORIA,
+        ]);
     }
-    
-    public function eliminar() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->validateCsrf();
 
-            $id = $_POST['id'];
-            
-            if ($this->movimientoModel->delete($id)) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => true, 'message' => 'Movimiento eliminado correctamente']);
-            } else {
-                header('Content-Type: application/json');
-                http_response_code(500);
-                echo json_encode(['success' => false, 'message' => 'Error al eliminar el movimiento']);
-            }
-        }
+    /**
+     * CRUD de ingresos
+     */
+    public function ingresos(): void
+    {
+        $ingresos = $this->movimiento->getAllIngresos();
+
+        $this->render('economia/ingresos', [
+            'title'      => 'Economía — Ingresos',
+            'user'       => $this->user(),
+            'ingresos'   => $ingresos,
+            'categorias' => Movimiento::CATEGORIAS_INGRESO,
+            'labels'     => Movimiento::LABELS_CATEGORIA,
+        ]);
     }
-    
-    public function obtener() {
-        $id = $_GET['id'] ?? null;
-        
-        if ($id) {
-            $movimiento = $this->movimientoModel->getById($id);
-            header('Content-Type: application/json');
-            echo json_encode(['success' => true, 'data' => $movimiento]);
+
+    /**
+     * Deuda acumulada por trabajador (mes actual) + historial de pagos mensuales
+     */
+    public function deudas_trabajadores(): void
+    {
+        $deudaMesActual = $this->pagoMensual->getDeudaMesActual($this->userId());
+        $pagosPendientes = $this->pagoMensual->getPendientes($this->userId());
+        $todosLosPagos   = $this->pagoMensual->getAll($this->userId());
+
+        $this->render('economia/deudas', [
+            'title'          => 'Economía — Deudas trabajadores',
+            'user'           => $this->user(),
+            'deudaMesActual' => $deudaMesActual,
+            'pagosPendientes'=> $pagosPendientes,
+            'todosLosPagos'  => $todosLosPagos,
+            'mesActual'      => (int) date('n'),
+            'anioActual'     => (int) date('Y'),
+        ]);
+    }
+
+    // ─── API JSON ─────────────────────────────────────────────────────────────
+
+    public function crear(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+        $this->validateCsrf();
+
+        $data = $this->extractMovimientoData($_POST);
+
+        if ($this->movimiento->create($data)) {
+            $this->json(['success' => true, 'message' => 'Guardado correctamente']);
         } else {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'ID no proporcionado']);
+            http_response_code(500);
+            $this->json(['success' => false, 'message' => 'Error al guardar']);
         }
     }
-    
-    public function buscar() {
-        $query = $_GET['q'] ?? '';
-        
-        if (strlen($query) >= 2) {
-            $resultados = $this->movimientoModel->buscar($query);
-            header('Content-Type: application/json');
-            echo json_encode(['success' => true, 'data' => $resultados]);
+
+    public function editar(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+        $this->validateCsrf();
+
+        $id   = (int) ($_POST['id'] ?? 0);
+        $data = $this->extractMovimientoData($_POST);
+
+        if ($this->movimiento->update($id, $data)) {
+            $this->json(['success' => true, 'message' => 'Actualizado correctamente']);
         } else {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Término de búsqueda muy corto']);
+            http_response_code(500);
+            $this->json(['success' => false, 'message' => 'Error al actualizar']);
         }
     }
-    
-    public function obtenerProveedores() {
-        $proveedores = $this->proveedorModel->getAll($this->getUserId());
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'data' => $proveedores]);
+
+    public function eliminar(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+        $this->validateCsrf();
+
+        $id = (int) ($_POST['id'] ?? 0);
+
+        if ($this->movimiento->delete($id)) {
+            $this->json(['success' => true, 'message' => 'Eliminado correctamente']);
+        } else {
+            http_response_code(500);
+            $this->json(['success' => false, 'message' => 'Error al eliminar']);
+        }
     }
-    
-    public function obtenerTrabajadores() {
-        $trabajadores = $this->trabajadorModel->getAll($this->getUserId());
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'data' => $trabajadores]);
+
+    public function obtener(): void
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+        $row = $this->movimiento->getById($id);
+
+        if ($row) {
+            $this->json(['success' => true, 'data' => $row]);
+        } else {
+            http_response_code(404);
+            $this->json(['success' => false, 'message' => 'No encontrado']);
+        }
     }
-    
-    public function obtenerVehiculos() {
-        $vehiculos = $this->vehiculoModel->getAll($this->getUserId());
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'data' => $vehiculos]);
+
+    /**
+     * Cerrar mes: genera registros en pagos_mensuales_trabajadores para el mes/año dado
+     */
+    public function cerrar_mes(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+        $this->validateCsrf();
+
+        $month = (int) ($_POST['month'] ?? date('n'));
+        $year  = (int) ($_POST['year']  ?? date('Y'));
+
+        $trabajadores = $this->pagoMensual->calcularDeudaMes($month, $year, $this->userId());
+
+        if (empty($trabajadores)) {
+            $this->json(['success' => false, 'message' => 'No hay tareas con coste en ese mes']);
+            return;
+        }
+
+        $creados = 0;
+        foreach ($trabajadores as $t) {
+            $ok = $this->pagoMensual->upsert(
+                $t['trabajador_id'],
+                $month,
+                $year,
+                $t['deuda_calculada'],
+                $this->userId()
+            );
+            if ($ok) $creados++;
+        }
+
+        $this->json([
+            'success' => true,
+            'message' => "Mes cerrado: {$creados} registro(s) generado(s)",
+        ]);
     }
-    
-    public function obtenerParcelas() {
-        $parcelas = $this->parcelaModel->getAll($this->getUserId());
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'data' => $parcelas]);
+
+    /**
+     * Registrar pago: marca un pago mensual como pagado
+     */
+    public function registrar_pago(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+        $this->validateCsrf();
+
+        $id        = (int) ($_POST['id'] ?? 0);
+        $fechaPago = $_POST['fecha_pago'] ?? date('Y-m-d');
+
+        if ($this->pagoMensual->marcarPagado($id, $fechaPago)) {
+            $this->json(['success' => true, 'message' => 'Pago registrado correctamente']);
+        } else {
+            http_response_code(500);
+            $this->json(['success' => false, 'message' => 'Error al registrar el pago']);
+        }
     }
-    
-    public function obtenerResumen() {
-        $resumen = $this->movimientoModel->getResumenFinanciero();
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'data' => $resumen]);
+
+    // ─── Helper privado ───────────────────────────────────────────────────────
+
+    private function extractMovimientoData(array $post): array
+    {
+        return [
+            'fecha'        => $post['fecha']        ?? date('Y-m-d'),
+            'tipo'         => $post['tipo']          ?? 'gasto',
+            'concepto'     => htmlspecialchars(trim($post['concepto'] ?? '')),
+            'categoria'    => $post['categoria']     ?? 'otros',
+            'importe'      => (float) ($post['importe'] ?? 0),
+            'cuenta'       => in_array($post['cuenta'] ?? '', ['banco', 'efectivo']) ? $post['cuenta'] : 'banco',
+            'proveedor_id' => !empty($post['proveedor_id'])  ? (int) $post['proveedor_id']  : null,
+            'trabajador_id'=> !empty($post['trabajador_id']) ? (int) $post['trabajador_id'] : null,
+            'vehiculo_id'  => !empty($post['vehiculo_id'])   ? (int) $post['vehiculo_id']   : null,
+            'parcela_id'   => !empty($post['parcela_id'])    ? (int) $post['parcela_id']    : null,
+            'estado'       => in_array($post['estado'] ?? '', ['pendiente', 'pagado']) ? $post['estado'] : 'pendiente',
+        ];
     }
 }

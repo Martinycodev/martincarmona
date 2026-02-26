@@ -108,17 +108,16 @@ $router->get('/reportes/recursos', 'ReportesController@recursos');
 $router->get('/reportes/proveedores', 'ReportesController@proveedores');
 
 // Rutas para economía
-$router->get('/economia', 'EconomiaController@index');
-$router->post('/economia/crear', 'EconomiaController@crear');
-$router->post('/economia/editar', 'EconomiaController@editar');
-$router->post('/economia/eliminar', 'EconomiaController@eliminar');
-$router->get('/economia/obtener', 'EconomiaController@obtener');
-$router->get('/economia/buscar', 'EconomiaController@buscar');
-$router->get('/economia/obtenerProveedores', 'EconomiaController@obtenerProveedores');
-$router->get('/economia/obtenerTrabajadores', 'EconomiaController@obtenerTrabajadores');
-$router->get('/economia/obtenerVehiculos', 'EconomiaController@obtenerVehiculos');
-$router->get('/economia/obtenerParcelas', 'EconomiaController@obtenerParcelas');
-$router->get('/economia/obtenerResumen', 'EconomiaController@obtenerResumen');
+$router->get('/economia',          'EconomiaController@index');
+$router->get('/economia/gastos',   'EconomiaController@gastos');
+$router->get('/economia/ingresos', 'EconomiaController@ingresos');
+$router->get('/economia/deudas',   'EconomiaController@deudas_trabajadores');
+$router->post('/economia/crear',         'EconomiaController@crear');
+$router->post('/economia/editar',        'EconomiaController@editar');
+$router->post('/economia/eliminar',      'EconomiaController@eliminar');
+$router->get('/economia/obtener',        'EconomiaController@obtener');
+$router->post('/economia/cerrarMes',     'EconomiaController@cerrar_mes');
+$router->post('/economia/registrarPago', 'EconomiaController@registrar_pago');
 
 // Rutas para edición inline de relaciones en el modal de tareas
 $router->post('/tareas/agregarTrabajador', 'TareasController@agregarTrabajador');
