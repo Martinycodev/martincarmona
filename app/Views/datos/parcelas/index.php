@@ -63,6 +63,19 @@ $title = htmlspecialchars($parcela['nombre'] ?? 'Sin nombre');
                     </div>
                 </div>
 
+                <!-- Economía -->
+                <div class="detail-section">
+                    <h3>💶 Economía</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Coste acumulado (mano de obra):</label>
+                            <span style="color:#f44336;font-weight:700;">
+                                <?= number_format($parcela['coste_acumulado'] ?? 0, 2, ',', '.') ?> €
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Campos Futuros -->
                 <div class="detail-section">
                     <h3>📊 Información Técnica (Futuro)</h3>

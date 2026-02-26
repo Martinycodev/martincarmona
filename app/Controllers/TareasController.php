@@ -839,7 +839,7 @@ class TareasController extends BaseController
         }
 
         $trabajos = [];
-        $res = $this->db->query("SELECT id, nombre FROM trabajos ORDER BY nombre");
+        $res = $this->db->query("SELECT id, nombre, precio_hora FROM trabajos ORDER BY nombre");
         if ($res) {
             while ($row = $res->fetch_assoc()) {
                 $trabajos[] = $row;

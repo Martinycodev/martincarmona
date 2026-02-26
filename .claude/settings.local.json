@@ -17,7 +17,11 @@
       "Bash(php -l app/Models/Vehiculo.php)",
       "Bash(php -l app/Models/Parcela.php)",
       "Bash(php -l app/Models/Movimiento.php)",
-      "Bash(php -l app/Models/PagoMensual.php)"
+      "Bash(php -l app/Models/PagoMensual.php)",
+      "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Models/Tarea.php\")",
+      "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Models/PagoMensual.php\")",
+      "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Models/Parcela.php\")",
+      "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Controllers/TareasController.php\")"
     ]
   }
 }

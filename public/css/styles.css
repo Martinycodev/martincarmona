@@ -4427,6 +4427,14 @@ textarea {
 
 .sidebar-inline-select:focus { outline: none; border-color: #4a9eff; }
 
+/* Coste estimado bajo el selector de tipo de trabajo */
+.sidebar-coste-label {
+    font-size: .78rem;
+    color: #4caf50;
+    margin-top: 6px;
+    min-height: 1.2em;
+}
+
 .sidebar-btn-add {
     background: #1a5c2d;
     color: #fff;

@@ -141,19 +141,21 @@ class Tarea
     }
 
     /**
-     * Insertar trabajos en la tabla de relaciones
+     * Insertar trabajos en la tabla de relaciones.
+     * Almacena precio_hora como snapshot para preservar el histórico.
      */
     private function insertarTrabajos($tareaId, $trabajos, $horasDefault = 0)
     {
         $stmt = $this->db->prepare("
-            INSERT INTO tarea_trabajos (tarea_id, trabajo_id, horas_trabajo)
-            VALUES (?, ?, ?)
-            ON DUPLICATE KEY UPDATE horas_trabajo = VALUES(horas_trabajo)
+            INSERT INTO tarea_trabajos (tarea_id, trabajo_id, horas_trabajo, precio_hora)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE horas_trabajo = VALUES(horas_trabajo), precio_hora = VALUES(precio_hora)
         ");
 
         foreach ($trabajos as $trabajoId) {
             if ($trabajoId > 0) {
-                $stmt->bind_param("iid", $tareaId, $trabajoId, $horasDefault);
+                $precioHora = $this->getPrecioHoraTrabajo($trabajoId);
+                $stmt->bind_param("iidd", $tareaId, $trabajoId, $horasDefault, $precioHora);
                 $stmt->execute();
             }
         }

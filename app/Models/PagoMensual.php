@@ -131,12 +131,14 @@ class PagoMensual
      */
     public function calcularDeudaMes(int $month, int $year, int $userId): array
     {
+        // ttrab.precio_hora es el snapshot guardado al crear la tarea;
+        // trab.precio_hora es el precio actual del trabajo (fallback si no hay snapshot).
         $sql = "SELECT
                     t.id          AS trabajador_id,
                     t.nombre      AS trabajador_nombre,
                     t.apellidos   AS trabajador_apellidos,
                     COALESCE(
-                        SUM(tt.horas_asignadas * COALESCE(trab.precio_hora, 0)),
+                        SUM(tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0)),
                         0
                     )             AS deuda_calculada
                 FROM trabajadores t

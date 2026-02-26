@@ -123,6 +123,9 @@ class Parcela
                 return false;
             }
 
+            // Coste acumulado real de mano de obra en esta parcela
+            $parcela['coste_acumulado'] = $this->getCostoAcumuladoPorParcela((int)$id, (int)$userId);
+
             // Agregar campos futuros (placeholder por ahora)
             $parcela['foto'] = ''; // Campo futuro
             $parcela['referencia_catastral'] = ''; // Campo futuro
@@ -139,6 +142,37 @@ class Parcela
         } catch (\Exception $e) {
             error_log("Error obteniendo detalle de parcela: " . $e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Coste acumulado de mano de obra para una parcela:
+     * SUM(horas_asignadas × precio_hora) de todas las tareas vinculadas.
+     * Usa el precio snapshot de tarea_trabajos con fallback al precio actual de trabajos.
+     */
+    public function getCostoAcumuladoPorParcela(int $parcelaId, int $userId): float
+    {
+        try {
+            $sql = "SELECT COALESCE(
+                        SUM(tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0)),
+                        0
+                    ) AS coste
+                    FROM tarea_parcelas tp
+                    JOIN tareas ta          ON tp.tarea_id = ta.id
+                    JOIN tarea_trabajadores tt ON ta.id = tt.tarea_id
+                    LEFT JOIN tarea_trabajos ttrab ON ta.id = ttrab.tarea_id
+                    LEFT JOIN trabajos trab        ON ttrab.trabajo_id = trab.id
+                    WHERE tp.parcela_id = ? AND ta.id_user = ?";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bind_param("ii", $parcelaId, $userId);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+            return (float) ($row['coste'] ?? 0);
+        } catch (\Exception $e) {
+            error_log("Error calculando coste acumulado de parcela: " . $e->getMessage());
+            return 0.0;
         }
     }
 

@@ -149,6 +149,7 @@ class TaskSidebar {
         input.step = '0.5';
         input.addEventListener('change', () => {
             this._autoSaveImmediate('horas', input.value);
+            this._actualizarCoste();
         });
         wrap.appendChild(input);
         return wrap;
@@ -254,14 +255,47 @@ class TaskSidebar {
         sel.appendChild(opt);
 
         // Las opciones se rellenan en _cargarOpciones()
-        // Preseleccionar el trabajo actual (si hay uno)
-        sel.dataset.currentTrabajo = tarea.trabajos && tarea.trabajos.length
-            ? tarea.trabajos[0].id
-            : '';
+        const currentTrabajo = tarea.trabajos && tarea.trabajos.length ? tarea.trabajos[0] : null;
+        sel.dataset.currentTrabajo = currentTrabajo?.id ?? '';
 
-        sel.addEventListener('change', () => this._cambiarTrabajo(sel));
+        sel.addEventListener('change', () => {
+            this._cambiarTrabajo(sel);
+            this._actualizarCoste();
+        });
+
+        // Coste estimado usando el snapshot de precio guardado en la tarea
+        const costeEl = document.createElement('div');
+        costeEl.id        = `sidebar-coste-${this.taskId}`;
+        costeEl.className = 'sidebar-coste-label';
+
+        if (currentTrabajo && currentTrabajo.precio_hora) {
+            const horas  = parseFloat(tarea.horas || 0);
+            const precio = parseFloat(currentTrabajo.precio_hora);
+            if (horas > 0 && precio > 0) {
+                costeEl.textContent = `💶 ${precio.toFixed(2)} €/h × ${horas} h = ${(precio * horas).toFixed(2)} €`;
+            }
+        }
+
         wrap.appendChild(sel);
+        wrap.appendChild(costeEl);
         return wrap;
+    }
+
+    _actualizarCoste() {
+        const costeEl    = document.getElementById(`sidebar-coste-${this.taskId}`);
+        const sel        = document.getElementById(`sidebar-sel-trabajo-${this.taskId}`);
+        const horasInput = document.getElementById('sidebar-horas');
+        if (!costeEl || !sel || !horasInput) return;
+
+        const selectedOpt = sel.options[sel.selectedIndex];
+        const precio = parseFloat(selectedOpt?.dataset?.precio ?? 0);
+        const horas  = parseFloat(horasInput.value || 0);
+
+        if (precio > 0 && horas > 0) {
+            costeEl.textContent = `💶 ${precio.toFixed(2)} €/h × ${horas} h = ${(precio * horas).toFixed(2)} €`;
+        } else {
+            costeEl.textContent = '';
+        }
     }
 
     _buildImagenesSection(tarea) {
@@ -389,6 +423,8 @@ class TaskSidebar {
                 // Restaurar selección actual
                 const current = selTrabajo.dataset.currentTrabajo;
                 if (current) selTrabajo.value = current;
+                // Actualizar coste una vez cargadas las opciones con precio_hora
+                this._actualizarCoste();
             }
         } catch (e) {
             console.error('Error cargando opciones del sidebar:', e);
@@ -404,6 +440,7 @@ class TaskSidebar {
             const opt = document.createElement('option');
             opt.value       = item.id;
             opt.textContent = item.nombre;
+            if (item.precio_hora != null) opt.dataset.precio = item.precio_hora;
             sel.appendChild(opt);
         });
     }

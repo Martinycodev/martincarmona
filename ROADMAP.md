@@ -50,8 +50,8 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 - [x] `registrar_pago()` — Marca el pago mensual como pagado, deuda → cero
 
 **Integración con tareas:**
-- [ ] Calcular coste real al crear tarea: `horas_asignadas × precio_hora_trabajo` → acumular en deuda del trabajador
-- [ ] Mostrar coste acumulado por parcela en ficha de parcela
+- [x] Calcular coste real al crear tarea: `horas_asignadas × precio_hora_trabajo` → acumular en deuda de cada trabajador en la tarea.
+- [x] Mostrar coste acumulado por parcela en ficha de parcela.
 
 **Vistas:**
 - [ ] Dashboard económico: saldo banco/efectivo, últimos movimientos, deudas pendientes
