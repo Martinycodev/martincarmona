@@ -1078,11 +1078,6 @@ class Tarea
         }
     }
 
-    public function __destruct()
-    {
-        if ($this->db) {
-            $this->db->close();
-        }
     }
 
     /**

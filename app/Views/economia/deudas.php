@@ -70,7 +70,8 @@
     <!-- Deuda mes actual -->
     <div class="deuda-section">
         <div class="deuda-section-title">
-            <span>Deuda calculada — <?= strftime('%B %Y') ?? date('F Y') ?></span>
+            <?php $nombresMeses = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']; ?>
+            <span>Deuda calculada — <?= $nombresMeses[$mesActual] . ' ' . $anioActual ?></span>
             <div class="mes-selector">
                 <label style="color:#888;font-size:.8rem;">Cerrar mes:</label>
                 <select id="selMes">
