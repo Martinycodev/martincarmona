@@ -158,8 +158,16 @@ class AjaxNavigation {
             const newContent = doc.querySelector('.container') || doc.querySelector('main') || doc.body;
 
             if (newContent) {
+                // Recoger <style> que estén fuera del .container (ej. vistas con style antes del div)
+                let extraStyles = '';
+                doc.querySelectorAll('style').forEach(s => {
+                    if (!newContent.contains(s)) {
+                        extraStyles += s.outerHTML;
+                    }
+                });
+
                 // Actualizar el contenido con animación suave
-                await this.updateContentWithAnimation(newContent.innerHTML);
+                await this.updateContentWithAnimation(extraStyles + newContent.innerHTML);
 
                 // Re-interceptar enlaces en el nuevo contenido
                 this.interceptNavigationLinks();

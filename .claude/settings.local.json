@@ -21,7 +21,8 @@
       "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Models/Tarea.php\")",
       "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Models/PagoMensual.php\")",
       "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Models/Parcela.php\")",
-      "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Controllers/TareasController.php\")"
+      "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Controllers/TareasController.php\")",
+      "Bash(node -e \"const fs = require\\(''fs''\\); const code = fs.readFileSync\\(''c:/xampp/htdocs/martincarmona/public/js/ajax-navigation.js'', ''utf8''\\); try { new Function\\(code\\); console.log\\(''OK''\\); } catch\\(e\\) { console.error\\(''Error:'', e.message\\); }\")"
     ]
   }
 }
