@@ -1,189 +1,196 @@
 # ROADMAP — Sistema de Gestión Agrícola
 
 > Documento unificado de objetivos, estado y planificación.
-> **Última actualización:** 20 de febrero de 2026
+> **Última actualización:** 25 de febrero de 2026
 
 ---
 
 ## Estado General
 
-La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CRUD completos y conexión a base de datos remota. La fase de seguridad crítica está prácticamente terminada. El siguiente bloque prioritario es el **Módulo de Economía**.
+La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CRUD completos y conexión a base de datos remota. El módulo de Economía está en desarrollo activo. Las siguientes fases completan la visión definida en `Proyecto.md`.
 
 ---
 
-## Checklist de Objetivos Pendientes
+## Tabla de módulos
+
+| Módulo | Estado | Notas |
+|---|---|---|
+| Tareas | ✅ Completo | CRUD + calendario + filtros |
+| Trabajadores | ✅ Completo | Faltan imágenes de documentos (Fase 2) |
+| Trabajos | ✅ Completo | Tipos de trabajo con precio/hora |
+| Parcelas | ✅ Completo | Faltan campos técnicos y propietario FK (Fase 2) |
+| Vehículos | ✅ Completo | Falta adjuntar documentación (Fase 2) |
+| Herramientas | ✅ Completo | Falta PDF instrucciones (Fase 2) |
+| Empresas | ✅ Completo | Gestoras de parcelas |
+| Proveedores | ✅ Completo | |
+| Riego | 🟡 BD existe | Tabla `riegos` en BD. Falta controller y vistas (Fase 2) |
+| Economía | 🚧 En desarrollo | Dashboard, gastos, ingresos, deudas (Fase 1) |
+| Propietarios | ⬜ Pendiente | Entidad propia separada de Empresas (Fase 2) |
+| Tareas pendientes | ⬜ Pendiente | Tareas sin fecha asignada (Fase 2) |
+| Fitosanitarios | ⬜ Pendiente | Registro automático por tipo de tarea (Fase 3) |
+| Campaña | ⬜ Pendiente | Módulo completo nov→feb (Fase 3) |
+| Multi-rol | ⬜ Pendiente | Acceso Propietario y Trabajador (Fase 4) |
 
 ---
 
-### PRIORIDAD ALTA
+## FASE 1 — Completar módulo Economía 🚧 EN CURSO
 
-#### Seguridad — Input Validation
-
-> **Motivo:** Actualmente los datos de formularios (fechas, horas, IDs) se usan directamente sin validar rangos ni formatos. Esto permite valores absurdos (ej. `horas: 999`) o entradas malformadas que pueden romper la lógica de negocio o la base de datos.
-
-- [ ] Crear `core/Validator.php` con reglas: `required`, `date`, `numeric`, `min`, `max`, `integer`, `max_length`
-- [ ] Aplicar validación en `TareasController` (crear, actualizar): `fecha`, `horas`, `trabajo`
-- [ ] Aplicar validación en `TrabajadoresController`, `ParcelasController` y demás POST
-- [ ] Sanitizar textos libres con `htmlspecialchars()` antes de guardar o mostrar
-
----
-
-#### Módulo de Economía
-
-> **Motivo:** Es el objetivo principal de la aplicación. Sin él no se puede calcular la rentabilidad de una parcela, controlar deudas de trabajadores ni tener una visión financiera de la explotación.
+> Motor financiero de la aplicación. Sin él no se puede controlar deudas de trabajadores ni calcular rentabilidad.
 
 **Base de datos:**
+- [ ] Añadir campo `cuenta` ENUM('banco','efectivo') a tabla `movimientos`
+- [ ] Crear tabla `pagos_mensuales_trabajadores` (trabajador_id, mes, año, importe_total, pagado, fecha_pago)
 
-- [ ] Crear tabla `deudas_trabajadores` (trabajador\_id, monto, fecha, descripcion, pagado)
-  > Permite registrar anticipos, deudas y pagos a trabajadores de forma trazable
-- [ ] Crear tabla `cuentas_bancarias` (nombre, tipo, saldo\_actual)
-  > Permite saber en cada momento cuánto dinero hay en banco vs efectivo
-
-
-**Backend:**
-
-- [ ] Crear `EconomiaController` con métodos:
-  - [ ] `index()` — Dashboard financiero con resumen de gastos, ingresos y saldo
-  - [ ] `gastos()` — Listado y CRUD de gastos (combustible, insumos, reparaciones, etc.)
-  - [ ] `ingresos()` — Listado y CRUD de ingresos (venta de cosecha, subvenciones, etc.)
-  - [ ] `trabajadores_finanzas()` — Deudas, anticipos y pagos por trabajador
-  - [ ] `reportes()` — Balance mensual y anual
-
-**Vistas:**
-
-- [ ] Dashboard económico: resumen de saldo, últimas transacciones, gráfico mensual
-- [ ] Formularios CRUD para gastos e ingresos
-- [ ] Vista de cuenta por trabajador (lo que se le debe, lo que ha cobrado)
-- [ ] Generación de facturas o recibos en PDF (futura fase)
-  > Facilita la justificación de pagos y el control fiscal
+**Backend — `EconomiaController`:**
+- [ ] `index()` — Dashboard financiero: saldo banco, saldo efectivo, deuda total trabajadores
+- [ ] `gastos()` — CRUD de gastos con categoría (compras, reparaciones, inversiones, seguros, impuestos, gestoría) y cuenta (banco/efectivo)
+- [ ] `ingresos()` — CRUD de ingresos con categoría (labores a terceros, subvenciones, liquidación aceite) y cuenta
+- [ ] `deudas_trabajadores()` — Deuda acumulada por trabajador (suma de tareas del mes)
+- [ ] `cerrar_mes()` — Genera registro mensual de deuda por trabajador y lo marca como pendiente de pago
+- [ ] `registrar_pago()` — Marca el pago mensual como pagado, deuda → cero
 
 **Integración con tareas:**
+- [ ] Calcular coste real al crear tarea: `horas_asignadas × precio_hora_trabajo` → acumular en deuda del trabajador
+- [ ] Mostrar coste acumulado por parcela en ficha de parcela
 
-- [ ] Calcular coste real de cada tarea: `horas × precio_hora_trabajo`
-  > Ya existe `precios_trabajo` en BD. Conectar con el resumen económico
-- [ ] Mostrar coste acumulado por parcela en el módulo de parcelas.
--  Valorar qué ocurre si este precio cambia.
-
+**Vistas:**
+- [ ] Dashboard económico: saldo banco/efectivo, últimos movimientos, deudas pendientes
+- [ ] Formularios CRUD para gastos e ingresos
+- [ ] Vista de cuenta por trabajador: deuda actual, historial de pagos mensuales
 
 ---
 
-### PRIORIDAD MEDIA
+## FASE 2 — Ampliaciones a módulos existentes
 
+> Completar entidades ya iniciadas con los campos y funcionalidades que define Proyecto.md.
 
-#### Arquitectura Backend — Limpieza de Deuda Técnica
+### Trabajadores
+- [ ] Añadir campo `baja_ss` DATE a tabla `trabajadores`
+- [ ] Subir y almacenar imagen DNI anverso + reverso
+- [ ] Subir y almacenar imagen documento de Seguridad Social
+- [ ] Vista individual de trabajador: datos, historial de tareas, estado de deuda
 
-> **Motivo:** El código actual mezcla responsabilidades (controladores con lógica de negocio directa, `require_once` manuales cuando ya existe un autoloader PSR-4). Esto hace el código más difícil de mantener y escalar.
+### Parcelas
+- [ ] Añadir campos: `referencia_catastral`, `tipo_olivos`, `año_plantacion`, `tipo_plantacion` ENUM('tradicional','intensivo','superintensivo'), `riego_secano` ENUM('riego','secano'), `corta` ENUM('par','impar','siempre')
+- [ ] Crear tabla `documentos_parcelas` (parcela_id, tipo ENUM('escritura','permiso_riego','otro'), archivo, nombre)
+- [ ] Vista individual de parcela: ficha completa + documentos + resumen productividad (coste anual por olivo)
+- [ ] Cambiar `propietario` de texto plano → FK a tabla `propietarios` (Fase 2 — ver abajo)
 
-- [ ] Eliminar `require_once` manuales de archivos que ya gestiona el autoloader PSR-4
-  > El autoloader ya carga clases por namespace; los `require_once` son redundantes y confusos
-- [ ] Mover las rutas de `index.php` a `routes/web.php`
-  > Actualmente hay ~165 líneas de rutas en el archivo de entrada. Separarlas mejora la legibilidad
+### Propietarios (entidad propia)
+- [ ] Crear tabla `propietarios`: `dni`, `imagen_dni_anverso`, `imagen_dni_reverso`, `nombre`, `apellidos`, `telefono`, `email`
+- [ ] Migrar datos actuales de `parcelas.propietario` (texto) a registros de la nueva tabla
+- [ ] CRUD completo de propietarios
+- [ ] Vista individual de propietario: sus parcelas y datos de contacto
+
+### Riego (BD ya existe, solo falta frontend)
+- [ ] Reestructurar tabla `riegos`: cambiar campo `propiedad` (texto) → `parcela_id` INT FK a `parcelas`
+- [ ] Crear `RiegoController` con CRUD completo
+- [ ] Vistas: listado de riegos por año, formulario de nueva fase de riego
+- [ ] Resumen anual de m³ por parcela visible en la ficha de la parcela
+
+### Vehículos y Herramientas
+- [ ] Vehículos: subir imagen ficha técnica y póliza de seguro (PDF/imagen)
+- [ ] Herramientas: subir PDF de instrucciones
+
+### Tareas pendientes (sin fecha)
+- [ ] Hacer `fecha` nullable en tabla `tareas` + añadir campo `estado` ENUM('realizada','pendiente') DEFAULT 'realizada'
+- [ ] Vista separada de tareas pendientes (sin fecha)
+- [ ] Acción "Fechar tarea" para asignar fecha y pasarla a realizada
+- [ ] Si la tarea pendiente tiene trabajador asignado → visible en la vista del rol Trabajador (Fase 4)
+
+---
+
+## FASE 3 — Módulos nuevos
+
+### Campaña (nov → feb/mar)
+- [ ] Crear tabla `campanas` (nombre: '25/26', fecha_inicio, fecha_fin, activa)
+- [ ] Crear tabla `campaña_registros` (campaña_id, parcela_id, fecha, kilos, rendimiento_pct, precio_venta, beneficio)
+- [ ] Sección de campaña con vista organizada por campaña (25/26, 26/27...)
+- [ ] Registro diario: parcela + kilos recogidos
+- [ ] Añadir rendimiento (% aceite/kg) a un registro existente — edición posterior
+- [ ] Al cerrar campaña: aplicar precio de venta → calcular y guardar `beneficio`
+- [ ] Reporte: beneficio campaña vs coste de producción acumulado por parcela
+- [ ] Reset del coste de producción al abrir nueva campaña
+
+### Fitosanitarios
+- [ ] Crear tabla `fitosanitarios_inventario` (producto, fecha_compra, cantidad, unidad, proveedor_id)
+- [ ] Crear tabla `fitosanitarios_aplicaciones` (parcela_id, producto, fecha, cantidad, tarea_id)
+- [ ] Hook automático: al crear una tarea con trabajo "Sulfato" o "Herbicida" → generar entrada en `fitosanitarios_aplicaciones`
+- [ ] Vista de inventario de productos
+- [ ] Vista de historial de aplicaciones filtrable por parcela y producto
+
+---
+
+## FASE 4 — Multi-rol (Propietario y Trabajador)
+
+> Dar acceso controlado a propietarios de parcelas y trabajadores desde sus propios dispositivos.
+
+**Base de datos:**
+- [ ] Añadir campo `rol` ENUM('empresa','propietario','trabajador') a tabla `usuarios`
+- [ ] Añadir columna `propietario_id` a `usuarios` (FK a `propietarios`) para vincular login con propietario
+- [ ] Añadir columna `trabajador_id` a `usuarios` (FK a `trabajadores`) para vincular login con trabajador
+
+**Backend:**
+- [ ] Middleware de autorización por rol para todas las rutas
+- [ ] Panel de administración para crear y gestionar usuarios (solo rol empresa)
+
+**Vista Propietario:**
+- [ ] Sus parcelas y las tareas realizadas en ellas (sin mostrar trabajadores, horas ni precio)
+- [ ] Datos de contacto de la empresa
+
+**Vista Trabajador:**
+- [ ] Deuda acumulada (lo que va a percibir este mes)
+- [ ] Calendario con sus tareas realizadas
+- [ ] Lista de tareas pendientes asignadas
+- [ ] Datos de contacto de la empresa
+
+---
+
+## FASE 5 — Calidad técnica
+
+> Consolidar la arquitectura antes de escalar más.
+
+### Seguridad — Input Validation
+- [ ] Crear `core/Validator.php` con reglas: `required`, `date`, `numeric`, `min`, `max`, `integer`, `max_length`
+- [ ] Aplicar validación en `TareasController`, `TrabajadoresController`, `ParcelasController` y demás POST
+- [ ] Sanitizar textos libres con `htmlspecialchars()` antes de guardar o mostrar
+
+### Deuda técnica — Arquitectura
+- [ ] Eliminar `require_once` manuales redundantes con el autoloader PSR-4
+- [ ] Mover rutas de `index.php` a `routes/web.php`
 - [ ] Añadir soporte de parámetros dinámicos al Router (`/tareas/{id}`)
-  > Permite URLs limpias y RESTful en lugar de query params (`?id=5`)
-- [ ] Centralizar el manejo de errores y excepciones en un único punto
-  > Actualmente los `error_log()` están dispersos; un handler central facilita el debug
-- [ ] Eliminar `console.log()` del código JavaScript de producción
-  > Expone información interna en la consola del navegador
+- [ ] Centralizar el manejo de errores en un único handler
+- [ ] Eliminar `console.log()` del JS de producción
 
----
-
-#### Testing
-
-> **Motivo:** Sin tests es imposible saber si un cambio en el código rompe algo que antes funcionaba. Con la aplicación creciendo (módulo de economía, nuevas reglas de negocio), el riesgo de regresiones aumenta.
-
+### Testing
 - [ ] Instalar PHPUnit o Pest como dependencia de desarrollo
 - [ ] Tests unitarios para modelos (Tarea, Trabajador, Parcela)
-- [ ] Tests de integración para los controladores POST (crear, actualizar, eliminar)
-- [ ] Cubrir los casos límite de la validación de inputs
+- [ ] Tests de integración para controladores POST
 - [ ] Objetivo mínimo: 50% de cobertura en lógica de negocio
 
----
-
-#### Sistema de Logging
-
-> **Motivo:** Cuando algo falla en producción, los `error_log()` dispersos no son suficientes para diagnosticar el problema. Un log estructurado permite filtrar por nivel, módulo y fecha.
-
+### Logging
 - [ ] Instalar `monolog/monolog`
-- [ ] Configurar canales: `app.log` para errores generales, `security.log` para eventos de autenticación
-- [ ] Reemplazar los `error_log()` actuales por el logger centralizado
-- [ ] Configurar rotación de logs para que no crezcan indefinidamente
+- [ ] Configurar canales: `app.log` y `security.log`
+- [ ] Reemplazar `error_log()` dispersos por el logger centralizado
 
 ---
 
-### PRIORIDAD BAJA
+## FASE 6 — Largo plazo / Extras
+
+- [ ] Exportar CSV/Excel: tareas, gastos, cuenta mensual por trabajador
+- [ ] PDF de balance mensual por trabajador
+- [ ] Gráficos de productividad por parcela (Chart.js — ya en el stack)
+- [ ] Evaluar Alpine.js para reactividad ligera en formularios complejos
+- [ ] `docker-compose.yml` con PHP + MySQL para desarrollo reproducible
+- [ ] GitHub Actions para ejecutar tests automáticamente en cada push
+- [ ] Backups automáticos de la base de datos
 
 ---
 
-#### Frontend — Modernización (Opcional / Largo Plazo)
-
-> **Motivo:** El stack actual (JS vanilla, CSS plano de 1000+ líneas) funciona, pero es difícil de mantener cuando crece. La modernización no es urgente pero sí necesaria si el proyecto escala o necesita más interactividad.
-
-- [ ] Evaluar si merece la pena introducir Alpine.js (ligero, reactivo, sin build complejo)
-  > Alternativa liviana a Vue.js. Útil para modales, formularios dinámicos y dropdowns
-- [ ] Crear `package.json` para gestionar dependencias JS formalmente
-- [ ] Sustituir CDN de librerías por dependencias locales
-  > Las CDN de terceros son una dependencia externa fuera de control. Las locales garantizan disponibilidad offline
-
----
-
-#### Gestión de Usuarios Multi-rol
-
-> **Motivo:** Actualmente solo existe un usuario. Si en el futuro varios trabajadores o el gestor necesitan acceder, hace falta control de acceso por rol (quién puede ver qué, quién puede editar).
-
-- [ ] Crear tabla `usuarios` con roles (admin, empleado, consulta)
-- [ ] Middleware de autorización por rol para rutas protegidas
-- [ ] Registro y edición de usuarios desde panel de administración
-- [ ] Log de actividad por usuario (quién creó, editó o eliminó qué)
-
----
-
-#### Reportes Avanzados
-
-> **Motivo:** Los datos ya están en la base de datos; lo que falta es presentarlos de forma analítica. Un PDF de balance mensual o un Excel de tareas por parcela ahorra mucho trabajo manual.
-
-- [ ] Exportar listados a CSV/Excel (tareas, gastos, trabajadores)
-- [ ] Generar PDF de balance económico mensual
-- [ ] Gráficos de productividad por parcela con Chart.js (ya incluido en el stack)
-
----
-
-#### DevOps
-
-> **Motivo:** Docker y CI/CD son herramientas para equipos o proyectos que van a producción con despliegues frecuentes. Para uso local/familiar actual, son opcionales pero convenientes si se despliega en servidor.
-
-- [ ] `docker-compose.yml` con PHP 8.3 + MySQL para desarrollo reproducible
-  > Elimina la dependencia de XAMPP; cualquier máquina puede levantar el proyecto igual
-- [ ] GitHub Actions para ejecutar los tests automáticamente en cada push
-  > Evita subir código roto al repositorio sin darse cuenta
-- [ ] Sistema de backups automáticos de la base de datos
-  > Crítico si los datos de producción son reales (parcelas, cosechas, economía real de la explotación)
-
----
-
-## Criterios de Calidad
+## Criterios de calidad
 
 - [ ] Todos los formularios POST validan y sanitizan inputs
 - [ ] Tiempo de respuesta < 2 segundos en operaciones normales
 - [ ] La aplicación es usable en móvil (uso en campo)
 - [ ] Un cambio de código no rompe funcionalidad existente (tests)
-
----
-
-
-## IDEAS SUELTAS
-- [ ] añadir imagen a cada trabajador como foto de perfil.
-- [ ] Añadir el campo "Alta en Seguridad social" para los trabajadores. y otro campo que sea "Cuadrilla" para añadirlo directamente en grupo a una tarea.
-- [ ] Crear vista individual de trabajador, parcela, empresa, vehículo con información relevante de cada uno.
-- [ ] añadir una vista de "campaña" que muestre una visión general de la tarea de "recoger aceituna" separada por fechas que empiecen en noviembre poniendo "campaña 25/26" por ejemplo.
-- [ ] Añadir la opción de subir documentos a cada parcela (escritura y catastro), vehículos (documentación relevante).
-- [ ] Dar importancia a la economía de los trabajadores y servicios a empresas externas.
-- [ ] Mostrar trabajadores, vehículos, empresas en cajas en lugar de tabla. (ya que no van a ser muchos)
-- [ ] Valorar la diferencia entre el concepto de Propietario, Empresa.
-- [ ] Crear el módulo de Riego, Inventario, Fitosanitarios, Herramientas y Proveedores.
-- [ ] Exportar cuentas de cada trabajador al final del mes.
-- [ ] Añadir la posibilidad de Tareas sin realizar que aparezcan en el calendario fechadas para preveerlas. Por ejemplo pasar itv, sabes la fecha pero aún no la has hecho.
-- [ ] Añadir la vista de enlaces de interes, en el footer por ejemplo.
-- [ ] Añadir tareas pendientes que aún no estén agendadas.
-
-- [ ] eliminar el botón del ojo en las tablas sustituyendolo por el click encima del campo.
- 
+- [ ] Cada rol solo ve lo que debe ver (autorización verificada en backend)
