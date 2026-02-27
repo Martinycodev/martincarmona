@@ -55,6 +55,50 @@ $title = 'Gestión de Parcelas';
                             placeholder="Descripción opcional"></textarea>
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="referencia_catastral">Referencia Catastral:</label>
+                        <input type="text" id="referencia_catastral" name="referencia_catastral" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo_olivos">Tipo de Olivos:</label>
+                        <input type="text" id="tipo_olivos" name="tipo_olivos" maxlength="100">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="año_plantacion">Año de Plantación:</label>
+                        <input type="number" id="año_plantacion" name="año_plantacion" min="1900" max="2100">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo_plantacion">Tipo de Plantación:</label>
+                        <select id="tipo_plantacion" name="tipo_plantacion">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="tradicional">Tradicional</option>
+                            <option value="intensivo">Intensivo</option>
+                            <option value="superintensivo">Superintensivo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="riego_secano">Riego / Secano:</label>
+                        <select id="riego_secano" name="riego_secano">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="riego">Riego</option>
+                            <option value="secano">Secano</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="corta">Corta:</label>
+                        <select id="corta" name="corta">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="par">Par</option>
+                            <option value="impar">Impar</option>
+                            <option value="siempre">Siempre</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="form-buttons">
                     <button type="button" class="btn btn-secondary" onclick="closeCreateSection()">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Crear Parcela</button>
@@ -149,6 +193,50 @@ $title = 'Gestión de Parcelas';
                         <label for="editDescripcion">Descripción:</label>
                         <textarea id="editDescripcion" name="descripcion" rows="3"
                             placeholder="Descripción opcional"></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editReferenciaCatastral">Referencia Catastral:</label>
+                        <input type="text" id="editReferenciaCatastral" name="referencia_catastral" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTipoOlivos">Tipo de Olivos:</label>
+                        <input type="text" id="editTipoOlivos" name="tipo_olivos" maxlength="100">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editAñoPlantacion">Año de Plantación:</label>
+                        <input type="number" id="editAñoPlantacion" name="año_plantacion" min="1900" max="2100">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTipoPlantacion">Tipo de Plantación:</label>
+                        <select id="editTipoPlantacion" name="tipo_plantacion">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="tradicional">Tradicional</option>
+                            <option value="intensivo">Intensivo</option>
+                            <option value="superintensivo">Superintensivo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editRiegoSecano">Riego / Secano:</label>
+                        <select id="editRiegoSecano" name="riego_secano">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="riego">Riego</option>
+                            <option value="secano">Secano</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCorta">Corta:</label>
+                        <select id="editCorta" name="corta">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="par">Par</option>
+                            <option value="impar">Impar</option>
+                            <option value="siempre">Siempre</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-buttons">
@@ -261,6 +349,12 @@ $title = 'Gestión de Parcelas';
                 document.getElementById('editOlivos').value = parcela.olivos || '0';
                 document.getElementById('editHidrante').value = parcela.hidrante || '0';
                 document.getElementById('editDescripcion').value = parcela.descripcion || '';
+                document.getElementById('editReferenciaCatastral').value = parcela.referencia_catastral || '';
+                document.getElementById('editTipoOlivos').value = parcela.tipo_olivos || '';
+                document.getElementById('editAñoPlantacion').value = parcela.año_plantacion || '';
+                document.getElementById('editTipoPlantacion').value = parcela.tipo_plantacion || '';
+                document.getElementById('editRiegoSecano').value = parcela.riego_secano || '';
+                document.getElementById('editCorta').value = parcela.corta || '';
                 openEditModal(buttonElement);
                 showToast('Datos cargados correctamente', 'success');
             } else {
