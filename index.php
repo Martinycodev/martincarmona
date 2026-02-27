@@ -130,6 +130,7 @@ $router->get('/tareas/opcionesModal', 'TareasController@opcionesModal');
 
 // Ruta para el autocompletado de parcelas
 $router->get('/parcelas/buscar', 'ParcelasController@buscar');
+$router->get('/parcelas/propietarios', 'ParcelasController@obtenerListaPropietarios');
 $router->post('/parcelas/crear', 'ParcelasController@crear');
 $router->get('/parcelas/obtener', 'ParcelasController@obtener');
 $router->post('/parcelas/actualizar', 'ParcelasController@actualizar');

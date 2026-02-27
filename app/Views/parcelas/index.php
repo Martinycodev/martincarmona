@@ -34,8 +34,11 @@ $title = 'Gestión de Parcelas';
                         <input type="text" id="empresa" name="empresa">
                     </div>
                     <div class="form-group">
-                        <label for="propietario">Propietario:</label>
-                        <input type="text" id="propietario" name="propietario">
+                        <label for="propietario_id">Propietario:</label>
+                        <select id="propietario_id" name="propietario_id">
+                            <option value="">-- Sin propietario --</option>
+                        </select>
+                        <input type="hidden" id="propietario" name="propietario" value="">
                     </div>
                 </div>
                 <div class="form-row">
@@ -129,7 +132,11 @@ $title = 'Gestión de Parcelas';
                         <td><?= htmlspecialchars($parcela['nombre'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($parcela['ubicacion'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($parcela['empresa'] ?? '-') ?></td>
-                        <td><?= htmlspecialchars($parcela['propietario'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars(
+                            !empty($parcela['propietario_nombre'])
+                            ? $parcela['propietario_nombre'] . ' ' . $parcela['propietario_apellidos']
+                            : ($parcela['propietario'] ?? '—')
+                        ) ?></td>
                         <td><?= htmlspecialchars($parcela['olivos'] ?? '0') ?></td>
                         <td><?= htmlspecialchars($parcela['hidrante'] ?? '0') ?></td>
                         <td class="actions">
@@ -174,8 +181,11 @@ $title = 'Gestión de Parcelas';
                         <input type="text" id="editEmpresa" name="empresa">
                     </div>
                     <div class="form-group">
-                        <label for="editPropietario">Propietario:</label>
-                        <input type="text" id="editPropietario" name="propietario">
+                        <label for="edit_propietario_id">Propietario:</label>
+                        <select id="edit_propietario_id" name="propietario_id">
+                            <option value="">-- Sin propietario --</option>
+                        </select>
+                        <input type="hidden" id="editPropietario" name="propietario" value="">
                     </div>
                 </div>
                 <div class="form-row">
@@ -255,10 +265,29 @@ $title = 'Gestión de Parcelas';
     // Variables globales
     let createSectionVisible = false;
 
+    // Cargar propietarios en un select dinámicamente
+    function cargarSelectPropietarios(selectId, selectedId) {
+        fetch(window._APP_BASE_PATH + '/parcelas/propietarios')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (!data.success) return;
+                var sel = document.getElementById(selectId);
+                sel.innerHTML = '<option value="">-- Sin propietario --</option>';
+                data.propietarios.forEach(function(p) {
+                    var opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.apellidos ? p.apellidos + ', ' + p.nombre : p.nombre;
+                    if (selectedId && parseInt(selectedId) === p.id) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+            });
+    }
+
     // Funciones para manejar la sección de crear
     function openCreateModal() {
         document.getElementById('createSection').style.display = 'block';
         createSectionVisible = true;
+        cargarSelectPropietarios('propietario_id', null);
         document.getElementById('nombre').focus();
     }
 
@@ -355,6 +384,7 @@ $title = 'Gestión de Parcelas';
                 document.getElementById('editTipoPlantacion').value = parcela.tipo_plantacion || '';
                 document.getElementById('editRiegoSecano').value = parcela.riego_secano || '';
                 document.getElementById('editCorta').value = parcela.corta || '';
+                cargarSelectPropietarios('edit_propietario_id', parcela.propietario_id);
                 openEditModal(buttonElement);
                 showToast('Datos cargados correctamente', 'success');
             } else {
