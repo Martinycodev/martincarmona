@@ -147,6 +147,8 @@ $router->post('/trabajadores/actualizar', 'TrabajadoresController@actualizar');
 $router->post('/trabajadores/eliminar', 'TrabajadoresController@eliminar');
 $router->post('/trabajadores/subirFoto', 'TrabajadoresController@subirFoto');
 $router->get('/trabajadores/cuadrilla', 'TrabajadoresController@obtenerCuadrilla');
+$router->get('/trabajadores/detalle', 'TrabajadoresController@detalle');
+$router->post('/trabajadores/subirDocumento', 'TrabajadoresController@subirDocumento');
 
 // Rutas para datos detallados de trabajadores
 $router->get('/datos/trabajadores', 'DatosTrabajadoresController@index');

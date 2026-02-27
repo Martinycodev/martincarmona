@@ -58,6 +58,13 @@ $title = 'Gestión de Trabajadores';
                 </div>
 
                 <div class="form-row">
+                    <div class="form-group">
+                        <label for="baja_ss">Baja en Seguridad Social:</label>
+                        <input type="date" id="baja_ss" name="baja_ss">
+                    </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group form-group--checkbox">
                         <label class="checkbox-label">
                             <input type="checkbox" id="cuadrilla" name="cuadrilla" value="1">
@@ -119,6 +126,7 @@ $title = 'Gestión de Trabajadores';
                         <?= $esCuadrilla ? '<span class="cuadrilla-check">✓</span>' : '<span class="cuadrilla-no">—</span>' ?>
                     </td>
                     <td class="actions">
+                        <a href="<?= $this->url('/trabajadores/detalle?id=' . $trabajador['id']) ?>" class="btn btn-info btn-sm" title="Ficha individual">📋 Ficha</a>
                         <button class="btn-icon btn-view"
                                 onclick="window.location.href='<?= $this->url('/datos/trabajadores?id=' . $trabajador['id']) ?>'"
                                 title="Ver detalles">👁️</button>
@@ -180,6 +188,13 @@ $title = 'Gestión de Trabajadores';
                     <div class="form-group">
                         <label for="editAltaSs">Alta en Seguridad Social:</label>
                         <input type="date" id="editAltaSs" name="alta_ss">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editBajaSs">Baja en Seguridad Social:</label>
+                        <input type="date" id="editBajaSs" name="baja_ss">
                     </div>
                 </div>
 

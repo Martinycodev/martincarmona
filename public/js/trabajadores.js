@@ -51,6 +51,7 @@ async function editWorker(id, buttonElement = null) {
             document.getElementById('editDni').value        = worker.dni || '';
             document.getElementById('editSs').value         = worker.ss || '';
             document.getElementById('editAltaSs').value     = worker.alta_ss || '';
+            document.getElementById('editBajaSs').value     = worker.baja_ss || '';
             document.getElementById('editCuadrilla').checked = !!parseInt(worker.cuadrilla);
 
             // Mostrar foto actual en el preview
@@ -156,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 dni:       document.getElementById('dni').value.trim(),
                 ss:        document.getElementById('ss').value.trim(),
                 alta_ss:   document.getElementById('alta_ss').value || null,
+                baja_ss:   document.getElementById('baja_ss').value || null,
                 cuadrilla: cuadrillaEl && cuadrillaEl.checked ? 1 : 0,
             };
 
@@ -210,6 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 dni:       document.getElementById('editDni').value.trim(),
                 ss:        document.getElementById('editSs').value.trim(),
                 alta_ss:   document.getElementById('editAltaSs').value || null,
+                baja_ss:   document.getElementById('editBajaSs').value || null,
                 cuadrilla: cuadrillaEl && cuadrillaEl.checked ? 1 : 0,
             };
 
