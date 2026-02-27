@@ -161,6 +161,14 @@ $router->get('/trabajos/obtener', 'TrabajosController@obtener');
 $router->post('/trabajos/actualizar', 'TrabajosController@actualizar');
 $router->post('/trabajos/eliminar', 'TrabajosController@eliminar');
 
+// Rutas para propietarios
+$router->get('/datos/propietarios', 'PropietariosController@index');
+$router->post('/propietarios/crear', 'PropietariosController@crear');
+$router->get('/propietarios/obtener', 'PropietariosController@obtener');
+$router->post('/propietarios/actualizar', 'PropietariosController@actualizar');
+$router->post('/propietarios/eliminar', 'PropietariosController@eliminar');
+$router->post('/propietarios/subirImagenDni', 'PropietariosController@subirImagenDni');
+
 // Configurar página 404
 $router->notFound(function () {
     http_response_code(404);
