@@ -505,7 +505,7 @@ class ParcelasController extends BaseController
         $today = date('Y-m-d');
 
         $stmt = $db->prepare("INSERT INTO documentos_parcelas (parcela_id, tipo, nombre, archivo, id_user, created_at) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("isssss", $parcela_id, $tipo, $nombre, $archivoPath, $_SESSION['user_id'], $today);
+        $stmt->bind_param("isssis", $parcela_id, $tipo, $nombre, $archivoPath, $_SESSION['user_id'], $today);
 
         if ($stmt->execute()) {
             echo json_encode(['success' => true, 'message' => 'Documento subido correctamente', 'id' => $db->insert_id, 'archivo' => $archivoPath]);
