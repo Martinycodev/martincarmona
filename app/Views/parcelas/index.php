@@ -140,6 +140,7 @@ $title = 'Gestión de Parcelas';
                         <td><?= htmlspecialchars($parcela['olivos'] ?? '0') ?></td>
                         <td><?= htmlspecialchars($parcela['hidrante'] ?? '0') ?></td>
                         <td class="actions">
+                            <a href="<?= $this->url('/parcelas/detalle?id=' . $parcela['id']) ?>" class="btn btn-info btn-sm" title="Ver ficha">📋 Ficha</a>
                             <button class="btn-icon btn-edit" onclick="editParcela(<?= $parcela['id'] ?>, this)"
                                 title="Editar">
                                 ✏️

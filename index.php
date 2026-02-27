@@ -135,6 +135,9 @@ $router->post('/parcelas/crear', 'ParcelasController@crear');
 $router->get('/parcelas/obtener', 'ParcelasController@obtener');
 $router->post('/parcelas/actualizar', 'ParcelasController@actualizar');
 $router->post('/parcelas/eliminar', 'ParcelasController@eliminar');
+$router->get('/parcelas/detalle', 'ParcelasController@detalle');
+$router->post('/parcelas/subirDocumento', 'ParcelasController@subirDocumento');
+$router->post('/parcelas/eliminarDocumento', 'ParcelasController@eliminarDocumento');
 
 // Rutas para trabajadores (CRUD + búsqueda)
 $router->get('/trabajadores/buscar', 'TrabajadoresController@buscar');

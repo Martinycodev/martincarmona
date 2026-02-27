@@ -361,6 +361,211 @@ class ParcelasController extends BaseController
         }
     }
 
+    /**
+     * Ficha individual de una parcela con documentos y resumen de coste acumulado
+     */
+    public function detalle()
+    {
+        $id = intval($_GET['id'] ?? 0);
+        if ($id <= 0) {
+            header('Location: /datos/parcelas');
+            exit;
+        }
+
+        $db = \Database::connect();
+
+        // Cargar parcela con propietario
+        $stmt = $db->prepare("
+            SELECT p.*, pr.nombre as propietario_nombre, pr.apellidos as propietario_apellidos,
+                   pr.telefono as propietario_telefono, pr.email as propietario_email
+            FROM parcelas p
+            LEFT JOIN propietarios pr ON p.propietario_id = pr.id
+            WHERE p.id = ? AND p.id_user = ?
+        ");
+        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->execute();
+        $parcela = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$parcela) {
+            header('Location: /datos/parcelas');
+            exit;
+        }
+
+        // Cargar documentos
+        $stmt = $db->prepare("SELECT * FROM documentos_parcelas WHERE parcela_id = ? AND id_user = ? ORDER BY created_at DESC");
+        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->execute();
+        $documentos = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        // Coste acumulado: suma de horas_asignadas * precio_hora por parcela
+        // Estructura real confirmada leyendo PagoMensual.php:
+        // - tarea_parcelas: tarea_id, parcela_id
+        // - tarea_trabajadores: tarea_id, trabajador_id, horas_asignadas
+        // - tarea_trabajos: tarea_id, trabajo_id, precio_hora (snapshot)
+        // - trabajos: id, precio_hora (fallback)
+        $stmt = $db->prepare("
+            SELECT COALESCE(
+                SUM(tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0)),
+                0
+            ) as coste_acumulado
+            FROM tarea_parcelas tp
+            JOIN tareas ta ON tp.tarea_id = ta.id
+            JOIN tarea_trabajadores tt ON ta.id = tt.tarea_id
+            LEFT JOIN tarea_trabajos ttrab ON ta.id = ttrab.tarea_id
+            LEFT JOIN trabajos trab ON ttrab.trabajo_id = trab.id
+            WHERE tp.parcela_id = ? AND ta.id_user = ?
+        ");
+        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->execute();
+        $coste_row = $stmt->get_result()->fetch_assoc();
+        $coste_acumulado = $coste_row['coste_acumulado'] ?? 0;
+        $stmt->close();
+        $db->close();
+
+        $this->render('parcelas/detalle', [
+            'parcela' => $parcela,
+            'documentos' => $documentos,
+            'coste_acumulado' => $coste_acumulado,
+            'user' => ['name' => $_SESSION['user_name'] ?? 'Usuario']
+        ]);
+    }
+
+    /**
+     * Subir un documento adjunto a una parcela
+     */
+    public function subirDocumento()
+    {
+        header('Content-Type: application/json');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        $this->validateCsrf();
+
+        $parcela_id = intval($_POST['parcela_id'] ?? 0);
+        $tipo = in_array($_POST['tipo'] ?? '', ['escritura', 'permiso_riego', 'otro'])
+                ? $_POST['tipo'] : 'otro';
+        $nombre = trim($_POST['nombre'] ?? '');
+
+        if ($parcela_id <= 0 || empty($nombre)) {
+            echo json_encode(['success' => false, 'message' => 'Datos incompletos']);
+            return;
+        }
+
+        if (empty($_FILES['archivo']) || $_FILES['archivo']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['success' => false, 'message' => 'No se recibió ningún archivo válido']);
+            return;
+        }
+
+        $file = $_FILES['archivo'];
+        $allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+        $mimeType = mime_content_type($file['tmp_name']);
+
+        if (!in_array($mimeType, $allowed)) {
+            echo json_encode(['success' => false, 'message' => 'Formato no permitido (jpg, png, webp, pdf)']);
+            return;
+        }
+
+        if ($file['size'] > 10 * 1024 * 1024) {
+            echo json_encode(['success' => false, 'message' => 'El archivo no puede superar 10MB']);
+            return;
+        }
+
+        // Verify ownership
+        $db = \Database::connect();
+        $stmt = $db->prepare("SELECT id FROM parcelas WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $parcela_id, $_SESSION['user_id']);
+        $stmt->execute();
+        if ($stmt->get_result()->num_rows === 0) {
+            $stmt->close();
+            $db->close();
+            echo json_encode(['success' => false, 'message' => 'Parcela no encontrada']);
+            return;
+        }
+        $stmt->close();
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $uploadDir = BASE_PATH . '/public/uploads/parcelas/' . $parcela_id . '/docs/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $filename = uniqid('doc_') . '.' . $ext;
+        $dest = $uploadDir . $filename;
+
+        if (!move_uploaded_file($file['tmp_name'], $dest)) {
+            $db->close();
+            echo json_encode(['success' => false, 'message' => 'Error al guardar el archivo']);
+            return;
+        }
+
+        $archivoPath = '/public/uploads/parcelas/' . $parcela_id . '/docs/' . $filename;
+        $today = date('Y-m-d');
+
+        $stmt = $db->prepare("INSERT INTO documentos_parcelas (parcela_id, tipo, nombre, archivo, id_user, created_at) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isssss", $parcela_id, $tipo, $nombre, $archivoPath, $_SESSION['user_id'], $today);
+
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true, 'message' => 'Documento subido correctamente', 'id' => $db->insert_id, 'archivo' => $archivoPath]);
+        } else {
+            unlink($dest);
+            echo json_encode(['success' => false, 'message' => 'Error al guardar en la base de datos']);
+        }
+
+        $stmt->close();
+        $db->close();
+    }
+
+    /**
+     * Eliminar un documento adjunto de una parcela
+     */
+    public function eliminarDocumento()
+    {
+        header('Content-Type: application/json');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        $this->validateCsrf();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $id = intval($input['id'] ?? 0);
+
+        if ($id <= 0) {
+            echo json_encode(['success' => false, 'message' => 'ID no válido']);
+            return;
+        }
+
+        $db = \Database::connect();
+        $stmt = $db->prepare("SELECT archivo FROM documentos_parcelas WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$row) {
+            $db->close();
+            echo json_encode(['success' => false, 'message' => 'Documento no encontrado']);
+            return;
+        }
+
+        // Delete physical file
+        $filePath = BASE_PATH . $row['archivo'];
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        $stmt = $db->prepare("DELETE FROM documentos_parcelas WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->execute();
+        $stmt->close();
+        $db->close();
+
+        echo json_encode(['success' => true, 'message' => 'Documento eliminado correctamente']);
+    }
+
     public function __destruct()
     {
         if ($this->db) {
