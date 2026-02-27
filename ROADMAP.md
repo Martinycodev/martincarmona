@@ -54,9 +54,9 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 - [x] Mostrar coste acumulado por parcela en ficha de parcela.
 
 **Vistas:**
-- [ ] Dashboard económico: saldo banco/efectivo, últimos movimientos, deudas pendientes
-- [ ] Formularios CRUD para gastos e ingresos
-- [ ] Vista de cuenta por trabajador: deuda actual, historial de pagos mensuales
+- [x] Dashboard económico: saldo banco/efectivo, últimos movimientos, deudas pendientes
+- [x] Formularios CRUD para gastos e ingresos
+- [x] Vista de cuenta por trabajador: deuda actual, historial de pagos mensuales
 
 ---
 
