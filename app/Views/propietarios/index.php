@@ -253,12 +253,20 @@ $title = 'Gestión de Propietarios';
             var prevReverso = document.getElementById('previewReverso');
 
             if (p.imagen_dni_anverso) {
-                prevAnverso.innerHTML = '<img src="' + basePath + p.imagen_dni_anverso + '" alt="Anverso">';
+                var imgAnverso = document.createElement('img');
+                imgAnverso.src = basePath + p.imagen_dni_anverso;
+                imgAnverso.alt = 'DNI Anverso';
+                prevAnverso.innerHTML = '';
+                prevAnverso.appendChild(imgAnverso);
             } else {
                 prevAnverso.innerHTML = '<span>Sin imagen</span>';
             }
             if (p.imagen_dni_reverso) {
-                prevReverso.innerHTML = '<img src="' + basePath + p.imagen_dni_reverso + '" alt="Reverso">';
+                var imgReverso = document.createElement('img');
+                imgReverso.src = basePath + p.imagen_dni_reverso;
+                imgReverso.alt = 'DNI Reverso';
+                prevReverso.innerHTML = '';
+                prevReverso.appendChild(imgReverso);
             } else {
                 prevReverso.innerHTML = '<span>Sin imagen</span>';
             }
@@ -394,7 +402,11 @@ $title = 'Gestión de Propietarios';
                 showToast('Imagen subida correctamente', 'success');
                 var previewId = lado === 'anverso' ? 'previewAnverso' : 'previewReverso';
                 var preview   = document.getElementById(previewId);
-                preview.innerHTML = '<img src="' + basePath + res.imagen + '?t=' + Date.now() + '" alt="' + lado + '">';
+                var imgSubida = document.createElement('img');
+                imgSubida.src = basePath + res.imagen + '?t=' + Date.now();
+                imgSubida.alt = lado === 'anverso' ? 'DNI Anverso' : 'DNI Reverso';
+                preview.innerHTML = '';
+                preview.appendChild(imgSubida);
             } else {
                 showToast(res.message || 'Error al subir la imagen', 'error');
             }

@@ -176,7 +176,7 @@ class PropietariosController extends BaseController
             );
 
             if ($stmt->execute()) {
-                if ($stmt->affected_rows >= 0) {
+                if ($stmt->affected_rows > 0) {
                     echo json_encode(['success' => true, 'message' => 'Propietario actualizado correctamente']);
                 } else {
                     echo json_encode(['success' => false, 'message' => 'No se encontró el propietario']);
@@ -242,6 +242,15 @@ class PropietariosController extends BaseController
                 }
             }
 
+            // Clean up uploaded files
+            $uploadDir = BASE_PATH . '/public/uploads/propietarios/' . $id . '/';
+            if (is_dir($uploadDir)) {
+                foreach (glob($uploadDir . '*') as $file) {
+                    unlink($file);
+                }
+                rmdir($uploadDir);
+            }
+
             $stmt = $db->prepare("DELETE FROM propietarios WHERE id = ? AND id_user = ?");
             $stmt->bind_param("ii", $id, $_SESSION['user_id']);
 
@@ -305,6 +314,24 @@ class PropietariosController extends BaseController
             return;
         }
 
+        if ($file['size'] > 5 * 1024 * 1024) {
+            echo json_encode(['success' => false, 'message' => 'El archivo no puede superar 5MB']);
+            return;
+        }
+
+        // Verify ownership before writing file
+        $db = \Database::connect();
+        $stmt = $db->prepare("SELECT id FROM propietarios WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->execute();
+        if ($stmt->get_result()->num_rows === 0) {
+            $stmt->close();
+            $db->close();
+            echo json_encode(['success' => false, 'message' => 'Propietario no encontrado']);
+            return;
+        }
+        $stmt->close();
+
         $ext       = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $uploadDir = BASE_PATH . '/public/uploads/propietarios/' . $id . '/';
 
@@ -329,7 +356,6 @@ class PropietariosController extends BaseController
         $campo     = ($lado === 'anverso') ? 'imagen_dni_anverso' : 'imagen_dni_reverso';
 
         try {
-            $db   = \Database::connect();
             $stmt = $db->prepare("UPDATE propietarios SET {$campo} = ? WHERE id = ? AND id_user = ?");
             $stmt->bind_param("sii", $imagePath, $id, $_SESSION['user_id']);
             $stmt->execute();
