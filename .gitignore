@@ -21,6 +21,9 @@ vendor/
 .vscode/
 .idea/
 
+# Git worktrees
+.worktrees/
+
 
 # Archivos de prueba
 test/
