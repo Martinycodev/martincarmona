@@ -118,7 +118,6 @@ class ParcelasController extends BaseController
 
             $nombre = trim($input['nombre'] ?? '');
             $ubicacion = trim($input['ubicacion'] ?? '');
-            $empresa = trim($input['empresa'] ?? '');
             $propietario = trim($input['propietario'] ?? '');
             $propietario_id = !empty($input['propietario_id']) ? intval($input['propietario_id']) : null;
             $olivos = intval($input['olivos'] ?? 0);
@@ -152,8 +151,8 @@ class ParcelasController extends BaseController
             }
             $stmt->close();
 
-            $stmt = $db->prepare("INSERT INTO parcelas (nombre, olivos, ubicacion, empresa, propietario, propietario_id, hidrante, descripcion, referencia_catastral, tipo_olivos, `año_plantacion`, tipo_plantacion, riego_secano, corta, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sissssissssssssi", $nombre, $olivos, $ubicacion, $empresa, $propietario, $propietario_id, $hidrante, $descripcion, $referencia_catastral, $tipo_olivos, $año_plantacion, $tipo_plantacion, $riego_secano, $corta, $_SESSION['user_id']);
+            $stmt = $db->prepare("INSERT INTO parcelas (nombre, olivos, ubicacion, propietario, propietario_id, hidrante, descripcion, referencia_catastral, tipo_olivos, `año_plantacion`, tipo_plantacion, riego_secano, corta, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sisssissssssssi", $nombre, $olivos, $ubicacion, $propietario, $propietario_id, $hidrante, $descripcion, $referencia_catastral, $tipo_olivos, $año_plantacion, $tipo_plantacion, $riego_secano, $corta, $_SESSION['user_id']);
 
             if ($stmt->execute()) {
                 echo json_encode(['success' => true, 'message' => 'Parcela creada correctamente', 'id' => $db->insert_id]);
@@ -233,7 +232,6 @@ class ParcelasController extends BaseController
             $id = intval($input['id'] ?? 0);
             $nombre = trim($input['nombre'] ?? '');
             $ubicacion = trim($input['ubicacion'] ?? '');
-            $empresa = trim($input['empresa'] ?? '');
             $propietario = trim($input['propietario'] ?? '');
             $propietario_id = !empty($input['propietario_id']) ? intval($input['propietario_id']) : null;
             $olivos = intval($input['olivos'] ?? 0);
@@ -272,8 +270,8 @@ class ParcelasController extends BaseController
             }
             $stmt->close();
 
-            $stmt = $db->prepare("UPDATE parcelas SET nombre = ?, olivos = ?, ubicacion = ?, empresa = ?, propietario = ?, propietario_id = ?, hidrante = ?, descripcion = ?, referencia_catastral = ?, tipo_olivos = ?, `año_plantacion` = ?, tipo_plantacion = ?, riego_secano = ?, corta = ? WHERE id = ?");
-            $stmt->bind_param("sissssissssssssi", $nombre, $olivos, $ubicacion, $empresa, $propietario, $propietario_id, $hidrante, $descripcion, $referencia_catastral, $tipo_olivos, $año_plantacion, $tipo_plantacion, $riego_secano, $corta, $id);
+            $stmt = $db->prepare("UPDATE parcelas SET nombre = ?, olivos = ?, ubicacion = ?, propietario = ?, propietario_id = ?, hidrante = ?, descripcion = ?, referencia_catastral = ?, tipo_olivos = ?, `año_plantacion` = ?, tipo_plantacion = ?, riego_secano = ?, corta = ? WHERE id = ?");
+            $stmt->bind_param("sisssissssssssi", $nombre, $olivos, $ubicacion, $propietario, $propietario_id, $hidrante, $descripcion, $referencia_catastral, $tipo_olivos, $año_plantacion, $tipo_plantacion, $riego_secano, $corta, $id);
 
             if ($stmt->execute()) {
                 if ($stmt->affected_rows > 0) {

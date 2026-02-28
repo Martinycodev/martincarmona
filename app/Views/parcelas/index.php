@@ -30,10 +30,6 @@ $title = 'Gestión de Parcelas';
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="empresa">Empresa:</label>
-                        <input type="text" id="empresa" name="empresa">
-                    </div>
-                    <div class="form-group">
                         <label for="propietario_id">Propietario:</label>
                         <select id="propietario_id" name="propietario_id">
                             <option value="">-- Sin propietario --</option>
@@ -118,7 +114,6 @@ $title = 'Gestión de Parcelas';
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Ubicación</th>
-                    <th>Empresa</th>
                     <th>Propietario</th>
                     <th>Olivos</th>
                     <th>Hidrante</th>
@@ -131,7 +126,6 @@ $title = 'Gestión de Parcelas';
                         <td><?= htmlspecialchars($parcela['id'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($parcela['nombre'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($parcela['ubicacion'] ?? '-') ?></td>
-                        <td><?= htmlspecialchars($parcela['empresa'] ?? '-') ?></td>
                         <td><?= htmlspecialchars(
                             !empty($parcela['propietario_nombre'])
                             ? $parcela['propietario_nombre'] . ' ' . $parcela['propietario_apellidos']
@@ -177,10 +171,6 @@ $title = 'Gestión de Parcelas';
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="editEmpresa">Empresa:</label>
-                        <input type="text" id="editEmpresa" name="empresa">
-                    </div>
                     <div class="form-group">
                         <label for="edit_propietario_id">Propietario:</label>
                         <select id="edit_propietario_id" name="propietario_id">
@@ -374,7 +364,6 @@ $title = 'Gestión de Parcelas';
                 document.getElementById('editId').value = parcela.id;
                 document.getElementById('editNombre').value = parcela.nombre || '';
                 document.getElementById('editUbicacion').value = parcela.ubicacion || '';
-                document.getElementById('editEmpresa').value = parcela.empresa || '';
                 document.getElementById('editPropietario').value = parcela.propietario || '';
                 document.getElementById('editOlivos').value = parcela.olivos || '0';
                 document.getElementById('editHidrante').value = parcela.hidrante || '0';

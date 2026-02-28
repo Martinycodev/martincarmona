@@ -27,11 +27,6 @@ $title = 'Datos - MartinCarmona.com';
                 <div class="action-title">Herramientas</div>
                 <div class="action-desc">Listado de todas las herramientas</div>
             </a>
-            <a href="<?= $this->url('/datos/empresas') ?>" class="action-card">
-                <span class="action-icon">🏢</span>
-                <div class="action-title">Empresas</div>
-                <div class="action-desc">Listado de todas las empresas</div>
-            </a>
             <a href="<?= $this->url('/datos/parcelas') ?>" class="action-card">
                 <span class="action-icon">🌾</span>
                 <div class="action-title">Parcelas</div>

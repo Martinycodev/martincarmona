@@ -15,7 +15,6 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
         <div class="detail-grid">
             <div><strong>Olivos:</strong> <?= intval($parcela['olivos']) ?></div>
             <div><strong>Ubicación:</strong> <?= htmlspecialchars($parcela['ubicacion'] ?? '—') ?></div>
-            <div><strong>Empresa:</strong> <?= htmlspecialchars($parcela['empresa'] ?? '—') ?></div>
             <div><strong>Hidrante:</strong> <?= intval($parcela['hidrante'] ?? 0) ?></div>
             <?php if (!empty($parcela['referencia_catastral'])): ?>
             <div><strong>Referencia catastral:</strong> <?= htmlspecialchars($parcela['referencia_catastral']) ?></div>
