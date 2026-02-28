@@ -312,7 +312,7 @@ class Tarea
                     created_at,
                     updated_at
                 FROM tareas
-                WHERE id_user = ?
+                WHERE id_user = ? AND estado = 'realizada'
                 ORDER BY fecha DESC, created_at DESC
                 LIMIT ? OFFSET ?
             ");
@@ -353,8 +353,8 @@ class Tarea
         try {
             $stmt = $this->db->prepare("
                 SELECT COUNT(*) as total
-                FROM tareas 
-                WHERE id_user = ?
+                FROM tareas
+                WHERE id_user = ? AND estado = 'realizada'
             ");
             $stmt->bind_param("i", $userId);
             $stmt->execute();

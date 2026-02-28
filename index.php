@@ -118,6 +118,11 @@ $router->get('/economia/obtener', 'EconomiaController@obtener');
 $router->post('/economia/cerrarMes', 'EconomiaController@cerrar_mes');
 $router->post('/economia/registrarPago', 'EconomiaController@registrar_pago');
 
+// Rutas para tareas pendientes
+$router->get('/tareas/pendientes', 'TareasController@pendientes');
+$router->post('/tareas/crearPendiente', 'TareasController@crearPendiente');
+$router->post('/tareas/fechar', 'TareasController@fechar');
+
 // Rutas para edición inline de relaciones en el modal de tareas
 $router->post('/tareas/agregarTrabajador', 'TareasController@agregarTrabajador');
 $router->post('/tareas/quitarTrabajador', 'TareasController@quitarTrabajador');

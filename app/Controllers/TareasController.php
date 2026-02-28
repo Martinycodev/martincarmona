@@ -852,4 +852,122 @@ class TareasController extends BaseController
             'trabajos'     => $trabajos,
         ]);
     }
+
+    /**
+     * Lista de tareas pendientes (sin fecha)
+     */
+    public function pendientes()
+    {
+        $db = \Database::connect();
+        $stmt = $db->prepare("
+            SELECT t.*,
+                   GROUP_CONCAT(DISTINCT tr.nombre ORDER BY tr.nombre SEPARATOR ', ') as trabajadores_nombres,
+                   GROUP_CONCAT(DISTINCT p.nombre  ORDER BY p.nombre  SEPARATOR ', ') as parcelas_nombres
+            FROM tareas t
+            LEFT JOIN tarea_trabajadores tt ON t.id = tt.tarea_id
+            LEFT JOIN trabajadores tr ON tt.trabajador_id = tr.id
+            LEFT JOIN tarea_parcelas tp ON t.id = tp.tarea_id
+            LEFT JOIN parcelas p ON tp.parcela_id = p.id
+            WHERE t.estado = 'pendiente' AND t.id_user = ?
+            GROUP BY t.id
+            ORDER BY t.created_at DESC
+        ");
+        $stmt->bind_param("i", $_SESSION['user_id']);
+        $stmt->execute();
+        $tareas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        $db->close();
+
+        $this->render('tareas/pendientes', [
+            'tareas' => $tareas,
+            'user'   => ['name' => $_SESSION['user_name'] ?? 'Usuario']
+        ]);
+    }
+
+    /**
+     * Crear una tarea pendiente (sin fecha)
+     */
+    public function crearPendiente()
+    {
+        header('Content-Type: application/json');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        $this->validateCsrf();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $titulo      = trim($input['titulo'] ?? '');
+        $descripcion = trim($input['descripcion'] ?? '');
+
+        if (empty($titulo)) {
+            echo json_encode(['success' => false, 'message' => 'El título es requerido']);
+            return;
+        }
+
+        try {
+            $db   = \Database::connect();
+            $stmt = $db->prepare("
+                INSERT INTO tareas (titulo, descripcion, estado, horas, id_user, created_at, updated_at)
+                VALUES (?, ?, 'pendiente', 0, ?, NOW(), NOW())
+            ");
+            $stmt->bind_param("ssi", $titulo, $descripcion, $_SESSION['user_id']);
+
+            if ($stmt->execute()) {
+                echo json_encode(['success' => true, 'id' => $db->insert_id]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Error al crear la tarea: ' . $stmt->error]);
+            }
+            $stmt->close();
+            $db->close();
+
+        } catch (\Exception $e) {
+            error_log("Error creando tarea pendiente: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
+        }
+    }
+
+    /**
+     * Asignar fecha a una tarea pendiente → pasa a 'realizada'
+     */
+    public function fechar()
+    {
+        header('Content-Type: application/json');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        $this->validateCsrf();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $id    = intval($input['id'] ?? 0);
+        $fecha = trim($input['fecha'] ?? '');
+
+        if ($id <= 0 || empty($fecha) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            echo json_encode(['success' => false, 'message' => 'Datos inválidos']);
+            return;
+        }
+
+        try {
+            $db   = \Database::connect();
+            $stmt = $db->prepare("
+                UPDATE tareas
+                SET fecha = ?, estado = 'realizada', updated_at = NOW()
+                WHERE id = ? AND id_user = ? AND estado = 'pendiente'
+            ");
+            $stmt->bind_param("sii", $fecha, $id, $_SESSION['user_id']);
+
+            if ($stmt->execute() && $stmt->affected_rows > 0) {
+                echo json_encode(['success' => true, 'message' => 'Tarea fechada correctamente']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'No se pudo fechar la tarea']);
+            }
+            $stmt->close();
+            $db->close();
+
+        } catch (\Exception $e) {
+            error_log("Error fechando tarea: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
+        }
+    }
 }
