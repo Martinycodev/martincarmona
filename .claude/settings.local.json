@@ -25,7 +25,11 @@
       "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Models/PagoMensual.php\")",
       "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Models/Parcela.php\")",
       "Bash(php -l \"c:/xampp/htdocs/martincarmona/app/Controllers/TareasController.php\")",
-      "Bash(node -e \"const fs = require\\(''fs''\\); const code = fs.readFileSync\\(''c:/xampp/htdocs/martincarmona/public/js/ajax-navigation.js'', ''utf8''\\); try { new Function\\(code\\); console.log\\(''OK''\\); } catch\\(e\\) { console.error\\(''Error:'', e.message\\); }\")"
+      "Bash(node -e \"const fs = require\\(''fs''\\); const code = fs.readFileSync\\(''c:/xampp/htdocs/martincarmona/public/js/ajax-navigation.js'', ''utf8''\\); try { new Function\\(code\\); console.log\\(''OK''\\); } catch\\(e\\) { console.error\\(''Error:'', e.message\\); }\")",
+      "Bash(git add migrations/009_riego_parcela_fk.sql app/Controllers/RiegoController.php app/Views/riego/ index.php app/Views/datos/index.php app/Controllers/ParcelasController.php app/Views/parcelas/detalle.php)",
+      "Bash(git commit:*)",
+      "Bash(git add app/Controllers/EmpresasController.php app/Models/Empresa.php app/Views/empresas/index.php app/Views/datos/index.php app/Views/parcelas/index.php app/Views/parcelas/detalle.php app/Controllers/ParcelasController.php)",
+      "Bash(git add migrations/010_tareas_pendientes.sql app/Models/Tarea.php app/Controllers/TareasController.php app/Views/tareas/pendientes.php index.php app/Views/layouts/header.php)"
     ]
   }
 }

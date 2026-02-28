@@ -65,59 +65,59 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 > Completar entidades ya iniciadas con los campos y funcionalidades que define Proyecto.md.
 
 ### Trabajadores
-- [ ] Añadir campo `baja_ss` DATE a tabla `trabajadores`
-- [ ] Subir y almacenar imagen DNI anverso + reverso
-- [ ] Subir y almacenar imagen documento de Seguridad Social
-- [ ] Vista individual de trabajador: datos, historial de tareas, estado de deuda
+- [x] Añadir campo `baja_ss` DATE a tabla `trabajadores`
+- [x] Subir y almacenar imagen DNI anverso + reverso
+- [x] Subir y almacenar imagen documento de Seguridad Social
+- [x] Vista individual de trabajador: datos, historial de tareas, estado de deuda
 
 ### Parcelas
-- [ ] Añadir campos: `referencia_catastral`, `tipo_olivos`, `año_plantacion`, `tipo_plantacion` ENUM('tradicional','intensivo','superintensivo'), `riego_secano` ENUM('riego','secano'), `corta` ENUM('par','impar','siempre')
-- [ ] Crear tabla `documentos_parcelas` (parcela_id, tipo ENUM('escritura','permiso_riego','otro'), archivo, nombre)
-- [ ] Vista individual de parcela: ficha completa + documentos + resumen productividad (coste anual por olivo)
-- [ ] Cambiar `propietario` de texto plano → FK a tabla `propietarios` (Fase 2 — ver abajo)
+- [x] Añadir campos: `referencia_catastral`, `tipo_olivos`, `año_plantacion`, `tipo_plantacion` ENUM('tradicional','intensivo','superintensivo'), `riego_secano` ENUM('riego','secano'), `corta` ENUM('par','impar','siempre')
+- [x] Crear tabla `documentos_parcelas` (parcela_id, tipo ENUM('escritura','permiso_riego','otro'), archivo, nombre)
+- [x] Vista individual de parcela: ficha completa + documentos + resumen productividad (coste anual por olivo)
+- [x] Cambiar `propietario` de texto plano → FK a tabla `propietarios` (Fase 2 — ver abajo)
 
 ### Propietarios (entidad propia)
-- [ ] Crear tabla `propietarios`: `dni`, `imagen_dni_anverso`, `imagen_dni_reverso`, `nombre`, `apellidos`, `telefono`, `email`
-- [ ] Migrar datos actuales de `parcelas.propietario` (texto) a registros de la nueva tabla
-- [ ] CRUD completo de propietarios
-- [ ] Vista individual de propietario: sus parcelas y datos de contacto
+- [x] Crear tabla `propietarios`: `dni`, `imagen_dni_anverso`, `imagen_dni_reverso`, `nombre`, `apellidos`, `telefono`, `email`
+- [x] Migrar datos actuales de `parcelas.propietario` (texto) a registros de la nueva tabla
+- [x] CRUD completo de propietarios
+- [x] Vista individual de propietario: sus parcelas y datos de contacto
 
 ### Riego (BD ya existe, solo falta frontend)
-- [ ] Reestructurar tabla `riegos`: cambiar campo `propiedad` (texto) → `parcela_id` INT FK a `parcelas`
-- [ ] Crear `RiegoController` con CRUD completo
-- [ ] Vistas: listado de riegos por año, formulario de nueva fase de riego
-- [ ] Resumen anual de m³ por parcela visible en la ficha de la parcela
+- [x] Reestructurar tabla `riegos`: cambiar campo `propiedad` (texto) → `parcela_id` INT FK a `parcelas`
+- [x] Crear `RiegoController` con CRUD completo
+- [x] Vistas: listado de riegos por año, formulario de nueva fase de riego
+- [x] Resumen anual de m³ por parcela visible en la ficha de la parcela
 
 ### Vehículos y Herramientas
-- [ ] Vehículos: subir imagen ficha técnica y póliza de seguro (PDF/imagen)
-- [ ] Herramientas: subir PDF de instrucciones
+- [x] Vehículos: subir imagen ficha técnica y póliza de seguro (PDF/imagen)
+- [x] Herramientas: subir PDF de instrucciones
 
 ### Tareas pendientes (sin fecha)
-- [ ] Hacer `fecha` nullable en tabla `tareas` + añadir campo `estado` ENUM('realizada','pendiente') DEFAULT 'realizada'
-- [ ] Vista separada de tareas pendientes (sin fecha)
-- [ ] Acción "Fechar tarea" para asignar fecha y pasarla a realizada
-- [ ] Si la tarea pendiente tiene trabajador asignado → visible en la vista del rol Trabajador (Fase 4)
+- [x] Hacer `fecha` nullable en tabla `tareas` + añadir campo `estado` ENUM('realizada','pendiente') DEFAULT 'realizada'
+- [x] Vista separada de tareas pendientes (sin fecha)
+- [x] Acción "Fechar tarea" para asignar fecha y pasarla a realizada
+- [x] Si la tarea pendiente tiene trabajador asignado → visible en la vista del rol Trabajador (Fase 4)
 
 ---
 
 ## FASE 3 — Módulos nuevos
 
 ### Campaña (nov → feb/mar)
-- [ ] Crear tabla `campanas` (nombre: '25/26', fecha_inicio, fecha_fin, activa)
-- [ ] Crear tabla `campaña_registros` (campaña_id, parcela_id, fecha, kilos, rendimiento_pct, precio_venta, beneficio)
-- [ ] Sección de campaña con vista organizada por campaña (25/26, 26/27...)
-- [ ] Registro diario: parcela + kilos recogidos
-- [ ] Añadir rendimiento (% aceite/kg) a un registro existente — edición posterior
-- [ ] Al cerrar campaña: aplicar precio de venta → calcular y guardar `beneficio`
-- [ ] Reporte: beneficio campaña vs coste de producción acumulado por parcela
-- [ ] Reset del coste de producción al abrir nueva campaña
+- [x] Crear tabla `campanas` (nombre: '25/26', fecha_inicio, fecha_fin, activa)
+- [x] Crear tabla `campaña_registros` (campaña_id, parcela_id, fecha, kilos, rendimiento_pct, precio_venta, beneficio)
+- [x] Sección de campaña con vista organizada por campaña (25/26, 26/27...)
+- [x] Registro diario: parcela + kilos recogidos
+- [x] Añadir rendimiento (% aceite/kg) a un registro existente — edición posterior
+- [x] Al cerrar campaña: aplicar precio de venta → calcular y guardar `beneficio`
+- [x] Reporte: beneficio campaña vs coste de producción acumulado por parcela
+- [x] Reset del coste de producción al abrir nueva campaña
 
 ### Fitosanitarios
-- [ ] Crear tabla `fitosanitarios_inventario` (producto, fecha_compra, cantidad, unidad, proveedor_id)
-- [ ] Crear tabla `fitosanitarios_aplicaciones` (parcela_id, producto, fecha, cantidad, tarea_id)
-- [ ] Hook automático: al crear una tarea con trabajo "Sulfato" o "Herbicida" → generar entrada en `fitosanitarios_aplicaciones`
-- [ ] Vista de inventario de productos
-- [ ] Vista de historial de aplicaciones filtrable por parcela y producto
+- [x] Crear tabla `fitosanitarios_inventario` (producto, fecha_compra, cantidad, unidad, proveedor_id)
+- [x] Crear tabla `fitosanitarios_aplicaciones` (parcela_id, producto, fecha, cantidad, tarea_id)
+- [x] Hook automático: al crear una tarea con trabajo "Sulfato" o "Herbicida" → generar entrada en `fitosanitarios_aplicaciones`
+- [x] Vista de inventario de productos
+- [x] Vista de historial de aplicaciones filtrable por parcela y producto
 
 ---
 

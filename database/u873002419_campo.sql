@@ -2,8 +2,8 @@
 -- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 22-02-2026 a las 17:38:56
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 28-02-2026 a las 16:45:06
 -- Versión del servidor: 11.8.3-MariaDB-log
 -- Versión de PHP: 7.2.34
 
@@ -48,23 +48,18 @@ CREATE TABLE `cache_locks` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `empresas`
+-- Estructura de tabla para la tabla `documentos_parcelas`
 --
 
-CREATE TABLE `empresas` (
+CREATE TABLE `documentos_parcelas` (
   `id` int(11) NOT NULL,
+  `parcela_id` int(11) NOT NULL,
+  `tipo` enum('escritura','permiso_riego','otro') NOT NULL DEFAULT 'otro',
   `nombre` varchar(255) NOT NULL,
-  `dni` varchar(255) NOT NULL,
-  `id_user` bigint(20) NOT NULL
+  `archivo` varchar(255) NOT NULL,
+  `id_user` bigint(20) NOT NULL,
+  `created_at` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `empresas`
---
-
-INSERT INTO `empresas` (`id`, `nombre`, `dni`, `id_user`) VALUES
-(0, 'Pedro Carmona Díaz', '25961919W', 4),
-(1, 'Francisco José Peña Díaz', '78680834L', 4);
 
 -- --------------------------------------------------------
 
@@ -79,7 +74,9 @@ CREATE TABLE `herramientas` (
   `fecha_compra` date DEFAULT NULL,
   `descripcion` text DEFAULT NULL,
   `precio` decimal(10,2) DEFAULT NULL,
-  `id_user` bigint(20) NOT NULL
+  `id_user` bigint(20) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -114,27 +111,56 @@ CREATE TABLE `movimientos` (
   `fecha` date NOT NULL,
   `tipo` enum('ingreso','gasto') NOT NULL,
   `concepto` varchar(255) NOT NULL,
-  `categoria` enum('personal','pago','impuestos','maquinaria','parcela','servicios','subvencion','otros') NOT NULL,
+  `categoria` enum('personal','pago','impuestos','maquinaria','parcela','servicios','subvencion','otros','compras','reparaciones','inversiones','seguros','gestoria','labores_terceros','subvenciones','liquidacion_aceite') NOT NULL,
   `importe` decimal(10,2) NOT NULL,
   `proveedor_id` int(11) DEFAULT NULL,
   `trabajador_id` int(11) DEFAULT NULL,
   `vehiculo_id` int(11) DEFAULT NULL,
   `parcela_id` int(11) DEFAULT NULL,
-  `estado` enum('pendiente','pagado') DEFAULT 'pendiente'
+  `estado` enum('pendiente','pagado') DEFAULT 'pendiente',
+  `cuenta` enum('banco','efectivo') NOT NULL DEFAULT 'banco',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `movimientos`
 --
 
-INSERT INTO `movimientos` (`id`, `fecha`, `tipo`, `concepto`, `categoria`, `importe`, `proveedor_id`, `trabajador_id`, `vehiculo_id`, `parcela_id`, `estado`) VALUES
-(20, '2025-09-01', 'gasto', 'Sueldo - September 2025', 'pago', 60.00, NULL, 27, NULL, NULL, 'pendiente'),
-(21, '2025-09-24', 'ingreso', 'Ingreso tocho', 'personal', 300.00, NULL, NULL, NULL, NULL, 'pagado'),
-(25, '2025-09-01', 'gasto', 'Sueldo - September 2025', 'pago', 60.00, NULL, 34, NULL, NULL, 'pendiente'),
-(28, '2025-10-01', 'gasto', 'Sueldo - October 2025', 'pago', 27.69, NULL, 25, NULL, NULL, 'pendiente'),
-(29, '2025-11-01', 'gasto', 'Sueldo - November 2025', 'pago', 45.00, NULL, 25, NULL, NULL, 'pendiente'),
-(30, '2025-11-14', 'ingreso', 'gasto 2', 'personal', 33.00, NULL, NULL, NULL, NULL, 'pagado'),
-(31, '2026-02-01', 'gasto', 'Sueldo - February 2026', 'pago', 27.69, NULL, 25, NULL, NULL, 'pendiente');
+INSERT INTO `movimientos` (`id`, `fecha`, `tipo`, `concepto`, `categoria`, `importe`, `proveedor_id`, `trabajador_id`, `vehiculo_id`, `parcela_id`, `estado`, `cuenta`, `created_at`, `updated_at`) VALUES
+(20, '2025-09-01', 'gasto', 'Sueldo - September 2025', 'pago', 60.00, NULL, 27, NULL, NULL, 'pendiente', 'banco', '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(21, '2025-09-24', 'ingreso', 'Ingreso tocho', 'personal', 300.00, NULL, NULL, NULL, NULL, 'pagado', 'banco', '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(25, '2025-09-01', 'gasto', 'Sueldo - September 2025', 'pago', 60.00, NULL, 34, NULL, NULL, 'pendiente', 'banco', '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(28, '2025-10-01', 'gasto', 'Sueldo - October 2025', 'pago', 27.69, NULL, 25, NULL, NULL, 'pendiente', 'banco', '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(29, '2025-11-01', 'gasto', 'Sueldo - November 2025', 'pago', 45.00, NULL, 25, NULL, NULL, 'pendiente', 'banco', '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(30, '2025-11-14', 'ingreso', 'gasto 2', 'personal', 33.00, NULL, NULL, NULL, NULL, 'pagado', 'banco', '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(31, '2026-02-01', 'gasto', 'Sueldo - February 2026', 'pago', 27.69, NULL, 25, NULL, NULL, 'pendiente', 'banco', '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(32, '2026-02-26', 'gasto', 'rastrillos', 'compras', 10.00, NULL, NULL, NULL, NULL, 'pendiente', 'banco', '2026-02-26 20:59:37', '2026-02-26 20:59:37');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pagos_mensuales_trabajadores`
+--
+
+CREATE TABLE `pagos_mensuales_trabajadores` (
+  `id` int(11) NOT NULL,
+  `trabajador_id` int(11) NOT NULL,
+  `month` tinyint(2) NOT NULL COMMENT '1-12',
+  `year` smallint(4) NOT NULL COMMENT 'Ej: 2026',
+  `importe_total` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `pagado` tinyint(1) NOT NULL DEFAULT 0,
+  `fecha_pago` date DEFAULT NULL,
+  `id_user` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `pagos_mensuales_trabajadores`
+--
+
+INSERT INTO `pagos_mensuales_trabajadores` (`id`, `trabajador_id`, `month`, `year`, `importe_total`, `pagado`, `fecha_pago`, `id_user`) VALUES
+(1, 25, 2, 2026, 46.00, 1, '2026-02-26', 4),
+(2, 34, 2, 2026, 18.00, 1, '2026-02-26', 4);
 
 -- --------------------------------------------------------
 
@@ -143,63 +169,72 @@ INSERT INTO `movimientos` (`id`, `fecha`, `tipo`, `concepto`, `categoria`, `impo
 --
 
 CREATE TABLE `parcelas` (
-  `nombre` varchar(2000) NOT NULL,
+  `nombre` varchar(255) NOT NULL,
   `id` int(11) NOT NULL,
   `olivos` int(11) NOT NULL,
   `ubicacion` varchar(255) NOT NULL,
   `empresa` varchar(255) NOT NULL,
   `propietario` varchar(255) NOT NULL,
+  `propietario_id` int(11) DEFAULT NULL,
   `hidrante` int(11) NOT NULL,
   `descripcion` varchar(255) NOT NULL,
-  `id_user` bigint(20) NOT NULL
+  `referencia_catastral` varchar(50) DEFAULT NULL,
+  `tipo_olivos` varchar(100) DEFAULT NULL,
+  `año_plantacion` year(4) DEFAULT NULL,
+  `tipo_plantacion` enum('tradicional','intensivo','superintensivo') DEFAULT NULL,
+  `riego_secano` enum('riego','secano') DEFAULT NULL,
+  `corta` enum('par','impar','siempre') DEFAULT NULL,
+  `id_user` bigint(20) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `parcelas`
 --
 
-INSERT INTO `parcelas` (`nombre`, `id`, `olivos`, `ubicacion`, `empresa`, `propietario`, `hidrante`, `descripcion`, `id_user`) VALUES
-('Amarguillos (Loli)', 2, 250, 'Crta Marín', 'Pedro Carmona Díaz', 'Loli', 853, '', 4),
-('Amarguillos (Paco)', 3, 200, 'Ctra Marín', 'Francisco José Peña Díaz', 'Paco', 855, '', 4),
-('Camino Andujar (plantones)', 4, 206, 'Camino Andujar', 'Francisco José Peña Díaz', 'Paco', 835, '', 4),
-('Camino Andújar Grande (abajo)', 5, 125, 'Camino Andujar', 'Pedro Carmona Díaz', 'Pedro', 849, '', 4),
-('Camino Andújar Grande (arriba)', 6, 78, 'Camino Andujar', 'Pedro Carmona Díaz', 'Pedro', 772, '', 4),
-('Camino Lopera', 7, 55, 'Camino Lopera', 'Pedro Carmona Díaz', 'Loli', 0, '', 4),
-('Cañada de Pedro Díaz', 8, 145, 'Ctra Porcuna', 'Pedro Carmona Díaz', 'Loli', 0, '', 4),
-('Cantarerías Pepe', 9, 0, '', 'Catalina Carmona (Pepe)', '', 0, '', 4),
-('Cáritas / grilleros', 10, 230, 'Camino grilleros', 'Pedro Carmona Díaz', 'Caritas', 0, '', 4),
-('Cochera', 11, 0, '', '', '', 0, '', 4),
-('Coquijo', 12, 41, 'Camino de las 3 fuentes', 'Francisco José Peña Díaz', 'Paco', 0, '', 4),
-('Cuesta de Juan Cobo 1/3(Paco)', 13, 233, 'Camino Andújar', 'Francisco José Peña Díaz', 'Paco', 841, '', 4),
-('Cuesta de Juan Cobo 2/3(Pedro)', 14, 466, 'Camino Andújar', 'Pedro Carmona Díaz', 'Pedro', 841, '', 4),
-('Estaca del Abuelo (Paco)', 15, 150, 'Camino las rellertas', 'Francisco José Peña Díaz', 'Paco', 0, '', 4),
-('Estacá del Abuelo (Pedro)', 16, 64, 'camino de las rellertas', 'Pedro Carmona Díaz', 'Pedro', 0, '', 4),
-('Garría / marín', 17, 100, 'Camino del Marín', 'Pedro Carmona Díaz', 'Pedro', 0, '23007A00100060QW', 4),
-('Jurado', 18, 250, 'Camino arroyo Arjonilla', 'Francisco José Peña Díaz', 'Paco', 674, '', 4),
-('La Reguera (Plantones)', 19, 400, 'Camino de Praena', 'Pedro Carmona Díaz', 'Pedro', 0, '', 4),
-('Las cajas (San Jose)', 20, 738, 'Crta Lopera', 'Jose Ángel de la Brena Ruano', 'Jose Angel', 0, '', 4),
-('Los Caranzos (Paco)', 21, 200, 'Ctra Arjona', 'Francisco José Peña Díaz', 'Paco', 0, '', 4),
-('Los Caranzos (Pedro)', 22, 200, 'Ctra Arjona', 'Pedro Carmona Díaz', 'Pedro', 0, '', 4),
-('Los torneros', 23, 450, 'Camino Andújar', 'Pedro Carmona Díaz', 'Cristobal', 865, '', 4),
-('Majuelo', 24, 70, 'Camino fuente del escribano', 'Francisco José Peña Díaz', 'Paco', 0, '', 4),
-('Monguía (Ctra Marmolejo)', 25, 150, 'Ctra marmolejo', 'Pedro Carmona Díaz', 'Pedro', 0, '', 4),
-('Monte Pepe', 26, 0, '', 'Catalina Carmona (Pepe)', '', 0, '', 4),
-('Oficina', 27, 0, '', '', '', 0, '', 4),
-('Peña Rubias (Pedro)', 28, 170, 'Camino de fuente escribano', 'Pedro Carmona Díaz', 'Loli', 0, '', 4),
-('Peñarubias (acantilado)', 29, 70, 'Camino fuente del escribano', 'Francisco José Peña Díaz', 'Paco', 0, '', 4),
-('Peñarubias (Paco)', 30, 100, 'Camino fuente del escribano', 'Francisco José Peña Díaz', 'Paco', 0, '', 4),
-('Platerilla Estaca del abuelo (pequeño)', 31, 45, 'Camino de las rellertas', 'Pedro Carmona Díaz', 'Pedro', 0, '', 4),
-('Pocico (Loli)', 32, 150, 'Camino Pilar', 'Pedro Carmona Díaz', 'Loli', 604, '', 4),
-('Pocico (Paco)', 33, 120, 'Camino Pilar', 'Francisco José Peña Díaz', 'Paco', 605, '', 4),
-('Pocico (Pedro)', 34, 141, 'Camino Pilar', 'Pedro Carmona Díaz', 'Pedro', 605, '', 4),
-('Pocico (Pedro) plantones', 35, 200, 'Camino pilar', 'Pedro Carmona Díaz', 'Pedro', 605, '', 4),
-('Pocico tierra', 36, 0, '', 'Pedro Carmona Díaz', '', 0, '', 4),
-('PradoPortales Pepe', 37, 0, '', 'Catalina Carmona (Pepe)', '', 0, '', 4),
-('Praena Plantones grandes', 38, 280, 'Camino de Praena', 'Pedro Carmona Díaz', 'Pedro', 0, '', 4),
-('Santa Cruz (San Jose)', 39, 550, 'Ctra Lopera', 'Jose Ángel de la Brena Ruano', 'Jose Angel', 0, '', 4),
-('Silveria - caranzos (Paco)', 40, 0, 'Ctra Arjona', 'Francisco José Peña Díaz', 'Paco', 0, '', 4),
-('Sotelo Arjona', 41, 400, 'Ctra Arjona', 'Pedro Carmona Díaz', 'Cristobal', 0, '', 4),
-('Aguirre', 42, 72, 'Camino del pilar', 'Pedro Carmona Díaz', 'Loli', 0, '', 4);
+INSERT INTO `parcelas` (`nombre`, `id`, `olivos`, `ubicacion`, `empresa`, `propietario`, `propietario_id`, `hidrante`, `descripcion`, `referencia_catastral`, `tipo_olivos`, `año_plantacion`, `tipo_plantacion`, `riego_secano`, `corta`, `id_user`, `created_at`, `updated_at`) VALUES
+('Amarguillos (Loli)', 2, 250, 'Crta Marín', 'Pedro Carmona Díaz', 'Loli', NULL, 853, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Amarguillos (Paco)', 3, 200, 'Ctra Marín', 'Francisco José Peña Díaz', 'Paco', NULL, 855, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Camino Andujar (plantones)', 4, 206, 'Camino Andujar', 'Francisco José Peña Díaz', 'Paco', NULL, 835, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Camino Andújar Grande (abajo)', 5, 125, 'Camino Andujar', 'Pedro Carmona Díaz', 'Pedro', NULL, 849, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Camino Andújar Grande (arriba)', 6, 78, 'Camino Andujar', 'Pedro Carmona Díaz', 'Pedro', NULL, 772, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Camino Lopera', 7, 55, 'Camino Lopera', 'Pedro Carmona Díaz', 'Loli', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Cañada de Pedro Díaz', 8, 145, 'Ctra Porcuna', 'Pedro Carmona Díaz', 'Loli', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Cantarerías Pepe', 9, 0, '', 'Catalina Carmona (Pepe)', '', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Cáritas / grilleros', 10, 230, 'Camino grilleros', 'Pedro Carmona Díaz', 'Caritas', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Cochera', 11, 0, '', '', '', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Coquijo', 12, 41, 'Camino de las 3 fuentes', 'Francisco José Peña Díaz', 'Paco', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Cuesta de Juan Cobo 1/3(Paco)', 13, 233, 'Camino Andújar', 'Francisco José Peña Díaz', 'Paco', NULL, 841, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Cuesta de Juan Cobo 2/3(Pedro)', 14, 466, 'Camino Andújar', 'Pedro Carmona Díaz', 'Pedro', NULL, 841, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Estaca del Abuelo (Paco)', 15, 150, 'Camino las rellertas', 'Francisco José Peña Díaz', 'Paco', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Estacá del Abuelo (Pedro)', 16, 64, 'camino de las rellertas', 'Pedro Carmona Díaz', 'Pedro', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Garría / marín', 17, 100, 'Camino del Marín', 'Pedro Carmona Díaz', 'Pedro', NULL, 0, '23007A00100060QW', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Jurado', 18, 250, 'Camino arroyo Arjonilla', 'Francisco José Peña Díaz', 'Paco', NULL, 674, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('La Reguera (Plantones)', 19, 400, 'Camino de Praena', 'Pedro Carmona Díaz', 'Pedro', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Las cajas (San Jose)', 20, 738, 'Crta Lopera', 'Jose Ángel de la Brena Ruano', 'Jose Angel', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Los Caranzos (Paco)', 21, 200, 'Ctra Arjona', 'Francisco José Peña Díaz', 'Paco', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Los Caranzos (Pedro)', 22, 200, 'Ctra Arjona', 'Pedro Carmona Díaz', 'Pedro', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Los torneros', 23, 450, 'Camino Andújar', 'Pedro Carmona Díaz', 'Cristobal', NULL, 865, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Majuelo', 24, 70, 'Camino fuente del escribano', 'Francisco José Peña Díaz', 'Paco', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Monguía (Ctra Marmolejo)', 25, 150, 'Ctra marmolejo', 'Pedro Carmona Díaz', 'Pedro', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Monte Pepe', 26, 0, '', 'Catalina Carmona (Pepe)', '', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Oficina', 27, 0, '', '', '', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Peña Rubias (Pedro)', 28, 170, 'Camino de fuente escribano', 'Pedro Carmona Díaz', 'Loli', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Peñarubias (acantilado)', 29, 70, 'Camino fuente del escribano', 'Francisco José Peña Díaz', 'Paco', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Peñarubias (Paco)', 30, 100, 'Camino fuente del escribano', 'Francisco José Peña Díaz', 'Paco', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Platerilla Estaca del abuelo (pequeño)', 31, 45, 'Camino de las rellertas', 'Pedro Carmona Díaz', 'Pedro', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Pocico (Loli)', 32, 150, 'Camino Pilar', 'Pedro Carmona Díaz', 'Loli', NULL, 604, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Pocico (Paco)', 33, 120, 'Camino Pilar', 'Francisco José Peña Díaz', 'Paco', NULL, 605, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Pocico (Pedro)', 34, 141, 'Camino Pilar', 'Pedro Carmona Díaz', 'Pedro', NULL, 605, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Pocico (Pedro) plantones', 35, 200, 'Camino pilar', 'Pedro Carmona Díaz', 'Pedro', NULL, 605, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Pocico tierra', 36, 0, '', 'Pedro Carmona Díaz', '', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('PradoPortales Pepe', 37, 0, '', 'Catalina Carmona (Pepe)', '', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Praena Plantones grandes', 38, 280, 'Camino de Praena', 'Pedro Carmona Díaz', 'Pedro', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Santa Cruz (San Jose)', 39, 550, 'Ctra Lopera', 'Jose Ángel de la Brena Ruano', 'Jose Angel', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Silveria - caranzos (Paco)', 40, 0, 'Ctra Arjona', 'Francisco José Peña Díaz', 'Paco', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Sotelo Arjona', 41, 400, 'Ctra Arjona', 'Pedro Carmona Díaz', 'Cristobal', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+('Aguirre', 42, 72, 'Camino del pilar', 'Pedro Carmona Díaz', 'Loli', NULL, 0, '', NULL, NULL, NULL, NULL, NULL, NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29');
 
 -- --------------------------------------------------------
 
@@ -227,6 +262,24 @@ CREATE TABLE `password_reset_tokens` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `propietarios`
+--
+
+CREATE TABLE `propietarios` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(255) NOT NULL,
+  `apellidos` varchar(255) DEFAULT NULL,
+  `dni` varchar(20) DEFAULT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `email` varchar(150) DEFAULT NULL,
+  `imagen_dni_anverso` varchar(255) DEFAULT NULL,
+  `imagen_dni_reverso` varchar(255) DEFAULT NULL,
+  `id_user` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `proveedores`
 --
 
@@ -236,7 +289,9 @@ CREATE TABLE `proveedores` (
   `telefono` varchar(20) DEFAULT NULL,
   `ubicacion` varchar(255) DEFAULT NULL,
   `descripcion` text DEFAULT NULL,
-  `id_user` bigint(20) NOT NULL
+  `id_user` bigint(20) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -255,7 +310,9 @@ CREATE TABLE `riegos` (
   `fecha_fin` date DEFAULT NULL,
   `fecha_ini` date DEFAULT NULL,
   `total_m3` float DEFAULT NULL,
-  `id_user` bigint(20) NOT NULL DEFAULT 4
+  `id_user` bigint(20) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -304,8 +361,8 @@ CREATE TABLE `tareas` (
   `titulo` varchar(150) NOT NULL DEFAULT '',
   `descripcion` varchar(255) DEFAULT NULL,
   `horas` decimal(5,2) DEFAULT 0.00 COMMENT 'Horas totales de la tarea',
-  `updated_at` date NOT NULL,
-  `created_at` date NOT NULL,
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
   `id_user` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -314,34 +371,37 @@ CREATE TABLE `tareas` (
 --
 
 INSERT INTO `tareas` (`id`, `fecha`, `titulo`, `descripcion`, `horas`, `updated_at`, `created_at`, `id_user`) VALUES
-(3, '2025-05-16', 'nada', 'nada', 4.00, '2025-05-08', '2025-05-08', 4),
-(5, '2025-05-14', 'adfadfadfa', 'adfadfadfa', 4.00, '2025-05-10', '2025-05-10', 4),
-(6, '2025-08-12', 'hola el 12', 'hola el 12', 4.00, '2025-08-30', '0000-00-00', 4),
-(7, '2025-08-16', 'fvczzv', 'fvczzv', 3.00, '2025-08-30', '2025-08-16', 4),
-(14, '2025-08-14', 'arreglar averia', 'arreglar averia', 3.00, '2025-08-16', '2025-08-16', 4),
-(16, '2025-08-20', 'afdsfadaf', 'afdsfadaf', 1.00, '2025-08-20', '2025-08-20', 4),
-(17, '2025-08-20', 'adfadf pedro', 'adfadf pedro', 2.00, '2025-08-20', '2025-08-20', 4),
-(18, '2025-08-13', 'trabajos', 'trabajos', 3.00, '2025-08-20', '2025-08-20', 4),
-(19, '2025-08-08', 'desnate', 'desnate', 3.00, '2025-08-20', '2025-08-20', 4),
-(20, '2025-08-22', 'Prueba de hoy', 'Prueba de hoy', 3.00, '2025-08-22', '2025-08-22', 4),
-(21, '2025-08-22', 'segunda prueba de hoy', 'segunda prueba de hoy', 3.00, '2025-08-30', '2025-08-22', 4),
-(22, '2025-08-18', 'nueva', 'nueva', 3.00, '2025-08-22', '2025-08-22', 4),
-(23, '2025-08-02', 'hola', 'hola', 3.00, '2025-08-30', '2025-08-30', 4),
-(24, '2025-08-04', 'Quitar vareta en el campo', 'Quitar vareta en el campo', 4.00, '2025-08-30', '2025-08-30', 4),
-(26, '2025-08-05', 'prueba de fuego', 'prueba de fuego', 3.00, '2025-08-30', '2025-08-30', 4),
-(42, '2025-09-19', 'poner 1 parcela', 'poner 1 parcela', 1.00, '2025-09-24', '2025-09-24', 4),
-(60, '2025-09-24', 'vareta', 'vareta', 4.00, '2025-09-24', '2025-09-24', 4),
-(61, '2025-09-24', 'Prueba de 2 trabajadores', 'Prueba de 2 trabajadores', 6.50, '2025-09-24', '2025-09-24', 4),
-(62, '2025-09-22', 'Elmakkid', 'Elmakkid', 2.00, '2025-09-24', '2025-09-24', 4),
-(66, '2025-09-25', 'arreglar plant', 'arreglar plant', 3.00, '2025-09-25', '2025-09-25', 4),
-(67, '2025-09-25', 'arreglar plant', 'arreglar plant', 6.50, '2025-09-25', '2025-09-25', 4),
-(71, '2025-10-22', 'holas', 'holas', 3.00, '2025-10-22', '2025-10-22', 4),
-(72, '2025-11-13', 'cosas', 'cosas', 3.00, '2025-11-13', '2025-11-13', 4),
-(73, '2026-02-14', 'fuimos a cortar con la motosierra', 'fuimos a cortar con la motosierra', 0.00, '2026-02-22', '2026-02-09', 4),
-(74, '2026-02-11', 'limpiar la cochera', 'limpiar la cochera', 3.00, '2026-02-22', '2026-02-09', 4),
-(75, '2026-02-09', 'ir al riego', 'ir al riego', 3.00, '2026-02-09', '2026-02-09', 4),
-(76, '2026-02-22', 'Prueba de fuego', 'hola cara cola', 2.00, '2026-02-22', '2026-02-22', 4),
-(77, '2026-02-18', '', '', 0.00, '2026-02-22', '2026-02-22', 4);
+(3, '2025-05-16', 'nada', 'nada', 4.00, '2025-05-08 00:00:00', '2025-05-08 00:00:00', 4),
+(5, '2025-05-14', 'adfadfadfa', 'adfadfadfa', 4.00, '2025-05-10 00:00:00', '2025-05-10 00:00:00', 4),
+(6, '2025-08-12', 'hola el 12', 'hola el 12', 4.00, '2025-08-30 00:00:00', '0000-00-00 00:00:00', 4),
+(7, '2025-08-16', 'fvczzv', 'fvczzv', 3.00, '2025-08-30 00:00:00', '2025-08-16 00:00:00', 4),
+(14, '2025-08-14', 'arreglar averia', 'arreglar averia', 3.00, '2025-08-16 00:00:00', '2025-08-16 00:00:00', 4),
+(16, '2025-08-20', 'afdsfadaf', 'afdsfadaf', 1.00, '2025-08-20 00:00:00', '2025-08-20 00:00:00', 4),
+(17, '2025-08-20', 'adfadf pedro', 'adfadf pedro', 2.00, '2025-08-20 00:00:00', '2025-08-20 00:00:00', 4),
+(18, '2025-08-13', 'trabajos', 'trabajos', 3.00, '2025-08-20 00:00:00', '2025-08-20 00:00:00', 4),
+(19, '2025-08-08', 'desnate', 'desnate', 3.00, '2025-08-20 00:00:00', '2025-08-20 00:00:00', 4),
+(20, '2025-08-22', 'Prueba de hoy', 'Prueba de hoy', 3.00, '2025-08-22 00:00:00', '2025-08-22 00:00:00', 4),
+(21, '2025-08-22', 'segunda prueba de hoy', 'segunda prueba de hoy', 3.00, '2025-08-30 00:00:00', '2025-08-22 00:00:00', 4),
+(22, '2025-08-18', 'nueva', 'nueva', 3.00, '2025-08-22 00:00:00', '2025-08-22 00:00:00', 4),
+(23, '2025-08-02', 'hola', 'hola', 3.00, '2025-08-30 00:00:00', '2025-08-30 00:00:00', 4),
+(24, '2025-08-04', 'Quitar vareta en el campo', 'Quitar vareta en el campo', 4.00, '2025-08-30 00:00:00', '2025-08-30 00:00:00', 4),
+(26, '2025-08-05', 'prueba de fuego', 'prueba de fuego', 3.00, '2025-08-30 00:00:00', '2025-08-30 00:00:00', 4),
+(42, '2025-09-19', 'poner 1 parcela', 'poner 1 parcela', 1.00, '2025-09-24 00:00:00', '2025-09-24 00:00:00', 4),
+(60, '2025-09-24', 'vareta', 'vareta', 4.00, '2025-09-24 00:00:00', '2025-09-24 00:00:00', 4),
+(61, '2025-09-24', 'Prueba de 2 trabajadores', 'Prueba de 2 trabajadores', 6.50, '2025-09-24 00:00:00', '2025-09-24 00:00:00', 4),
+(62, '2025-09-22', 'Elmakkid', 'Elmakkid', 2.00, '2025-09-24 00:00:00', '2025-09-24 00:00:00', 4),
+(66, '2025-09-25', 'arreglar plant', 'arreglar plant', 3.00, '2025-09-25 00:00:00', '2025-09-25 00:00:00', 4),
+(67, '2025-09-25', 'arreglar plant', 'arreglar plant', 6.50, '2025-09-25 00:00:00', '2025-09-25 00:00:00', 4),
+(71, '2025-10-22', 'holas', 'holas', 3.00, '2025-10-22 00:00:00', '2025-10-22 00:00:00', 4),
+(72, '2025-11-13', 'cosas', 'cosas', 3.00, '2025-11-13 00:00:00', '2025-11-13 00:00:00', 4),
+(73, '2026-02-14', 'fuimos a cortar con la motosierra', 'fuimos a cortar con la motosierra', 0.00, '2026-02-22 00:00:00', '2026-02-09 00:00:00', 4),
+(74, '2026-02-11', 'limpiar la cochera', 'limpiar la cochera', 3.00, '2026-02-22 00:00:00', '2026-02-09 00:00:00', 4),
+(75, '2026-02-09', 'ir al riego', 'ir al riego', 3.00, '2026-02-09 00:00:00', '2026-02-09 00:00:00', 4),
+(76, '2026-02-22', 'Prueba de fuego', 'hola cara cola', 2.00, '2026-02-22 00:00:00', '2026-02-22 00:00:00', 4),
+(77, '2026-02-18', 'cortar ramon', 'cortar ramon\n', 0.00, '2026-02-25 18:21:52', '2026-02-22 00:00:00', 4),
+(83, '2026-02-26', '', 'ir al riego', 4.00, '2026-02-26 20:57:20', '2026-02-26 20:55:50', 4),
+(84, '2026-02-26', 'abrir riego2', 'abrir riego dos', 6.00, '2026-02-26 21:12:43', '2026-02-26 21:12:23', 4),
+(85, '2026-02-27', '', 'abrir riego 3', 2.00, '2026-02-26 21:19:18', '2026-02-26 21:19:00', 4);
 
 -- --------------------------------------------------------
 
@@ -450,7 +510,10 @@ INSERT INTO `tarea_trabajadores` (`id`, `tarea_id`, `trabajador_id`, `horas_asig
 (83, 73, 25, 0.00, '2026-02-09 14:23:13'),
 (85, 74, 25, 3.00, '2026-02-09 14:38:21'),
 (86, 75, 25, 3.00, '2026-02-09 14:39:52'),
-(87, 76, 43, 2.00, '2026-02-22 15:04:44');
+(87, 76, 43, 2.00, '2026-02-22 15:04:44'),
+(88, 77, 35, 0.00, '2026-02-22 21:00:58'),
+(89, 85, 34, 2.00, '2026-02-26 21:19:21'),
+(90, 85, 25, 2.00, '2026-02-26 21:19:25');
 
 -- --------------------------------------------------------
 
@@ -497,7 +560,10 @@ INSERT INTO `tarea_trabajos` (`id`, `tarea_id`, `trabajo_id`, `horas_trabajo`, `
 (74, 73, 36, 0.00, NULL, '2026-02-09 14:23:13'),
 (75, 74, 51, 3.00, NULL, '2026-02-09 14:38:22'),
 (76, 75, 1, 3.00, NULL, '2026-02-09 14:39:52'),
-(77, 76, 57, 2.00, NULL, '2026-02-22 15:04:31');
+(77, 76, 57, 2.00, NULL, '2026-02-22 15:04:31'),
+(78, 83, 1, 4.00, NULL, '2026-02-26 20:56:29'),
+(79, 84, 1, 6.00, NULL, '2026-02-26 21:13:09'),
+(80, 85, 1, 2.00, NULL, '2026-02-26 21:19:32');
 
 -- --------------------------------------------------------
 
@@ -507,10 +573,11 @@ INSERT INTO `tarea_trabajos` (`id`, `tarea_id`, `trabajo_id`, `horas_trabajo`, `
 
 CREATE TABLE `trabajadores` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(2000) NOT NULL,
+  `nombre` varchar(255) NOT NULL,
   `dni` varchar(255) DEFAULT NULL,
   `ss` varchar(255) DEFAULT NULL,
   `alta_ss` date DEFAULT NULL,
+  `baja_ss` date DEFAULT NULL,
   `cuadrilla` tinyint(1) NOT NULL DEFAULT 0,
   `id_user` bigint(20) NOT NULL,
   `telefono` varchar(20) DEFAULT NULL,
@@ -520,37 +587,42 @@ CREATE TABLE `trabajadores` (
   `direccion` text DEFAULT NULL COMMENT 'Dirección del trabajador',
   `especialidad` varchar(100) DEFAULT NULL COMMENT 'Especialidad del trabajador',
   `fecha_contratacion` date DEFAULT NULL COMMENT 'Fecha de contratación',
-  `estado` enum('activo','inactivo') DEFAULT 'activo' COMMENT 'Estado del trabajador'
+  `estado` enum('activo','inactivo') DEFAULT 'activo' COMMENT 'Estado del trabajador',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `imagen_dni_anverso` varchar(255) DEFAULT NULL,
+  `imagen_dni_reverso` varchar(255) DEFAULT NULL,
+  `imagen_ss` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `trabajadores`
 --
 
-INSERT INTO `trabajadores` (`id`, `nombre`, `dni`, `ss`, `alta_ss`, `cuadrilla`, `id_user`, `telefono`, `foto`, `apellidos`, `email`, `direccion`, `especialidad`, `fecha_contratacion`, `estado`) VALUES
-(25, 'Martín Carmona López', '53598764R', '231011344450', NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(26, 'Pedro Carmona Díaz', '25961919W', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(27, 'Mohammed Louar', '53914211A', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(28, 'ElMakki Louaar', 'X839004P', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(29, 'Rabha Errafai', 'X5917993R', '231038134436', NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(30, 'Rafaela Escobedo Fernández', '26236788K', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(31, 'Antonio Fernández Cortés', '26001221C', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(32, 'Ignacio Ramirez Serrano', '52547045A', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(33, 'Radouane Louar', '53917977C', 'AN1079493610', NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(34, 'Jose Tomás Navarro Casado', '53910245Q', '231035142489', NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(35, 'Mateo Victor García', '53593089F', '231036938306', NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(36, 'Juana Maria Navarro Casado', '52559571V', '231035035991', NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(37, 'Manuel Navarro Casado', '53596580W', '231035142388', NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(38, 'Maria del Rocio Quero Sabalete', '53594744Y', '231034291721', NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(39, 'Miguel Angel Raigón', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(40, 'Juan Antonio Espino', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(41, 'Andrés cooperativa', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(42, 'José Maria Maño', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(43, 'Francisco Javier Ruiz Lara', '53911180P', '231048738657', NULL, 0, 4, '', NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(44, 'Manuel Porrillo', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(45, 'Miguel Angel Porrillo', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(46, 'Luis Porrillo', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo'),
-(47, 'Miguel Porrillo Vecino', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo');
+INSERT INTO `trabajadores` (`id`, `nombre`, `dni`, `ss`, `alta_ss`, `baja_ss`, `cuadrilla`, `id_user`, `telefono`, `foto`, `apellidos`, `email`, `direccion`, `especialidad`, `fecha_contratacion`, `estado`, `created_at`, `updated_at`, `imagen_dni_anverso`, `imagen_dni_reverso`, `imagen_ss`) VALUES
+(25, 'Martín Carmona López', '53598764R', '231011344450', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(26, 'Pedro Carmona Díaz', '25961919W', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(27, 'Mohammed Louar', '53914211A', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(28, 'ElMakki Louaar', 'X839004P', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(29, 'Rabha Errafai', 'X5917993R', '231038134436', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(30, 'Rafaela Escobedo Fernández', '26236788K', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(31, 'Antonio Fernández Cortés', '26001221C', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(32, 'Ignacio Ramirez Serrano', '52547045A', NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(33, 'Radouane Louar', '53917977C', 'AN1079493610', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(34, 'Jose Tomás Navarro Casado', '53910245Q', '231035142489', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(35, 'Mateo Victor García', '53593089F', '231036938306', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(36, 'Juana Maria Navarro Casado', '52559571V', '231035035991', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(37, 'Manuel Navarro Casado', '53596580W', '231035142388', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(38, 'Maria del Rocio Quero Sabalete', '53594744Y', '231034291721', NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(39, 'Miguel Angel Raigón', NULL, NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(40, 'Juan Antonio Espino', NULL, NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(41, 'Andrés cooperativa', NULL, NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(42, 'José Maria Maño', NULL, NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(43, 'Francisco Javier Ruiz Lara', '53911180P', '231048738657', NULL, NULL, 0, 4, '', NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(44, 'Manuel Porrillo', NULL, NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(45, 'Miguel Angel Porrillo', NULL, NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(46, 'Luis Porrillo', NULL, NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL),
+(47, 'Miguel Porrillo Vecino', NULL, NULL, NULL, NULL, 0, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'activo', '2026-02-22 17:41:29', '2026-02-22 17:41:29', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -563,70 +635,72 @@ CREATE TABLE `trabajos` (
   `nombre` varchar(255) NOT NULL,
   `descripcion` varchar(500) NOT NULL,
   `precio_hora` float DEFAULT NULL,
-  `id_user` bigint(20) NOT NULL
+  `id_user` bigint(20) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `trabajos`
 --
 
-INSERT INTO `trabajos` (`id`, `nombre`, `descripcion`, `precio_hora`, `id_user`) VALUES
-(1, 'Abrir Riego', 'abrir hidrante', 9.23, 4),
-(2, 'Echar a andar riego', '', 0, 4),
-(3, 'Estirar gomas', '', 0, 4),
-(4, 'Quitar vareta', '', 9.23, 4),
-(6, 'Echar abono con riego', '', 1, 4),
-(7, 'Desbrozar con tractor', '', 0, 4),
-(8, 'Pasar grada pinches', '', 0, 4),
-(9, 'Arreglar Plantones', '', 0, 4),
-(10, 'Arreglo tractor', '', 0, 4),
-(11, 'Quitar hierba con desbrozadora', '', 0, 4),
-(12, 'Recoger o acordonar desnate', '', 9.23, 4),
-(13, 'Cortar desnate', '', 0, 4),
-(14, 'Picar desnate', '', 0, 4),
-(15, 'Pasar itv maquinaria', '', 0, 4),
-(16, 'Papeleo y burocracia', '', 0, 4),
-(17, 'Pasar Rulo tractor', '', 0, 4),
-(18, 'Quemar vareta', '', 0, 4),
-(19, 'Pasar Rastra Tractor', '', 0, 4),
-(20, 'Soplar suelo sopladora', '', 9.23, 4),
-(21, 'Soplar suelo tractor', '', 0, 4),
-(23, 'Ordenar', '', 0, 4),
-(24, 'Formación', '', 0, 4),
-(25, 'Recoger aceituna', '', 0, 4),
-(26, 'Compras', '', 0, 4),
-(27, 'Preparar cuba', '', 0, 4),
-(28, 'Echar sulfato con atomizadora', '', NULL, 4),
-(29, 'Echar estiercol', '', NULL, 4),
-(30, 'Echar herbicida con tractor', '', NULL, 4),
-(31, 'Hacer suelos con mano hierro', '', NULL, 4),
-(32, 'Echar herbicida con mochila', '', NULL, 4),
-(33, 'Echar hoja con tractor', '', NULL, 4),
-(34, 'Cuentas', '', NULL, 4),
-(35, 'Hacer Cuentas', '', NULL, 4),
-(36, 'Corta', '', NULL, 4),
-(37, 'Echar abono con abonadora', '', NULL, 4),
-(38, 'Arreglar Máquinas', '', NULL, 4),
-(39, 'Escamujar', '', NULL, 4),
-(40, 'Cargar palos', '', NULL, 4),
-(41, 'Echar abono jarrillos', '', NULL, 4),
-(42, 'llevar remolque palos', '', NULL, 4),
-(43, 'Acordonar Ramón', '', NULL, 4),
-(44, 'Picar Ramón', '', NULL, 4),
-(45, 'Corta plantones', '', NULL, 4),
-(46, 'medir terreno', '', NULL, 4),
-(47, 'Recoger raigones', '', NULL, 4),
-(48, 'Preparar mochilas', '', NULL, 4),
-(49, 'Cargar paja', '', NULL, 4),
-(50, 'recoger gomas', '', NULL, 4),
-(51, 'Limpiar cuadra', '', NULL, 4),
-(52, 'Mantenimiento vehiculos', '', NULL, 4),
-(53, 'Regar plantones', '', NULL, 4),
-(54, 'Plantar plantones', '', NULL, 4),
-(55, 'Pasar Grada discos tractor', '', NULL, 4),
-(56, 'Abrir zanja retro', '', NULL, 4),
-(57, 'Arreglar avería riego', '', NULL, 4),
-(58, 'Cerrar Riego', '', NULL, 4);
+INSERT INTO `trabajos` (`id`, `nombre`, `descripcion`, `precio_hora`, `id_user`, `created_at`, `updated_at`) VALUES
+(1, 'Abrir Riego', 'abrir hidrante', 9.23, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(2, 'Echar a andar riego', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(3, 'Estirar gomas', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(4, 'Quitar vareta', '', 9.23, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(6, 'Echar abono con riego', '', 1, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(7, 'Desbrozar con tractor', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(8, 'Pasar grada pinches', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(9, 'Arreglar Plantones', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(10, 'Arreglo tractor', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(11, 'Quitar hierba con desbrozadora', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(12, 'Recoger o acordonar desnate', '', 9.23, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(13, 'Cortar desnate', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(14, 'Picar desnate', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(15, 'Pasar itv maquinaria', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(16, 'Papeleo y burocracia', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(17, 'Pasar Rulo tractor', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(18, 'Quemar vareta', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(19, 'Pasar Rastra Tractor', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(20, 'Soplar suelo sopladora', '', 9.23, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(21, 'Soplar suelo tractor', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(23, 'Ordenar', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(24, 'Formación', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(25, 'Recoger aceituna', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(26, 'Compras', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(27, 'Preparar cuba', '', 0, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(28, 'Echar sulfato con atomizadora', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(29, 'Echar estiercol', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(30, 'Echar herbicida con tractor', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(31, 'Hacer suelos con mano hierro', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(32, 'Echar herbicida con mochila', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(33, 'Echar hoja con tractor', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(34, 'Cuentas', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(35, 'Hacer Cuentas', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(36, 'Corta', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(37, 'Echar abono con abonadora', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(38, 'Arreglar Máquinas', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(39, 'Escamujar', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(40, 'Cargar palos', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(41, 'Echar abono jarrillos', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(42, 'llevar remolque palos', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(43, 'Acordonar Ramón', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(44, 'Picar Ramón', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(45, 'Corta plantones', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(46, 'medir terreno', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(47, 'Recoger raigones', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(48, 'Preparar mochilas', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(49, 'Cargar paja', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(50, 'recoger gomas', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(51, 'Limpiar cuadra', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(52, 'Mantenimiento vehiculos', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(53, 'Regar plantones', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(54, 'Plantar plantones', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(55, 'Pasar Grada discos tractor', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(56, 'Abrir zanja retro', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(57, 'Arreglar avería riego', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29'),
+(58, 'Cerrar Riego', '', NULL, 4, '2026-02-22 17:41:29', '2026-02-22 17:41:29');
 
 -- --------------------------------------------------------
 
@@ -664,7 +738,7 @@ CREATE TABLE `usuarios` (
   `password` varchar(255) NOT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `created_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
@@ -687,7 +761,9 @@ CREATE TABLE `vehiculos` (
   `fecha_matriculacion` date DEFAULT NULL,
   `seguro` varchar(100) DEFAULT NULL,
   `pasa_itv` date DEFAULT NULL,
-  `id_user` bigint(20) NOT NULL
+  `id_user` bigint(20) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -707,12 +783,12 @@ ALTER TABLE `cache_locks`
   ADD PRIMARY KEY (`key`);
 
 --
--- Indices de la tabla `empresas`
+-- Indices de la tabla `documentos_parcelas`
 --
-ALTER TABLE `empresas`
+ALTER TABLE `documentos_parcelas`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id` (`id`),
-  ADD KEY `id user` (`id_user`);
+  ADD KEY `idx_docs_parcela` (`parcela_id`),
+  ADD KEY `idx_docs_user` (`id_user`);
 
 --
 -- Indices de la tabla `herramientas`
@@ -735,7 +811,17 @@ ALTER TABLE `movimientos`
   ADD KEY `fk_mov_proveedor` (`proveedor_id`),
   ADD KEY `fk_mov_trabajador` (`trabajador_id`),
   ADD KEY `fk_mov_vehiculo` (`vehiculo_id`),
-  ADD KEY `fk_mov_parcela` (`parcela_id`);
+  ADD KEY `fk_mov_parcela` (`parcela_id`),
+  ADD KEY `idx_movimientos_fecha` (`fecha`);
+
+--
+-- Indices de la tabla `pagos_mensuales_trabajadores`
+--
+ALTER TABLE `pagos_mensuales_trabajadores`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_trabajador_month_year` (`trabajador_id`,`month`,`year`),
+  ADD KEY `fk_pmt_trabajador` (`trabajador_id`),
+  ADD KEY `fk_pmt_user` (`id_user`);
 
 --
 -- Indices de la tabla `parcelas`
@@ -743,7 +829,8 @@ ALTER TABLE `movimientos`
 ALTER TABLE `parcelas`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_parcelas_user` (`id_user`),
-  ADD KEY `id` (`id`);
+  ADD KEY `idx_parcelas_propietario` (`propietario`),
+  ADD KEY `fk_parcelas_propietario` (`propietario_id`);
 
 --
 -- Indices de la tabla `parcela_empresas`
@@ -756,6 +843,13 @@ ALTER TABLE `parcela_empresas`
 --
 ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
+
+--
+-- Indices de la tabla `propietarios`
+--
+ALTER TABLE `propietarios`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_propietarios_id_user` (`id_user`);
 
 --
 -- Indices de la tabla `proveedores`
@@ -790,7 +884,8 @@ ALTER TABLE `sessions`
 --
 ALTER TABLE `tareas`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_tareas_user` (`id_user`);
+  ADD KEY `fk_tareas_user` (`id_user`),
+  ADD KEY `idx_tareas_fecha` (`fecha`);
 
 --
 -- Indices de la tabla `tarea_imagenes`
@@ -869,6 +964,12 @@ ALTER TABLE `vehiculos`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `documentos_parcelas`
+--
+ALTER TABLE `documentos_parcelas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `herramientas`
 --
 ALTER TABLE `herramientas`
@@ -884,13 +985,25 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT de la tabla `movimientos`
 --
 ALTER TABLE `movimientos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+
+--
+-- AUTO_INCREMENT de la tabla `pagos_mensuales_trabajadores`
+--
+ALTER TABLE `pagos_mensuales_trabajadores`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `parcelas`
 --
 ALTER TABLE `parcelas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+
+--
+-- AUTO_INCREMENT de la tabla `propietarios`
+--
+ALTER TABLE `propietarios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
@@ -908,7 +1021,7 @@ ALTER TABLE `riegos`
 -- AUTO_INCREMENT de la tabla `tareas`
 --
 ALTER TABLE `tareas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- AUTO_INCREMENT de la tabla `tarea_imagenes`
@@ -926,13 +1039,13 @@ ALTER TABLE `tarea_parcelas`
 -- AUTO_INCREMENT de la tabla `tarea_trabajadores`
 --
 ALTER TABLE `tarea_trabajadores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
 
 --
 -- AUTO_INCREMENT de la tabla `tarea_trabajos`
 --
 ALTER TABLE `tarea_trabajos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT de la tabla `trabajadores`
@@ -969,10 +1082,10 @@ ALTER TABLE `vehiculos`
 --
 
 --
--- Filtros para la tabla `empresas`
+-- Filtros para la tabla `documentos_parcelas`
 --
-ALTER TABLE `empresas`
-  ADD CONSTRAINT `id user` FOREIGN KEY (`id_user`) REFERENCES `usuarios` (`id`);
+ALTER TABLE `documentos_parcelas`
+  ADD CONSTRAINT `fk_docs_parcela` FOREIGN KEY (`parcela_id`) REFERENCES `parcelas` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `herramientas`
@@ -990,9 +1103,17 @@ ALTER TABLE `movimientos`
   ADD CONSTRAINT `fk_mov_vehiculo` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehiculos` (`id`) ON DELETE SET NULL;
 
 --
+-- Filtros para la tabla `pagos_mensuales_trabajadores`
+--
+ALTER TABLE `pagos_mensuales_trabajadores`
+  ADD CONSTRAINT `fk_pmt_trabajador` FOREIGN KEY (`trabajador_id`) REFERENCES `trabajadores` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_pmt_user` FOREIGN KEY (`id_user`) REFERENCES `usuarios` (`id`);
+
+--
 -- Filtros para la tabla `parcelas`
 --
 ALTER TABLE `parcelas`
+  ADD CONSTRAINT `fk_parcelas_propietario` FOREIGN KEY (`propietario_id`) REFERENCES `propietarios` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_parcelas_user` FOREIGN KEY (`id_user`) REFERENCES `usuarios` (`id`);
 
 --
