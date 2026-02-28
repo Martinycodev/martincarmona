@@ -120,6 +120,25 @@ $router->get('/economia/obtener', 'EconomiaController@obtener');
 $router->post('/economia/cerrarMes', 'EconomiaController@cerrar_mes');
 $router->post('/economia/registrarPago', 'EconomiaController@registrar_pago');
 
+// Rutas Campaña
+$router->get('/campana', 'CampanaController@index');
+$router->get('/campana/detalle', 'CampanaController@detalle');
+$router->post('/campana/crear', 'CampanaController@crear');
+$router->post('/campana/actualizar', 'CampanaController@actualizar');
+$router->post('/campana/eliminar', 'CampanaController@eliminar');
+$router->post('/campana/crearRegistro', 'CampanaController@crearRegistro');
+$router->post('/campana/actualizarRegistro', 'CampanaController@actualizarRegistro');
+$router->post('/campana/eliminarRegistro', 'CampanaController@eliminarRegistro');
+$router->post('/campana/cerrar', 'CampanaController@cerrar');
+
+// Rutas Fitosanitarios
+$router->get('/datos/fitosanitarios', 'FitosanitariosController@inventario');
+$router->post('/fitosanitarios/crearInventario', 'FitosanitariosController@crearInventario');
+$router->post('/fitosanitarios/actualizarInventario', 'FitosanitariosController@actualizarInventario');
+$router->post('/fitosanitarios/eliminarInventario', 'FitosanitariosController@eliminarInventario');
+$router->post('/fitosanitarios/crearAplicacion', 'FitosanitariosController@crearAplicacion');
+$router->post('/fitosanitarios/eliminarAplicacion', 'FitosanitariosController@eliminarAplicacion');
+
 // Rutas para tareas pendientes
 $router->get('/tareas/pendientes', 'TareasController@pendientes');
 $router->post('/tareas/crearPendiente', 'TareasController@crearPendiente');

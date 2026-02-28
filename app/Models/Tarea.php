@@ -88,6 +88,12 @@ class Tarea
                 $this->actualizarMovimientosMensuales($trabajadores, $data['trabajo'], $data['horas'], $data['fecha']);
             }
 
+            // ===== HOOK FITOSANITARIOS =====
+            // Si el trabajo es de tipo Sulfato o Herbicida, auto-crear aplicación fitosanitaria
+            if (isset($data['trabajo']) && $data['trabajo'] > 0) {
+                $this->crearAplicacionFitosanitaria($tareaId, $data['trabajo'], $data['fecha'] ?? null, $data['parcelas'] ?? ($data['parcela'] ?? null), $userId);
+            }
+
             $this->db->commit();
             return $tareaId;
 
@@ -1319,5 +1325,67 @@ class Tarea
             error_log("Error actualizando movimiento mensual del trabajador: " . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Hook: si el trabajo asignado contiene "sulfato" o "herbicida" (case-insensitive),
+     * crea automáticamente un registro en fitosanitarios_aplicaciones.
+     *
+     * @param int        $tareaId    ID de la tarea recién creada
+     * @param int        $trabajoId  ID del trabajo asignado
+     * @param string|null $fecha     Fecha de la tarea
+     * @param mixed      $parcelas   ID/array de parcelas (o null)
+     * @param int        $userId
+     */
+    private function crearAplicacionFitosanitaria($tareaId, $trabajoId, $fecha, $parcelas, $userId)
+    {
+        // Obtener nombre del trabajo
+        $stmt = $this->db->prepare("SELECT nombre FROM trabajos WHERE id = ?");
+        $stmt->bind_param("i", $trabajoId);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$row) return;
+        $nombreTrabajo = strtolower($row['nombre']);
+
+        // Solo actuar si el trabajo es fitosanitario
+        $keywords = ['sulfato', 'herbicida', 'fungicida', 'insecticida', 'fitosanitario', 'tratamiento'];
+        $esFitosanitario = false;
+        foreach ($keywords as $kw) {
+            if (strpos($nombreTrabajo, $kw) !== false) {
+                $esFitosanitario = true;
+                break;
+            }
+        }
+        if (!$esFitosanitario) return;
+
+        // Normalizar parcelas a array de IDs
+        $parcelaIds = [];
+        if (is_array($parcelas)) {
+            $parcelaIds = array_map('intval', $parcelas);
+        } elseif ($parcelas > 0) {
+            $parcelaIds = [intval($parcelas)];
+        }
+
+        $fechaAplicacion = $fecha ?: date('Y-m-d');
+
+        // Insertar una aplicación por parcela (o una sin parcela si no hay)
+        $stmt = $this->db->prepare("
+            INSERT INTO fitosanitarios_aplicaciones (parcela_id, producto, fecha, tarea_id, id_user, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+        ");
+
+        if (!empty($parcelaIds)) {
+            foreach ($parcelaIds as $parcelaId) {
+                $stmt->bind_param("isiii", $parcelaId, $row['nombre'], $fechaAplicacion, $tareaId, $userId);
+                $stmt->execute();
+            }
+        } else {
+            $nullVal = null;
+            $stmt->bind_param("isiii", $nullVal, $row['nombre'], $fechaAplicacion, $tareaId, $userId);
+            $stmt->execute();
+        }
+        $stmt->close();
     }
 }

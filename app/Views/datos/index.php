@@ -52,12 +52,15 @@ $title = 'Datos - MartinCarmona.com';
                 <div class="action-title">Riegos</div>
                 <div class="action-desc">Gestión del riego</div>
             </a>
-            <a href="<?= $this->url('/tareas') ?>" class="action-card">
+            <a href="<?= $this->url('/datos/fitosanitarios') ?>" class="action-card">
                 <span class="action-icon">💊</span>
                 <div class="action-title">Fitosanitarios</div>
-                <div class="action-desc">Gestión de tratamientos</div>
+                <div class="action-desc">Inventario y registro de tratamientos</div>
+            </a>
+            <a href="<?= $this->url('/campana') ?>" class="action-card">
+                <span class="action-icon">🫒</span>
+                <div class="action-title">Campaña</div>
+                <div class="action-desc">Registro de recolección y rentabilidad</div>
             </a>
         </div>
     </div>
-</body>
-</html>
