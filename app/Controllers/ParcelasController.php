@@ -422,13 +422,45 @@ class ParcelasController extends BaseController
         $coste_row = $stmt->get_result()->fetch_assoc();
         $coste_acumulado = $coste_row['coste_acumulado'] ?? 0;
         $stmt->close();
+
+        // Historial de riego por año (si la migración 009 ya se ejecutó)
+        $riegos_por_anio = [];
+        $riegos_recientes = [];
+        $columnas = $db->query("SHOW COLUMNS FROM riegos LIKE 'parcela_id'");
+        if ($columnas && $columnas->num_rows > 0) {
+            $stmt = $db->prepare("
+                SELECT YEAR(fecha_ini) as anio, SUM(total_m3) as total_m3_anio, COUNT(*) as num_riegos
+                FROM riegos
+                WHERE parcela_id = ? AND id_user = ?
+                GROUP BY YEAR(fecha_ini)
+                ORDER BY anio DESC
+            ");
+            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+            $stmt->execute();
+            $riegos_por_anio = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+
+            $stmt = $db->prepare("
+                SELECT fecha_ini, fecha_fin, dias, hidrante, cantidad_ini, cantidad_fin, total_m3
+                FROM riegos
+                WHERE parcela_id = ? AND id_user = ?
+                ORDER BY fecha_ini DESC
+                LIMIT 20
+            ");
+            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+            $stmt->execute();
+            $riegos_recientes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+        }
         $db->close();
 
         $this->render('parcelas/detalle', [
-            'parcela' => $parcela,
-            'documentos' => $documentos,
-            'coste_acumulado' => $coste_acumulado,
-            'user' => ['name' => $_SESSION['user_name'] ?? 'Usuario']
+            'parcela'          => $parcela,
+            'documentos'       => $documentos,
+            'coste_acumulado'  => $coste_acumulado,
+            'riegos_por_anio'  => $riegos_por_anio,
+            'riegos_recientes' => $riegos_recientes,
+            'user'             => ['name' => $_SESSION['user_name'] ?? 'Usuario']
         ]);
     }
 

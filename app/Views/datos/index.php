@@ -52,7 +52,7 @@ $title = 'Datos - MartinCarmona.com';
                 <div class="action-title">Tareas</div>
                 <div class="action-desc">Gestión de todas las tareas</div>
             </a>
-            <a href="<?= $this->url('/tareas') ?>" class="action-card">
+            <a href="<?= $this->url('/datos/riego') ?>" class="action-card">
                 <span class="action-icon">💧</span>
                 <div class="action-title">Riegos</div>
                 <div class="action-desc">Gestión del riego</div>

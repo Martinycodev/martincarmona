@@ -68,6 +68,58 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
         </div>
     </div>
 
+    <!-- Historial de Riego -->
+    <?php if (!empty($riegos_por_anio) || !empty($riegos_recientes)): ?>
+    <div class="card">
+        <div class="card-header"><h3>💧 Historial de Riego</h3></div>
+
+        <?php if (!empty($riegos_por_anio)): ?>
+        <div class="detail-grid" style="margin-bottom: 1rem;">
+            <?php foreach ($riegos_por_anio as $ra): ?>
+            <div>
+                <strong><?= intval($ra['anio']) ?>:</strong>
+                <?= number_format($ra['total_m3_anio'], 1) ?> m³
+                (<?= intval($ra['num_riegos']) ?> riego<?= $ra['num_riegos'] != 1 ? 's' : '' ?>)
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+
+        <?php if (!empty($riegos_recientes)): ?>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Fecha ini</th>
+                    <th>Fecha fin</th>
+                    <th>Días</th>
+                    <th>Hidrante</th>
+                    <th>Contador ini</th>
+                    <th>Contador fin</th>
+                    <th>Total m³</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($riegos_recientes as $r): ?>
+                <tr>
+                    <td><?= htmlspecialchars($r['fecha_ini'] ?? '—') ?></td>
+                    <td><?= htmlspecialchars($r['fecha_fin'] ?? '—') ?></td>
+                    <td><?= $r['dias'] !== null ? intval($r['dias']) : '—' ?></td>
+                    <td><?= htmlspecialchars($r['hidrante'] ?? '—') ?></td>
+                    <td><?= $r['cantidad_ini'] !== null ? number_format($r['cantidad_ini'], 1) : '—' ?></td>
+                    <td><?= $r['cantidad_fin'] !== null ? number_format($r['cantidad_fin'], 1) : '—' ?></td>
+                    <td><strong><?= $r['total_m3'] !== null ? number_format($r['total_m3'], 1) . ' m³' : '—' ?></strong></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php endif; ?>
+
+        <div style="padding: 0.5rem 0;">
+            <a href="<?= $this->url('/datos/riego') ?>" class="btn btn-secondary btn-sm">Ver todos los riegos →</a>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Documentos -->
     <div class="card">
         <div class="card-header">

@@ -77,7 +77,6 @@ $router->get('/datos/trabajadores', 'TrabajadoresController@index');
 $router->get('/datos/trabajos', 'TrabajosController@index');
 $router->get('/datos/vehiculos', 'VehiculosController@index');
 $router->get('/datos/herramientas', 'HerramientasController@index');
-$router->get('/datos/empresas', 'EmpresasController@index');
 $router->get('/datos/parcelas', 'ParcelasController@index');
 $router->get('/datos/proveedores', 'ProveedoresController@index');
 $router->get('/dashboard', 'DashboardController@index');
@@ -108,15 +107,15 @@ $router->get('/reportes/recursos', 'ReportesController@recursos');
 $router->get('/reportes/proveedores', 'ReportesController@proveedores');
 
 // Rutas para economía
-$router->get('/economia',          'EconomiaController@index');
-$router->get('/economia/gastos',   'EconomiaController@gastos');
+$router->get('/economia', 'EconomiaController@index');
+$router->get('/economia/gastos', 'EconomiaController@gastos');
 $router->get('/economia/ingresos', 'EconomiaController@ingresos');
-$router->get('/economia/deudas',   'EconomiaController@deudas_trabajadores');
-$router->post('/economia/crear',         'EconomiaController@crear');
-$router->post('/economia/editar',        'EconomiaController@editar');
-$router->post('/economia/eliminar',      'EconomiaController@eliminar');
-$router->get('/economia/obtener',        'EconomiaController@obtener');
-$router->post('/economia/cerrarMes',     'EconomiaController@cerrar_mes');
+$router->get('/economia/deudas', 'EconomiaController@deudas_trabajadores');
+$router->post('/economia/crear', 'EconomiaController@crear');
+$router->post('/economia/editar', 'EconomiaController@editar');
+$router->post('/economia/eliminar', 'EconomiaController@eliminar');
+$router->get('/economia/obtener', 'EconomiaController@obtener');
+$router->post('/economia/cerrarMes', 'EconomiaController@cerrar_mes');
 $router->post('/economia/registrarPago', 'EconomiaController@registrar_pago');
 
 // Rutas para edición inline de relaciones en el modal de tareas
@@ -174,6 +173,13 @@ $router->get('/propietarios/obtener', 'PropietariosController@obtener');
 $router->post('/propietarios/actualizar', 'PropietariosController@actualizar');
 $router->post('/propietarios/eliminar', 'PropietariosController@eliminar');
 $router->post('/propietarios/subirImagenDni', 'PropietariosController@subirImagenDni');
+
+// Rutas para riego
+$router->get('/datos/riego', 'RiegoController@index');
+$router->post('/riego/crear', 'RiegoController@crear');
+$router->get('/riego/obtener', 'RiegoController@obtener');
+$router->post('/riego/actualizar', 'RiegoController@actualizar');
+$router->post('/riego/eliminar', 'RiegoController@eliminar');
 
 // Configurar página 404
 $router->notFound(function () {
