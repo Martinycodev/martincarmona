@@ -7,8 +7,8 @@ $title = 'Datos - MartinCarmona.com';
 
         <div class="quick-buttons">
             <a href="<?= $this->url('/tareas') ?>" class="btn">📋 Ver Tareas</a>
+            <a href="<?= $this->url('/tareas/pendientes') ?>" class="btn btn-secondary">⏳ Tareas Pendientes</a>
             <a href="<?= $this->url('/busqueda') ?>" class="btn btn-info">🔍 Búsqueda Avanzada</a>
-
             <a href="<?= $this->url('/economia?openModal=true') ?>" class="btn btn-primary">💰 Añadir Movimiento</a>
         </div>
     </div>

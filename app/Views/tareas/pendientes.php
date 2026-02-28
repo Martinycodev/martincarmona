@@ -60,7 +60,7 @@
                         <td><?= htmlspecialchars($t['parcelas_nombres'] ?: '—') ?></td>
                         <td><?= htmlspecialchars(substr($t['created_at'] ?? '', 0, 10)) ?></td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="abrirModalFechar(<?= intval($t['id']) ?>, <?= json_encode(htmlspecialchars($t['titulo'])) ?>)">
+                            <button class="btn btn-primary btn-sm" onclick="abrirModalFechar(<?= intval($t['id']) ?>, <?= htmlspecialchars(json_encode($t['titulo'] ?: ''), ENT_QUOTES) ?>)">
                                 📅 Fechar
                             </button>
                             <button class="btn btn-danger btn-sm" onclick="eliminarPendiente(<?= intval($t['id']) ?>)">
