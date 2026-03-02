@@ -126,27 +126,27 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 > Dar acceso controlado a propietarios de parcelas y trabajadores desde sus propios dispositivos. Crear un usuario "admin" para gestionar usuarios.
 
 **Base de datos:**
-- [ ] Añadir campo `rol` ENUM('empresa','propietario','trabajador', 'admin') a tabla `usuarios`
-- [ ] Añadir columna `propietario_id` a `usuarios` (FK a `propietarios`) para vincular login con propietario
-- [ ] Añadir columna `trabajador_id` a `usuarios` (FK a `trabajadores`) para vincular login con trabajador
+- [x] Añadir campo `rol` ENUM('empresa','propietario','trabajador', 'admin') a tabla `usuarios`
+- [x] Añadir columna `propietario_id` a `usuarios` (FK a `propietarios`) para vincular login con propietario
+- [x] Añadir columna `trabajador_id` a `usuarios` (FK a `trabajadores`) para vincular login con trabajador
 
 **Backend:**
-- [ ] Middleware de autorización por rol para todas las rutas
-- [ ] Panel de administración para crear y gestionar usuarios (solo rol empresa)
+- [x] Middleware de autorización por rol para todas las rutas
+- [x] Panel de administración para crear y gestionar usuarios (solo rol empresa)
 
 **Vista Propietario:**
-- [ ] Sus parcelas y las tareas realizadas en ellas (sin mostrar trabajadores, horas ni precio)
-- [ ] Datos de contacto de la empresa
+- [x] Sus parcelas y las tareas realizadas en ellas (sin mostrar trabajadores, horas ni precio)
+- [x] Datos de contacto de la empresa
 
 **Vista Trabajador:**
-- [ ] Deuda acumulada (lo que va a percibir este mes)
-- [ ] Calendario con sus tareas realizadas
-- [ ] Lista de tareas pendientes asignadas
-- [ ] Datos de contacto de la empresa
+- [x] Deuda acumulada (lo que va a percibir este mes)
+- [x] Calendario con sus tareas realizadas
+- [x] Lista de tareas pendientes asignadas
+- [x] Datos de contacto de la empresa
 
 **Vista Admin:**
-- [ ] Lista de Usuarios
-- [ ] Crear y gestionar usuarios y roles
+- [x] Lista de Usuarios
+- [x] Crear y gestionar usuarios y roles
 
 ---
 

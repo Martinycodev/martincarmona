@@ -5,15 +5,16 @@
         <p style="color:#6b7280; margin-top:.25rem;"><?= htmlspecialchars($trabajador['nombre']) ?></p>
     </div>
 
-    <!-- Deuda pendiente -->
+    <!-- Deuda estimada -->
     <div class="card" style="margin-bottom:1.5rem; padding:1.25rem 1.5rem;">
         <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
             <div>
-                <p style="font-size:.8rem; color:#6b7280; margin:0;">Deuda pendiente</p>
+                <p style="font-size:.8rem; color:#6b7280; margin:0;">Deuda estimada</p>
                 <p style="font-size:1.8rem; font-weight:700; margin:.25rem 0 0;
                     color:<?= $deuda > 0 ? '#dc2626' : '#16a34a' ?>;">
                     <?= number_format($deuda, 2, ',', '.') ?> €
                 </p>
+                <p style="font-size:.75rem; color:#9ca3af; margin:.25rem 0 0;">Calculada a partir de horas trabajadas</p>
             </div>
             <?php if ($mesesPendientes > 0): ?>
             <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:.5rem; padding:.5rem .75rem;">

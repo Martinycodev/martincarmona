@@ -30,18 +30,44 @@ class TrabajadorController extends BaseController
 
         if (!$trabajador) { $db->close(); $this->redirect('/'); return; }
 
-        // Deuda pendiente (meses no pagados)
+        // Deuda estimada: valor total generado en tareas
         $stmt = $db->prepare("
-            SELECT COALESCE(SUM(importe_total), 0) AS deuda_pendiente,
-                   COUNT(*) AS meses_pendientes
+            SELECT COALESCE(
+                SUM(tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0)), 0
+            ) AS total_generado
+            FROM tarea_trabajadores tt
+            JOIN tareas ta ON tt.tarea_id = ta.id
+            LEFT JOIN tarea_trabajos ttrab ON ta.id = ttrab.tarea_id
+            LEFT JOIN trabajos trab ON ttrab.trabajo_id = trab.id
+            WHERE tt.trabajador_id = ?
+        ");
+        $stmt->bind_param("i", $trabajadorId);
+        $stmt->execute();
+        $totalGenerado = floatval($stmt->get_result()->fetch_assoc()['total_generado']);
+        $stmt->close();
+
+        // Total ya pagado formalmente
+        $stmt = $db->prepare("
+            SELECT COALESCE(SUM(importe_total), 0) AS total_pagado
+            FROM pagos_mensuales_trabajadores
+            WHERE trabajador_id = ? AND pagado = 1
+        ");
+        $stmt->bind_param("i", $trabajadorId);
+        $stmt->execute();
+        $totalPagado = floatval($stmt->get_result()->fetch_assoc()['total_pagado']);
+        $stmt->close();
+
+        $deuda = max(0.0, $totalGenerado - $totalPagado);
+
+        // Meses formales pendientes de liquidar (cerrados pero no pagados)
+        $stmt = $db->prepare("
+            SELECT COUNT(*) AS meses_pendientes
             FROM pagos_mensuales_trabajadores
             WHERE trabajador_id = ? AND pagado = 0
         ");
         $stmt->bind_param("i", $trabajadorId);
         $stmt->execute();
-        $deudaRow         = $stmt->get_result()->fetch_assoc();
-        $deuda            = floatval($deudaRow['deuda_pendiente']);
-        $mesesPendientes  = intval($deudaRow['meses_pendientes']);
+        $mesesPendientes = intval($stmt->get_result()->fetch_assoc()['meses_pendientes']);
         $stmt->close();
 
         // Tareas pendientes asignadas a este trabajador
