@@ -78,6 +78,53 @@ class BaseController
         return $path;
     }
     
+    /**
+     * Verifica que el usuario esté autenticado con rol 'empresa'.
+     * Redirige al dashboard propio si tiene otro rol, o al login si no está autenticado.
+     * Backwards-compatible: sesiones sin user_rol se tratan como 'empresa'.
+     */
+    protected function requireEmpresa(): void
+    {
+        if (!isset($_SESSION['user_id'])) {
+            $this->redirect('/');
+            exit;
+        }
+        $rol = $_SESSION['user_rol'] ?? 'empresa';
+        if ($rol !== 'empresa') {
+            $this->redirectByRole($rol);
+            exit;
+        }
+    }
+
+    /**
+     * Permite acceso a roles 'empresa' O 'admin' (para el panel de administración).
+     */
+    protected function requireEmpresaOAdmin(): void
+    {
+        if (!isset($_SESSION['user_id'])) {
+            $this->redirect('/');
+            exit;
+        }
+        $rol = $_SESSION['user_rol'] ?? 'empresa';
+        if (!in_array($rol, ['empresa', 'admin'])) {
+            $this->redirectByRole($rol);
+            exit;
+        }
+    }
+
+    /**
+     * Redirige al usuario a su dashboard según su rol.
+     */
+    protected function redirectByRole(string $rol): void
+    {
+        $map = [
+            'admin'       => '/admin/usuarios',
+            'propietario' => '/propietario',
+            'trabajador'  => '/trabajador',
+        ];
+        $this->redirect($map[$rol] ?? '/');
+    }
+
     protected function isAjaxRequest()
     {
         return (

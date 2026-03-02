@@ -8,9 +8,7 @@ class CampanaController extends BaseController
 {
     public function __construct()
     {
-        if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/');
-        }
+        $this->requireEmpresa();
     }
 
     // ── Listado de campañas ─────────────────────────────────────────────────

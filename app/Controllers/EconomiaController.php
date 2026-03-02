@@ -20,10 +20,7 @@ class EconomiaController extends BaseController
 
     public function __construct()
     {
-        if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/');
-            return;
-        }
+        $this->requireEmpresa();
 
         $this->movimiento  = new Movimiento();
         $this->pagoMensual = new PagoMensual();

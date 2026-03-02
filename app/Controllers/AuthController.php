@@ -25,16 +25,25 @@ class AuthController extends BaseController
             if ($user) {
                 // Regenerar ID para prevenir session fixation tras autenticación
                 session_regenerate_id(true);
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_name'] = $user['name'];
-                $_SESSION['user_email'] = $user['email'];
+                $_SESSION['user_id']             = $user['id'];
+                $_SESSION['user_name']           = $user['name'];
+                $_SESSION['user_email']          = $user['email'];
+                $_SESSION['user_rol']            = $user['rol'] ?? 'empresa';
+                $_SESSION['user_propietario_id'] = $user['propietario_id'] ?? null;
+                $_SESSION['user_trabajador_id']  = $user['trabajador_id'] ?? null;
 
                 // Solo guardar cookie si el usuario marcó "Recuérdame"
                 if (isset($_POST['remember']) && $_POST['remember'] === 'on') {
                     setcookie('user_id', $user['id'], time() + (30 * 24 * 60 * 60), "/");
                 }
 
-                $this->redirect('/dashboard');
+                $redirects = [
+                    'empresa'     => '/dashboard',
+                    'admin'       => '/admin/usuarios',
+                    'propietario' => '/propietario',
+                    'trabajador'  => '/trabajador',
+                ];
+                $this->redirect($redirects[$_SESSION['user_rol']] ?? '/dashboard');
             } else {
                 $this->redirect('/?error=invalid_credentials');
             }
@@ -58,7 +67,7 @@ class AuthController extends BaseController
             $db = \Database::connect();
             
             // Buscar usuario por email
-            $stmt = $db->prepare("SELECT id, name, email, password FROM usuarios WHERE email = ?");
+            $stmt = $db->prepare("SELECT id, name, email, password, rol, propietario_id, trabajador_id FROM usuarios WHERE email = ?");
             $stmt->bind_param("s", $email);
             $stmt->execute();
             $result = $stmt->get_result();

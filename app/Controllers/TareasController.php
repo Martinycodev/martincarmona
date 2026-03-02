@@ -12,11 +12,7 @@ class TareasController extends BaseController
 
     public function __construct()
     {
-        // Verificar autenticación
-        if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/');
-            return;
-        }
+        $this->requireEmpresa();
 
         $this->tareaModel = new \App\Models\Tarea();
         $this->db = \Database::connect();

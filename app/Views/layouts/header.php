@@ -34,13 +34,23 @@
     </div>
 
     <!-- Menú de navegación -->
+    <?php $rolActual = $_SESSION['user_rol'] ?? 'empresa'; ?>
     <nav class="nav-menu" id="navMenu">
         <br>
+        <?php if ($rolActual === 'empresa'): ?>
         <a href="<?= $this->url('/datos') ?>">📚 Bases de datos</a>
         <a href="<?= $this->url('/tareas/pendientes') ?>">📋 Tareas Pendientes</a>
         <a href="<?= $this->url('/economia') ?>">💶 Economía</a>
         <a href="<?= $this->url('/reportes') ?>">📊 Reportes</a>
+        <a href="<?= $this->url('/admin/usuarios') ?>">👥 Usuarios</a>
         <a href="<?= $this->url('/perfil') ?>">👤 Mi Perfil</a>
+        <?php elseif ($rolActual === 'admin'): ?>
+        <a href="<?= $this->url('/admin/usuarios') ?>">👥 Gestión de Usuarios</a>
+        <?php elseif ($rolActual === 'propietario'): ?>
+        <a href="<?= $this->url('/propietario') ?>">🌳 Mis Parcelas</a>
+        <?php elseif ($rolActual === 'trabajador'): ?>
+        <a href="<?= $this->url('/trabajador') ?>">👷 Mi Cuenta</a>
+        <?php endif; ?>
         <a href="<?= $this->url('/logout') ?>" style="color: #ff4444;">🚪 Cerrar Sesión</a>
     </nav>
 

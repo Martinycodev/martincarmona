@@ -7,10 +7,7 @@ class TrabajadoresController extends BaseController
 
     public function __construct()
     {
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: /');
-            exit;
-        }
+        $this->requireEmpresa();
         $this->db = \Database::connect();
     }
 

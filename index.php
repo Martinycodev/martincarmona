@@ -29,15 +29,18 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['user_id'])) {
     $userId = (int) $_COOKIE['user_id'];
     try {
         $db = \Database::connect();
-        $stmt = $db->prepare("SELECT id, name, email FROM usuarios WHERE id = ?");
+        $stmt = $db->prepare("SELECT id, name, email, rol, propietario_id, trabajador_id FROM usuarios WHERE id = ?");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_email'] = $user['email'];
+            $_SESSION['user_id']             = $user['id'];
+            $_SESSION['user_name']           = $user['name'];
+            $_SESSION['user_email']          = $user['email'];
+            $_SESSION['user_rol']            = $user['rol'] ?? 'empresa';
+            $_SESSION['user_propietario_id'] = $user['propietario_id'] ?? null;
+            $_SESSION['user_trabajador_id']  = $user['trabajador_id'] ?? null;
         }
         $stmt->close();
     } catch (\Throwable $e) {
@@ -206,6 +209,18 @@ $router->post('/riego/crear', 'RiegoController@crear');
 $router->get('/riego/obtener', 'RiegoController@obtener');
 $router->post('/riego/actualizar', 'RiegoController@actualizar');
 $router->post('/riego/eliminar', 'RiegoController@eliminar');
+
+// Rutas Admin
+$router->get('/admin/usuarios', 'AdminController@usuarios');
+$router->post('/admin/crearUsuario', 'AdminController@crearUsuario');
+$router->post('/admin/actualizarUsuario', 'AdminController@actualizarUsuario');
+$router->post('/admin/eliminarUsuario', 'AdminController@eliminarUsuario');
+
+// Rutas Propietario
+$router->get('/propietario', 'PropietarioController@index');
+
+// Rutas Trabajador
+$router->get('/trabajador', 'TrabajadorController@index');
 
 // Configurar página 404
 $router->notFound(function () {
