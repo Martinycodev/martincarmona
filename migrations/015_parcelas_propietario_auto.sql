@@ -4,11 +4,10 @@
 -- Paso 1: Crear registros en `propietarios` a partir de los nombres únicos
 --         que aparecen en parcelas.propietario y aún no tienen propietario_id asignado.
 --         Se usa el primer usuario con rol='empresa' como id_user.
-INSERT INTO propietarios (nombre, id_user, created_at)
+INSERT INTO propietarios (nombre, id_user)
 SELECT DISTINCT
     p.propietario,
-    (SELECT u.id FROM usuarios u WHERE u.rol = 'empresa' ORDER BY u.id LIMIT 1) AS id_user,
-    NOW()
+    (SELECT u.id FROM usuarios u WHERE u.rol = 'empresa' ORDER BY u.id LIMIT 1) AS id_user
 FROM parcelas p
 WHERE p.propietario IS NOT NULL
   AND p.propietario != ''
