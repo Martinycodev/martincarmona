@@ -123,10 +123,10 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 
 ## FASE 4 — Multi-rol (Propietario y Trabajador)
 
-> Dar acceso controlado a propietarios de parcelas y trabajadores desde sus propios dispositivos.
+> Dar acceso controlado a propietarios de parcelas y trabajadores desde sus propios dispositivos. Crear un usuario "admin" para gestionar usuarios.
 
 **Base de datos:**
-- [ ] Añadir campo `rol` ENUM('empresa','propietario','trabajador') a tabla `usuarios`
+- [ ] Añadir campo `rol` ENUM('empresa','propietario','trabajador', 'admin') a tabla `usuarios`
 - [ ] Añadir columna `propietario_id` a `usuarios` (FK a `propietarios`) para vincular login con propietario
 - [ ] Añadir columna `trabajador_id` a `usuarios` (FK a `trabajadores`) para vincular login con trabajador
 
@@ -143,6 +143,10 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 - [ ] Calendario con sus tareas realizadas
 - [ ] Lista de tareas pendientes asignadas
 - [ ] Datos de contacto de la empresa
+
+**Vista Admin:**
+- [ ] Lista de Usuarios
+- [ ] Crear y gestionar usuarios y roles
 
 ---
 

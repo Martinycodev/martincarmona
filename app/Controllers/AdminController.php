@@ -8,7 +8,10 @@ class AdminController extends BaseController
 {
     public function __construct()
     {
-        $this->requireEmpresaOAdmin();
+        if (!isset($_SESSION['user_id'])) { $this->redirect('/'); exit; }
+        if (($_SESSION['user_rol'] ?? '') !== 'admin') {
+            $this->redirectByRole($_SESSION['user_rol'] ?? ''); exit;
+        }
     }
 
     // ── Lista de usuarios ────────────────────────────────────────────────────
