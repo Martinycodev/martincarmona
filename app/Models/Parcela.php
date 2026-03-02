@@ -20,16 +20,15 @@ class Parcela
     {
         try {
             $stmt = $this->db->prepare("
-                INSERT INTO parcelas (nombre, olivos, ubicacion, empresa, propietario, hidrante, descripcion, id_user)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO parcelas (nombre, olivos, ubicacion, propietario, hidrante, descripcion, id_user)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ");
 
             $stmt->bind_param(
-                "sisssiis",
+                "sissiis",
                 $data['nombre'],
                 $data['olivos'],
                 $data['ubicacion'],
-                $data['empresa'],
                 $data['propietario'],
                 $data['hidrante'],
                 $data['descripcion'],
@@ -55,12 +54,11 @@ class Parcela
     {
         try {
             $stmt = $this->db->prepare("
-                SELECT 
+                SELECT
                     id,
                     nombre,
                     olivos,
                     ubicacion,
-                    empresa,
                     propietario,
                     hidrante,
                     descripcion
@@ -183,17 +181,16 @@ class Parcela
     {
         try {
             $stmt = $this->db->prepare("
-                UPDATE parcelas 
-                SET nombre = ?, olivos = ?, ubicacion = ?, empresa = ?, propietario = ?, hidrante = ?, descripcion = ?
+                UPDATE parcelas
+                SET nombre = ?, olivos = ?, ubicacion = ?, propietario = ?, hidrante = ?, descripcion = ?
                 WHERE id = ? AND id_user = ?
             ");
 
             $stmt->bind_param(
-                "sisssiis",
+                "sissisii",
                 $data['nombre'],
                 $data['olivos'],
                 $data['ubicacion'],
-                $data['empresa'],
                 $data['propietario'],
                 $data['hidrante'],
                 $data['descripcion'],
@@ -278,8 +275,7 @@ class Parcela
                 SELECT 
                     COUNT(*) as total_parcelas,
                     SUM(olivos) as total_olivos,
-                    COUNT(DISTINCT propietario) as total_propietarios,
-                    COUNT(DISTINCT empresa) as total_empresas
+                    COUNT(DISTINCT propietario) as total_propietarios
                 FROM parcelas 
                 WHERE id_user = ?
             ");
@@ -294,7 +290,6 @@ class Parcela
                 'total_parcelas' => $stats['total_parcelas'] ?? 0,
                 'total_olivos' => $stats['total_olivos'] ?? 0,
                 'total_propietarios' => $stats['total_propietarios'] ?? 0,
-                'total_empresas' => $stats['total_empresas'] ?? 0
             ];
 
         } catch (\Exception $e) {
@@ -303,7 +298,6 @@ class Parcela
                 'total_parcelas' => 0,
                 'total_olivos' => 0,
                 'total_propietarios' => 0,
-                'total_empresas' => 0
             ];
         }
     }

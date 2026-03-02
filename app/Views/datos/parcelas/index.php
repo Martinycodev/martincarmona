@@ -49,10 +49,6 @@ $title = htmlspecialchars($parcela['nombre'] ?? 'Sin nombre');
                             <span><?= htmlspecialchars($parcela['propietario'] ?? '-') ?></span>
                         </div>
                         <div class="detail-item">
-                            <label>Empresa:</label>
-                            <span><?= htmlspecialchars($parcela['empresa'] ?? '-') ?></span>
-                        </div>
-                        <div class="detail-item">
                             <label>Hidrante:</label>
                             <span><?= htmlspecialchars($parcela['hidrante'] ?? '-') ?></span>
                         </div>
