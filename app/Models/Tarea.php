@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-require_once BASE_PATH . '/config/database.php';
 
 class Tarea
 {
@@ -99,7 +98,7 @@ class Tarea
 
         } catch (\Exception $e) {
             $this->db->rollback();
-            error_log("Error creando tarea: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando tarea: " . $e->getMessage());
             return false;
         }
     }
@@ -255,7 +254,7 @@ class Tarea
             return true;
         } catch (\Exception $e) {
             $this->db->rollback();
-            error_log("Error cambiando trabajo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error cambiando trabajo: " . $e->getMessage());
             return false;
         }
     }
@@ -286,7 +285,7 @@ class Tarea
             ];
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo estadísticas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo estadísticas: " . $e->getMessage());
             return [
                 'total_tareas' => 0,
                 'total_horas' => 0
@@ -346,7 +345,7 @@ class Tarea
             return array_values($tareas);
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo tareas paginadas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo tareas paginadas: " . $e->getMessage());
             return [];
         }
     }
@@ -371,7 +370,7 @@ class Tarea
             return (int) $row['total'];
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo total de tareas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo total de tareas: " . $e->getMessage());
             return 0;
         }
     }
@@ -522,7 +521,7 @@ class Tarea
             return array_values($tareas);
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo tareas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo tareas: " . $e->getMessage());
             return [];
         }
     }
@@ -685,7 +684,7 @@ class Tarea
             return array_values($tareas);
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo tareas del mes: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo tareas del mes: " . $e->getMessage());
             return [];
         }
     }
@@ -719,7 +718,7 @@ class Tarea
             return $trabajadores;
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajadores de tarea: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajadores de tarea: " . $e->getMessage());
             return [];
         }
     }
@@ -754,7 +753,7 @@ class Tarea
             return $parcelas;
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo parcelas de tarea: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo parcelas de tarea: " . $e->getMessage());
             return [];
         }
     }
@@ -789,7 +788,7 @@ class Tarea
             return $trabajos;
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajos de tarea: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajos de tarea: " . $e->getMessage());
             return [];
         }
     }
@@ -872,7 +871,7 @@ class Tarea
 
         } catch (\Exception $e) {
             $this->db->rollback();
-            error_log("Error actualizando tarea: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando tarea: " . $e->getMessage());
             return false;
         }
     }
@@ -932,7 +931,7 @@ class Tarea
 
             return $result ? $imageId : false;
         } catch (\Exception $e) {
-            error_log("Error agregando imagen: " . $e->getMessage());
+            \Core\Logger::app()->error("Error agregando imagen: " . $e->getMessage());
             return false;
         }
     }
@@ -960,7 +959,7 @@ class Tarea
 
             return $images;
         } catch (\Exception $e) {
-            error_log("Error obteniendo imágenes: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo imágenes: " . $e->getMessage());
             return [];
         }
     }
@@ -980,7 +979,7 @@ class Tarea
 
             return $image;
         } catch (\Exception $e) {
-            error_log("Error obteniendo imagen: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo imagen: " . $e->getMessage());
             return null;
         }
     }
@@ -998,7 +997,7 @@ class Tarea
 
             return $result;
         } catch (\Exception $e) {
-            error_log("Error eliminando imagen: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando imagen: " . $e->getMessage());
             return false;
         }
     }
@@ -1043,7 +1042,7 @@ class Tarea
 
         } catch (\Exception $e) {
             $this->db->rollback();
-            error_log("Error eliminando tarea: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando tarea: " . $e->getMessage());
             return false;
         }
     }
@@ -1081,7 +1080,7 @@ class Tarea
             
             return $result;
         } catch (\Exception $e) {
-            error_log("Error actualizando campo individual: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando campo individual: " . $e->getMessage());
             return false;
         }
     }
@@ -1201,7 +1200,7 @@ class Tarea
             return 15.0; // Precio por defecto de 15€/hora
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo precio del trabajo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo precio del trabajo: " . $e->getMessage());
             return 15.0; // Precio por defecto en caso de error
         }
     }
@@ -1235,7 +1234,7 @@ class Tarea
             // Si el importe es 0, no crear/actualizar movimientos
             if ($totalTarea <= 0) {
                 $precioHora = $this->getPrecioHoraTrabajo($trabajoId);
-                error_log("Importe 0 para trabajo ID: $trabajoId, precio_hora: $precioHora, horas: $horas - No se crearán movimientos");
+                \Core\Logger::app()->error("Importe 0 para trabajo ID: $trabajoId, precio_hora: $precioHora, horas: $horas - No se crearán movimientos");
                 return true; // No es un error, simplemente no hay nada que procesar
             }
 
@@ -1247,16 +1246,16 @@ class Tarea
 
                 if (!$resultado) {
                     $todosExitosos = false;
-                    error_log("Error actualizando movimientos para trabajador ID: $trabajadorId");
+                    \Core\Logger::app()->error("Error actualizando movimientos para trabajador ID: $trabajadorId");
                 } else {
-                    error_log("Movimiento actualizado para trabajador ID: $trabajadorId, total: $totalTarea");
+                    \Core\Logger::app()->error("Movimiento actualizado para trabajador ID: $trabajadorId, total: $totalTarea");
                 }
             }
 
             return $todosExitosos;
 
         } catch (\Exception $e) {
-            error_log("Error en actualizarMovimientosMensuales: " . $e->getMessage());
+            \Core\Logger::app()->error("Error en actualizarMovimientosMensuales: " . $e->getMessage());
             return false;
         }
     }
@@ -1322,7 +1321,7 @@ class Tarea
             }
 
         } catch (\Exception $e) {
-            error_log("Error actualizando movimiento mensual del trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando movimiento mensual del trabajador: " . $e->getMessage());
             return false;
         }
     }

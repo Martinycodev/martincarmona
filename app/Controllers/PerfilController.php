@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-require_once BASE_PATH . '/config/database.php';
 
 class PerfilController extends BaseController
 {
@@ -105,7 +104,7 @@ class PerfilController extends BaseController
                 ]);
             }
         } catch (\Exception $e) {
-            error_log("Error actualizando nombre: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando nombre: " . $e->getMessage());
             $this->json([
                 'success' => false,
                 'message' => 'Error en el servidor'

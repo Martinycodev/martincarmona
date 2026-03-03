@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-require_once BASE_PATH . '/config/database.php';
 
 class Parcela
 {
@@ -42,7 +41,7 @@ class Parcela
             return $result ? $insertId : false;
 
         } catch (\Exception $e) {
-            error_log("Error creando parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando parcela: " . $e->getMessage());
             return false;
         }
     }
@@ -79,7 +78,7 @@ class Parcela
             return $parcelas;
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo parcelas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo parcelas: " . $e->getMessage());
             return [];
         }
     }
@@ -104,7 +103,7 @@ class Parcela
             return $parcela;
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo parcela: " . $e->getMessage());
             return false;
         }
     }
@@ -138,7 +137,7 @@ class Parcela
             return $parcela;
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo detalle de parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo detalle de parcela: " . $e->getMessage());
             return false;
         }
     }
@@ -169,7 +168,7 @@ class Parcela
             $stmt->close();
             return (float) ($row['coste'] ?? 0);
         } catch (\Exception $e) {
-            error_log("Error calculando coste acumulado de parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error calculando coste acumulado de parcela: " . $e->getMessage());
             return 0.0;
         }
     }
@@ -204,7 +203,7 @@ class Parcela
             return $result;
 
         } catch (\Exception $e) {
-            error_log("Error actualizando parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando parcela: " . $e->getMessage());
             return false;
         }
     }
@@ -227,7 +226,7 @@ class Parcela
             return $result;
 
         } catch (\Exception $e) {
-            error_log("Error eliminando parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando parcela: " . $e->getMessage());
             return false;
         }
     }
@@ -260,7 +259,7 @@ class Parcela
             return $parcelas;
 
         } catch (\Exception $e) {
-            error_log("Error buscando parcelas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error buscando parcelas: " . $e->getMessage());
             return [];
         }
     }
@@ -293,7 +292,7 @@ class Parcela
             ];
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo estadísticas de parcelas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo estadísticas de parcelas: " . $e->getMessage());
             return [
                 'total_parcelas' => 0,
                 'total_olivos' => 0,

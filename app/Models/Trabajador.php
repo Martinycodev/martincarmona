@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-require_once BASE_PATH . '/config/database.php';
 
 class Trabajador
 {
@@ -25,7 +24,7 @@ class Trabajador
             ");
             
             $foto = $data['foto'] ?? '';
-            $stmt->bind_param("sssssssssi", 
+            $stmt->bind_param("ssssssssssi",
                 $data['nombre'],
                 $data['apellidos'],
                 $data['dni'],
@@ -46,7 +45,7 @@ class Trabajador
             return $result ? $insertId : false;
             
         } catch (\Exception $e) {
-            error_log("Error creando trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando trabajador: " . $e->getMessage());
             return false;
         }
     }
@@ -88,7 +87,7 @@ class Trabajador
             return $trabajadores;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajadores: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajadores: " . $e->getMessage());
             return [];
         }
     }
@@ -113,7 +112,7 @@ class Trabajador
             return $trabajador;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajador: " . $e->getMessage());
             return false;
         }
     }
@@ -131,7 +130,7 @@ class Trabajador
             ");
             
             $foto = $data['foto'] ?? '';
-            $stmt->bind_param("sssssssssii", 
+            $stmt->bind_param("ssssssssssii",
                 $data['nombre'],
                 $data['apellidos'],
                 $data['dni'],
@@ -152,7 +151,7 @@ class Trabajador
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error actualizando trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando trabajador: " . $e->getMessage());
             return false;
         }
     }
@@ -175,7 +174,7 @@ class Trabajador
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error eliminando trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando trabajador: " . $e->getMessage());
             return false;
         }
     }
@@ -205,7 +204,7 @@ class Trabajador
             return $trabajadores;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajadores activos: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajadores activos: " . $e->getMessage());
             return [];
         }
     }
@@ -260,7 +259,7 @@ class Trabajador
             return $trabajador;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo detalle del trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo detalle del trabajador: " . $e->getMessage());
             return false;
         }
     }
@@ -301,7 +300,7 @@ class Trabajador
             return $trabajos;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo historial de trabajos: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo historial de trabajos: " . $e->getMessage());
             return [];
         }
     }

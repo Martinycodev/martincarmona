@@ -239,7 +239,6 @@ class AjaxNavigation {
 
         // Llamar a la función global de reinicialización de modales
         if (typeof window.reinitializeModals === 'function') {
-            console.log('Reinitializing modals after AJAX load...');
             window.reinitializeModals();
         } else {
             console.warn('reinitializeModals function not found');
@@ -250,15 +249,12 @@ class AjaxNavigation {
         // Verificar si el script ya está cargado
         const existingScript = document.querySelector(`script[src="${src}"]`);
         if (existingScript) {
-            console.log('Script already loaded:', src);
             return;
         }
 
-        console.log('Loading external script:', src);
         const script = document.createElement('script');
         script.src = src;
         script.onload = () => {
-            console.log('Script loaded successfully:', src);
         };
         script.onerror = () => {
             console.error('Error loading script:', src);

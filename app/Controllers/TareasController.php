@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-require_once BASE_PATH . '/app/Models/Tarea.php';
-require_once BASE_PATH . '/config/database.php';
 
 class TareasController extends BaseController
 {
@@ -71,10 +69,20 @@ class TareasController extends BaseController
 
                 // Obtener datos JSON
                 $input = json_decode(file_get_contents('php://input'), true);
-                error_log('Datos recibidos: ' . print_r($input, true));
+                \Core\Logger::app()->error('Datos recibidos: ' . print_r($input, true));
 
                 if ($input === null) {
                     echo json_encode(['success' => false, 'message' => 'Error al procesar los datos JSON']);
+                    return;
+                }
+
+                $v = \Core\Validator::make($input, [
+                    'fecha'  => 'date',
+                    'horas'  => 'numeric|min:0|max:24',
+                    'titulo' => 'max_length:200',
+                ]);
+                if ($v->fails()) {
+                    echo json_encode(['success' => false, 'message' => implode(' ', $v->allErrors())]);
                     return;
                 }
 
@@ -82,11 +90,11 @@ class TareasController extends BaseController
                 $userId = $_SESSION['user_id'] ?? ($input['user_id'] ?? 0);
 
                 $tareaData = [
-                    'fecha' => $input['fecha'] ?? date('Y-m-d'),
-                    'titulo' => $input['titulo'] ?? '',
-                    'descripcion' => $input['descripcion'] ?? '',
-                    'trabajo' => intval($input['trabajo'] ?? 0),
-                    'horas' => floatval($input['horas'] ?? 0)
+                    'fecha'       => $input['fecha'] ?? date('Y-m-d'),
+                    'titulo'      => strip_tags(trim($input['titulo'] ?? '')),
+                    'descripcion' => strip_tags(trim($input['descripcion'] ?? '')),
+                    'trabajo'     => intval($input['trabajo'] ?? 0),
+                    'horas'       => floatval($input['horas'] ?? 0),
                 ];
 
                 // Manejar trabajadores múltiples
@@ -107,8 +115,8 @@ class TareasController extends BaseController
                     $tareaData['parcela'] = intval($input['parcela']);
                 }
 
-                error_log('Intentando crear tarea con datos: ' . print_r($tareaData, true));
-                error_log('User ID: ' . $userId);
+                \Core\Logger::app()->error('Intentando crear tarea con datos: ' . print_r($tareaData, true));
+                \Core\Logger::app()->error('User ID: ' . $userId);
 
                 // Validar tipos de datos
                 $tareaData['fecha'] = (string) $tareaData['fecha'];
@@ -128,7 +136,7 @@ class TareasController extends BaseController
                     $tareaData['parcela'] = (int) $tareaData['parcela'];
                 }
 
-                error_log('Datos después de la conversión: ' . print_r($tareaData, true));
+                \Core\Logger::app()->error('Datos después de la conversión: ' . print_r($tareaData, true));
 
                 $result = $this->tareaModel->create($tareaData, $userId);
                 if ($result) {
@@ -136,7 +144,7 @@ class TareasController extends BaseController
                 } else {
                     $error = error_get_last();
                     $errorMessage = $error ? $error['message'] : 'Error desconocido';
-                    error_log('Error al crear tarea: ' . $errorMessage);
+                    \Core\Logger::app()->error('Error al crear tarea: ' . $errorMessage);
                     echo json_encode(['success' => false, 'message' => 'Error al crear la tarea: ' . $errorMessage]);
                 }
                 return;
@@ -202,12 +210,23 @@ class TareasController extends BaseController
                     return;
                 }
 
+                $v = \Core\Validator::make($input, [
+                    'id'     => 'required|integer',
+                    'fecha'  => 'date',
+                    'horas'  => 'numeric|min:0|max:24',
+                    'titulo' => 'max_length:200',
+                ]);
+                if ($v->fails()) {
+                    echo json_encode(['success' => false, 'message' => implode(' ', $v->allErrors())]);
+                    return;
+                }
+
                 $tareaData = [
-                    'id' => $input['id'] ?? 0,
-                    'fecha' => $input['fecha'] ?? date('Y-m-d'),
-                    'titulo' => $input['titulo'] ?? '',
-                    'descripcion' => $input['descripcion'] ?? '',
-                    'horas' => $input['horas'] ?? 0
+                    'id'          => intval($input['id']),
+                    'fecha'       => $input['fecha'] ?? date('Y-m-d'),
+                    'titulo'      => strip_tags(trim($input['titulo'] ?? '')),
+                    'descripcion' => strip_tags(trim($input['descripcion'] ?? '')),
+                    'horas'       => $input['horas'] ?? 0,
                 ];
 
                 // Manejar trabajadores múltiples en actualización
@@ -420,7 +439,7 @@ class TareasController extends BaseController
             echo json_encode(['success' => true, 'tarea' => $tarea]);
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo tarea: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo tarea: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -464,7 +483,7 @@ class TareasController extends BaseController
             ]);
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo tareas del mes: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo tareas del mes: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error al obtener tareas']);
         }
     }
@@ -893,13 +912,18 @@ class TareasController extends BaseController
         $this->validateCsrf();
 
         $input = json_decode(file_get_contents('php://input'), true);
-        $titulo      = trim($input['titulo'] ?? '');
-        $descripcion = trim($input['descripcion'] ?? '');
 
-        if (empty($titulo)) {
-            echo json_encode(['success' => false, 'message' => 'El título es requerido']);
+        $v = \Core\Validator::make($input ?? [], [
+            'titulo'      => 'required|max_length:200',
+            'descripcion' => 'max_length:1000',
+        ]);
+        if ($v->fails()) {
+            echo json_encode(['success' => false, 'message' => implode(' ', $v->allErrors())]);
             return;
         }
+
+        $titulo      = strip_tags(trim($input['titulo']));
+        $descripcion = strip_tags(trim($input['descripcion'] ?? ''));
 
         try {
             $db   = \Database::connect();
@@ -918,7 +942,7 @@ class TareasController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error creando tarea pendiente: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando tarea pendiente: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -936,13 +960,18 @@ class TareasController extends BaseController
         $this->validateCsrf();
 
         $input = json_decode(file_get_contents('php://input'), true);
-        $id    = intval($input['id'] ?? 0);
-        $fecha = trim($input['fecha'] ?? '');
 
-        if ($id <= 0 || empty($fecha) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
-            echo json_encode(['success' => false, 'message' => 'Datos inválidos']);
+        $v = \Core\Validator::make($input ?? [], [
+            'id'    => 'required|integer',
+            'fecha' => 'required|date',
+        ]);
+        if ($v->fails()) {
+            echo json_encode(['success' => false, 'message' => implode(' ', $v->allErrors())]);
             return;
         }
+
+        $id    = intval($input['id']);
+        $fecha = $input['fecha'];
 
         try {
             $db   = \Database::connect();
@@ -962,7 +991,7 @@ class TareasController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error fechando tarea: " . $e->getMessage());
+            \Core\Logger::app()->error("Error fechando tarea: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }

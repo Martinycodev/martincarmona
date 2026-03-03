@@ -1,6 +1,5 @@
 <?php
 namespace App\Controllers;
-require_once BASE_PATH . '/config/database.php';
 
 class RiegoController extends BaseController
 {
@@ -88,7 +87,7 @@ class RiegoController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error creando riego: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando riego: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -117,7 +116,7 @@ class RiegoController extends BaseController
                 echo json_encode(['success' => false, 'message' => 'Riego no encontrado']);
             }
         } catch (\Exception $e) {
-            error_log("Error obteniendo riego: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo riego: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -178,7 +177,7 @@ class RiegoController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error actualizando riego: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando riego: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -214,7 +213,7 @@ class RiegoController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error eliminando riego: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando riego: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }

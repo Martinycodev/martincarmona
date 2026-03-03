@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-require_once BASE_PATH . '/app/Models/Tarea.php';
-require_once BASE_PATH . '/config/database.php';
 
 class BusquedaController extends BaseController
 {
@@ -64,8 +62,8 @@ class BusquedaController extends BaseController
             ];
             
             // Debug logging
-            error_log("Búsqueda avanzada - Filtros recibidos: " . json_encode($filtros));
-            error_log("Búsqueda avanzada - GET completo: " . json_encode($_GET));
+            \Core\Logger::app()->error("Búsqueda avanzada - Filtros recibidos: " . json_encode($filtros));
+            \Core\Logger::app()->error("Búsqueda avanzada - GET completo: " . json_encode($_GET));
             
             // Construir consulta SQL dinámica
             $sql = "
@@ -198,7 +196,7 @@ class BusquedaController extends BaseController
             ]);
             
         } catch (\Exception $e) {
-            error_log("Error en búsqueda avanzada: " . $e->getMessage());
+            \Core\Logger::app()->error("Error en búsqueda avanzada: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }

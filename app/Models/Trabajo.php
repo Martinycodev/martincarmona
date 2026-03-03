@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-require_once BASE_PATH . '/config/database.php';
 
 class Trabajo
 {
@@ -38,7 +37,7 @@ class Trabajo
             return $result ? $insertId : false;
             
         } catch (\Exception $e) {
-            error_log("Error creando trabajo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando trabajo: " . $e->getMessage());
             return false;
         }
     }
@@ -73,7 +72,7 @@ class Trabajo
             return $trabajos;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajos: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajos: " . $e->getMessage());
             return [];
         }
     }
@@ -98,7 +97,7 @@ class Trabajo
             return $trabajo;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajo: " . $e->getMessage());
             return false;
         }
     }
@@ -129,7 +128,7 @@ class Trabajo
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error actualizando trabajo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando trabajo: " . $e->getMessage());
             return false;
         }
     }
@@ -152,7 +151,7 @@ class Trabajo
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error eliminando trabajo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando trabajo: " . $e->getMessage());
             return false;
         }
     }
@@ -182,7 +181,7 @@ class Trabajo
             return $trabajos;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajos activos: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajos activos: " . $e->getMessage());
             return [];
         }
     }
@@ -212,7 +211,7 @@ class Trabajo
             return $trabajos;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajos por categoría: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajos por categoría: " . $e->getMessage());
             return [];
         }
     }

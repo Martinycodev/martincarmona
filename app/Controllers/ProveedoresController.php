@@ -1,6 +1,5 @@
 <?php
 namespace App\Controllers;
-require_once BASE_PATH . '/config/database.php';
 class ProveedoresController extends BaseController
 {
     public function index()

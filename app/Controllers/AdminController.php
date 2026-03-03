@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-require_once BASE_PATH . '/config/database.php';
 
 class AdminController extends BaseController
 {

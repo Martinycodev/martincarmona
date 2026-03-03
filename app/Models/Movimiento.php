@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-require_once BASE_PATH . '/config/database.php';
 
 class Movimiento
 {

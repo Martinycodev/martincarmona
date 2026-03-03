@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-require_once BASE_PATH . '/config/database.php';
 
 class Vehiculo
 {
@@ -46,7 +45,7 @@ class Vehiculo
             return $result ? $insertId : false;
             
         } catch (\Exception $e) {
-            error_log("Error creando vehículo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando vehículo: " . $e->getMessage());
             return false;
         }
     }
@@ -89,7 +88,7 @@ class Vehiculo
             return $vehiculos;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo vehículos: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo vehículos: " . $e->getMessage());
             return [];
         }
     }
@@ -114,7 +113,7 @@ class Vehiculo
             return $vehiculo;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo vehículo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo vehículo: " . $e->getMessage());
             return false;
         }
     }
@@ -153,7 +152,7 @@ class Vehiculo
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error actualizando vehículo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando vehículo: " . $e->getMessage());
             return false;
         }
     }
@@ -176,7 +175,7 @@ class Vehiculo
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error eliminando vehículo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando vehículo: " . $e->getMessage());
             return false;
         }
     }
@@ -206,7 +205,7 @@ class Vehiculo
             return $vehiculos;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo vehículos activos: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo vehículos activos: " . $e->getMessage());
             return [];
         }
     }
@@ -236,7 +235,7 @@ class Vehiculo
             return $vehiculos;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo vehículos por tipo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo vehículos por tipo: " . $e->getMessage());
             return [];
         }
     }
@@ -261,7 +260,7 @@ class Vehiculo
             return $vehiculo;
             
         } catch (\Exception $e) {
-            error_log("Error buscando vehículo por matrícula: " . $e->getMessage());
+            \Core\Logger::app()->error("Error buscando vehículo por matrícula: " . $e->getMessage());
             return false;
         }
     }

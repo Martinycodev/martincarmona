@@ -1,6 +1,5 @@
 <?php
 namespace App\Controllers;
-require_once BASE_PATH . '/config/database.php';
 class TrabajadoresController extends BaseController
 {
     private $db;
@@ -14,11 +13,11 @@ class TrabajadoresController extends BaseController
     public function buscar()
     {
         header('Content-Type: application/json');
-        error_log("Método buscar llamado en TrabajadoresController");
-        error_log("Query recibida: " . ($_GET['q'] ?? 'no definida'));
+        \Core\Logger::app()->error("Método buscar llamado en TrabajadoresController");
+        \Core\Logger::app()->error("Query recibida: " . ($_GET['q'] ?? 'no definida'));
 
         if (!isset($_GET['q']) || strlen($_GET['q']) < 3) {
-            error_log("Query muy corta o no definida");
+            \Core\Logger::app()->error("Query muy corta o no definida");
             echo json_encode([]);
             return;
         }
@@ -29,7 +28,7 @@ class TrabajadoresController extends BaseController
             }
 
             $query = "%" . $_GET['q'] . "%";
-            error_log("Buscando trabajadores con query: " . $query);
+            \Core\Logger::app()->error("Buscando trabajadores con query: " . $query);
 
             $tableCheck = $this->db->query("SHOW TABLES LIKE 'trabajadores'");
             if ($tableCheck->num_rows == 0) {
@@ -61,11 +60,11 @@ class TrabajadoresController extends BaseController
                 $trabajadores[] = $row;
             }
 
-            error_log("Trabajadores encontrados: " . json_encode($trabajadores));
+            \Core\Logger::app()->error("Trabajadores encontrados: " . json_encode($trabajadores));
             echo json_encode($trabajadores);
 
         } catch (\Exception $e) {
-            error_log("Error en búsqueda de trabajadores: " . $e->getMessage());
+            \Core\Logger::app()->error("Error en búsqueda de trabajadores: " . $e->getMessage());
             echo json_encode(['error' => 'Error en la búsqueda: ' . $e->getMessage()]);
         }
     }
@@ -114,10 +113,19 @@ class TrabajadoresController extends BaseController
             $baja_ss   = !empty($input['baja_ss']) ? $input['baja_ss'] : null;
             $cuadrilla = !empty($input['cuadrilla']) ? 1 : 0;
 
-            if (empty($nombre)) {
-                echo json_encode(['success' => false, 'message' => 'El nombre es requerido']);
+            $v = \Core\Validator::make($input, [
+                'nombre'  => 'required|max_length:100',
+                'dni'     => 'max_length:20',
+                'ss'      => 'max_length:30',
+                'alta_ss' => 'date',
+                'baja_ss' => 'date',
+            ]);
+            if ($v->fails()) {
+                echo json_encode(['success' => false, 'message' => implode(' ', $v->allErrors())]);
                 return;
             }
+
+            $nombre = strip_tags($nombre);
 
             $db = \Database::connect();
 
@@ -146,8 +154,8 @@ class TrabajadoresController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error creando trabajador: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
+            \Core\Logger::app()->error("Error creando trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Stack trace: " . $e->getTraceAsString());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor: ' . $e->getMessage()]);
         }
     }
@@ -183,7 +191,7 @@ class TrabajadoresController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajador: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -203,9 +211,9 @@ class TrabajadoresController extends BaseController
         $this->validateCsrf();
 
         try {
-            error_log("Método actualizar llamado");
+            \Core\Logger::app()->error("Método actualizar llamado");
             $input = json_decode(file_get_contents('php://input'), true);
-            error_log("Input recibido: " . json_encode($input));
+            \Core\Logger::app()->error("Input recibido: " . json_encode($input));
 
             if (!$input) {
                 echo json_encode(['success' => false, 'message' => 'Datos no válidos']);
@@ -220,21 +228,26 @@ class TrabajadoresController extends BaseController
             $baja_ss   = !empty($input['baja_ss']) ? $input['baja_ss'] : null;
             $cuadrilla = !empty($input['cuadrilla']) ? 1 : 0;
 
-            if ($id <= 0) {
-                echo json_encode(['success' => false, 'message' => 'ID no válido']);
+            $v = \Core\Validator::make($input, [
+                'id'      => 'required|integer',
+                'nombre'  => 'required|max_length:100',
+                'dni'     => 'max_length:20',
+                'ss'      => 'max_length:30',
+                'alta_ss' => 'date',
+                'baja_ss' => 'date',
+            ]);
+            if ($v->fails()) {
+                echo json_encode(['success' => false, 'message' => implode(' ', $v->allErrors())]);
                 return;
             }
 
-            if (empty($nombre)) {
-                echo json_encode(['success' => false, 'message' => 'El nombre es requerido']);
-                return;
-            }
+            $nombre = strip_tags($nombre);
 
             $db = \Database::connect();
-            error_log("Conexión a BD establecida");
+            \Core\Logger::app()->error("Conexión a BD establecida");
 
             if (!empty($dni)) {
-                error_log("Verificando DNI duplicado: $dni para ID: $id");
+                \Core\Logger::app()->error("Verificando DNI duplicado: $dni para ID: $id");
                 $stmt = $db->prepare("SELECT id FROM trabajadores WHERE dni = ? AND id != ?");
                 if (!$stmt) {
                     throw new \Exception("Error preparando consulta DNI: " . $db->error);
@@ -249,10 +262,10 @@ class TrabajadoresController extends BaseController
                     return;
                 }
                 $stmt->close();
-                error_log("DNI verificado - no hay duplicados");
+                \Core\Logger::app()->error("DNI verificado - no hay duplicados");
             }
 
-            error_log("Preparando consulta UPDATE");
+            \Core\Logger::app()->error("Preparando consulta UPDATE");
             $stmt = $db->prepare("UPDATE trabajadores SET nombre = ?, dni = ?, ss = ?, alta_ss = ?, baja_ss = ?, cuadrilla = ? WHERE id = ?");
             if (!$stmt) {
                 throw new \Exception("Error preparando consulta UPDATE: " . $db->error);
@@ -273,8 +286,8 @@ class TrabajadoresController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error actualizando trabajador: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
+            \Core\Logger::app()->error("Error actualizando trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Stack trace: " . $e->getTraceAsString());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor: ' . $e->getMessage()]);
         }
     }
@@ -345,7 +358,7 @@ class TrabajadoresController extends BaseController
 
             echo json_encode(['success' => true, 'foto' => $fotoPath]);
         } catch (\Exception $e) {
-            error_log("Error guardando foto: " . $e->getMessage());
+            \Core\Logger::app()->error("Error guardando foto: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error al actualizar la base de datos']);
         }
     }
@@ -374,7 +387,7 @@ class TrabajadoresController extends BaseController
 
             echo json_encode(['success' => true, 'trabajadores' => $trabajadores]);
         } catch (\Exception $e) {
-            error_log("Error obteniendo cuadrilla: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo cuadrilla: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -448,7 +461,7 @@ class TrabajadoresController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error eliminando trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando trabajador: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }

@@ -1,6 +1,5 @@
 <?php
 namespace App\Controllers;
-require_once BASE_PATH . '/config/database.php';
 class VehiculosController extends BaseController
 {
     public function index()

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-require_once BASE_PATH . '/config/database.php';
 
 class Herramienta
 {
@@ -46,7 +45,7 @@ class Herramienta
             return $result ? $insertId : false;
             
         } catch (\Exception $e) {
-            error_log("Error creando herramienta: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando herramienta: " . $e->getMessage());
             return false;
         }
     }
@@ -89,7 +88,7 @@ class Herramienta
             return $herramientas;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo herramientas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo herramientas: " . $e->getMessage());
             return [];
         }
     }
@@ -114,7 +113,7 @@ class Herramienta
             return $herramienta;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo herramienta: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo herramienta: " . $e->getMessage());
             return false;
         }
     }
@@ -153,7 +152,7 @@ class Herramienta
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error actualizando herramienta: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando herramienta: " . $e->getMessage());
             return false;
         }
     }
@@ -176,7 +175,7 @@ class Herramienta
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error eliminando herramienta: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando herramienta: " . $e->getMessage());
             return false;
         }
     }
@@ -206,7 +205,7 @@ class Herramienta
             return $herramientas;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo herramientas activas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo herramientas activas: " . $e->getMessage());
             return [];
         }
     }
@@ -236,7 +235,7 @@ class Herramienta
             return $herramientas;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo herramientas por categoría: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo herramientas por categoría: " . $e->getMessage());
             return [];
         }
     }
@@ -261,7 +260,7 @@ class Herramienta
             return $herramienta;
             
         } catch (\Exception $e) {
-            error_log("Error buscando herramienta por número de serie: " . $e->getMessage());
+            \Core\Logger::app()->error("Error buscando herramienta por número de serie: " . $e->getMessage());
             return false;
         }
     }
@@ -291,7 +290,7 @@ class Herramienta
             return $herramientas;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo herramientas por ubicación: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo herramientas por ubicación: " . $e->getMessage());
             return [];
         }
     }

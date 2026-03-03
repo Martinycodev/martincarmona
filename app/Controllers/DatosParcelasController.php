@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-require_once BASE_PATH . '/config/database.php';
-require_once BASE_PATH . '/app/Models/Parcela.php';
 
 class DatosParcelasController extends BaseController
 {
@@ -51,7 +49,7 @@ class DatosParcelasController extends BaseController
             $this->render('datos/parcelas/listado', $data);
             
         } catch (\Exception $e) {
-            error_log("Error mostrando listado de parcelas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error mostrando listado de parcelas: " . $e->getMessage());
             $this->render('error', ['message' => 'Error al cargar las parcelas']);
         }
     }
@@ -79,7 +77,7 @@ class DatosParcelasController extends BaseController
             $this->render('datos/parcelas/index', $data);
             
         } catch (\Exception $e) {
-            error_log("Error mostrando detalle de parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error mostrando detalle de parcela: " . $e->getMessage());
             $this->render('error', ['message' => 'Error al cargar la parcela']);
         }
     }
@@ -92,7 +90,7 @@ class DatosParcelasController extends BaseController
         try {
             return $this->parcelaModel->getAll($userId);
         } catch (\Exception $e) {
-            error_log("Error obteniendo parcelas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo parcelas: " . $e->getMessage());
             return [];
         }
     }
@@ -123,7 +121,7 @@ class DatosParcelasController extends BaseController
             echo json_encode(['success' => true, 'parcela' => $parcela]);
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo detalle de parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo detalle de parcela: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -161,7 +159,7 @@ class DatosParcelasController extends BaseController
             }
             
         } catch (\Exception $e) {
-            error_log("Error eliminando parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando parcela: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -187,7 +185,7 @@ class DatosParcelasController extends BaseController
             echo json_encode(['success' => true, 'parcelas' => $parcelas]);
             
         } catch (\Exception $e) {
-            error_log("Error buscando parcelas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error buscando parcelas: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }

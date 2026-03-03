@@ -30,7 +30,6 @@ function closeEditModal() {
 
 // Función para editar trabajador
 async function editWorker(id, buttonElement = null) {
-    console.log('editWorker called with id:', id);
     try {
         showToast('Cargando datos del trabajador...', 'info');
 
@@ -137,7 +136,6 @@ function reloadTable() {
 
 // Inicializar formularios cuando se carga el DOM
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Trabajadores script loaded');
 
     // Manejo del formulario de crear
     const createForm = document.getElementById('createWorkerForm');

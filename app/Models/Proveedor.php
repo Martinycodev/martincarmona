@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-require_once BASE_PATH . '/config/database.php';
 
 class Proveedor
 {
@@ -47,7 +46,7 @@ class Proveedor
             return $result ? $insertId : false;
             
         } catch (\Exception $e) {
-            error_log("Error creando proveedor: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando proveedor: " . $e->getMessage());
             return false;
         }
     }
@@ -91,7 +90,7 @@ class Proveedor
             return $proveedores;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo proveedores: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo proveedores: " . $e->getMessage());
             return [];
         }
     }
@@ -116,7 +115,7 @@ class Proveedor
             return $proveedor;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo proveedor: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo proveedor: " . $e->getMessage());
             return false;
         }
     }
@@ -156,7 +155,7 @@ class Proveedor
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error actualizando proveedor: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando proveedor: " . $e->getMessage());
             return false;
         }
     }
@@ -179,7 +178,7 @@ class Proveedor
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error eliminando proveedor: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando proveedor: " . $e->getMessage());
             return false;
         }
     }
@@ -209,7 +208,7 @@ class Proveedor
             return $proveedores;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo proveedores activos: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo proveedores activos: " . $e->getMessage());
             return [];
         }
     }
@@ -239,7 +238,7 @@ class Proveedor
             return $proveedores;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo proveedores por sector: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo proveedores por sector: " . $e->getMessage());
             return [];
         }
     }
@@ -264,7 +263,7 @@ class Proveedor
             return $proveedor;
             
         } catch (\Exception $e) {
-            error_log("Error buscando proveedor por CIF: " . $e->getMessage());
+            \Core\Logger::app()->error("Error buscando proveedor por CIF: " . $e->getMessage());
             return false;
         }
     }
@@ -295,7 +294,7 @@ class Proveedor
             return $proveedores;
             
         } catch (\Exception $e) {
-            error_log("Error buscando proveedores por nombre: " . $e->getMessage());
+            \Core\Logger::app()->error("Error buscando proveedores por nombre: " . $e->getMessage());
             return [];
         }
     }
@@ -326,7 +325,7 @@ class Proveedor
             return $proveedores;
             
         } catch (\Exception $e) {
-            error_log("Error buscando proveedores por productos: " . $e->getMessage());
+            \Core\Logger::app()->error("Error buscando proveedores por productos: " . $e->getMessage());
             return [];
         }
     }

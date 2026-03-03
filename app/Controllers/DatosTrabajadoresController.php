@@ -1,6 +1,5 @@
 <?php
 namespace App\Controllers;
-require_once BASE_PATH . '/config/database.php';
 
 class DatosTrabajadoresController extends BaseController
 {
@@ -58,7 +57,7 @@ class DatosTrabajadoresController extends BaseController
             $this->render('datos/trabajadores/index', $data);
             
         } catch (\Exception $e) {
-            error_log("Error en DatosTrabajadoresController: " . $e->getMessage());
+            \Core\Logger::app()->error("Error en DatosTrabajadoresController: " . $e->getMessage());
             $this->render('layouts/404', ['message' => 'Error al cargar los datos del trabajador']);
         }
     }
@@ -82,7 +81,7 @@ class DatosTrabajadoresController extends BaseController
             $this->render('datos/trabajadores/listado', $data);
             
         } catch (\Exception $e) {
-            error_log("Error mostrando listado de trabajadores: " . $e->getMessage());
+            \Core\Logger::app()->error("Error mostrando listado de trabajadores: " . $e->getMessage());
             $this->render('layouts/404', ['message' => 'Error al cargar el listado de trabajadores']);
         }
     }
@@ -116,7 +115,7 @@ class DatosTrabajadoresController extends BaseController
             return $trabajadores;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajadores: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajadores: " . $e->getMessage());
             return [];
         }
     }
@@ -147,7 +146,7 @@ class DatosTrabajadoresController extends BaseController
             return $trabajador;
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo detalle del trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo detalle del trabajador: " . $e->getMessage());
             return false;
         }
     }
@@ -219,7 +218,7 @@ class DatosTrabajadoresController extends BaseController
             echo json_encode(['success' => true, 'message' => 'Información actualizada correctamente']);
             
         } catch (\Exception $e) {
-            error_log("Error actualizando trabajador: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando trabajador: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }

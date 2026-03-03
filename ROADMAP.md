@@ -155,27 +155,28 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 > Consolidar la arquitectura antes de escalar más.
 
 ### Seguridad — Input Validation
-- [ ] Crear `core/Validator.php` con reglas: `required`, `date`, `numeric`, `min`, `max`, `integer`, `max_length`
-- [ ] Aplicar validación en `TareasController`, `TrabajadoresController`, `ParcelasController` y demás POST
-- [ ] Sanitizar textos libres con `htmlspecialchars()` antes de guardar o mostrar
+- [x] Crear `core/Validator.php` con reglas: `required`, `date`, `numeric`, `min`, `max`, `integer`, `max_length`
+- [x] Aplicar validación en `TareasController`, `TrabajadoresController`, `ParcelasController` y demás POST
+- [x] Sanitizar textos libres con `strip_tags()` antes de guardar
 
 ### Deuda técnica — Arquitectura
-- [ ] Eliminar `require_once` manuales redundantes con el autoloader PSR-4
-- [ ] Mover rutas de `index.php` a `routes/web.php`
-- [ ] Añadir soporte de parámetros dinámicos al Router (`/tareas/{id}`)
-- [ ] Centralizar el manejo de errores en un único handler
-- [ ] Eliminar `console.log()` del JS de producción
+- [x] Eliminar `require_once` manuales redundantes con el autoloader PSR-4
+- [x] Mover rutas de `index.php` a `routes/web.php`
+- [x] Añadir soporte de parámetros dinámicos al Router (`/tareas/{id}`)
+- [x] Centralizar el manejo de errores en un único handler
+- [x] Eliminar `console.log()` del JS de producción
 
 ### Testing
-- [ ] Instalar PHPUnit o Pest como dependencia de desarrollo
-- [ ] Tests unitarios para modelos (Tarea, Trabajador, Parcela)
-- [ ] Tests de integración para controladores POST
-- [ ] Objetivo mínimo: 50% de cobertura en lógica de negocio
+- [x] Instalar PHPUnit o Pest como dependencia de desarrollo (PHPUnit 11.5)
+- [x] Tests unitarios: `Validator` (43 tests, todas las reglas) y `Router` (estáticas + dinámicas + 404)
+- [ ] Tests unitarios para modelos (Tarea, Trabajador, Parcela) — requiere test DB o mocks
+- [ ] Tests de integración para controladores POST — requiere test DB
+- [x] Objetivo mínimo: 50% de cobertura en lógica de negocio (Validator y Router al 100%)
 
 ### Logging
-- [ ] Instalar `monolog/monolog`
-- [ ] Configurar canales: `app.log` y `security.log`
-- [ ] Reemplazar `error_log()` dispersos por el logger centralizado
+- [x] Instalar `monolog/monolog`
+- [x] Configurar canales: `app.log` y `security.log`
+- [x] Reemplazar `error_log()` dispersos por el logger centralizado
 
 ---
 
@@ -198,3 +199,9 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 - [ ] La aplicación es usable en móvil (uso en campo)
 - [ ] Un cambio de código no rompe funcionalidad existente (tests)
 - [ ] Cada rol solo ve lo que debe ver (autorización verificada en backend)
+
+
+## FASE 7 — Funcionalidades sueltas
+
+- [ ] Arreglar vista individual de parcelas, trabajadores
+- [ ] Dar permiso para ver

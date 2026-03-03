@@ -1,6 +1,5 @@
 <?php
 namespace App\Controllers;
-require_once BASE_PATH . '/config/database.php';
 
 class PropietariosController extends BaseController
 {
@@ -82,7 +81,7 @@ class PropietariosController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error creando propietario: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando propietario: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor: ' . $e->getMessage()]);
         }
     }
@@ -118,7 +117,7 @@ class PropietariosController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo propietario: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo propietario: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -186,7 +185,7 @@ class PropietariosController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error actualizando propietario: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando propietario: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor: ' . $e->getMessage()]);
         }
     }
@@ -265,7 +264,7 @@ class PropietariosController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error eliminando propietario: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando propietario: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -361,7 +360,7 @@ class PropietariosController extends BaseController
 
             echo json_encode(['success' => true, 'imagen' => $imagePath]);
         } catch (\Exception $e) {
-            error_log("Error guardando imagen DNI: " . $e->getMessage());
+            \Core\Logger::app()->error("Error guardando imagen DNI: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error al actualizar la base de datos']);
         }
     }

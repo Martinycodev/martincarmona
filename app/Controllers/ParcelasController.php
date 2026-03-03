@@ -1,6 +1,5 @@
 <?php
 namespace App\Controllers;
-require_once BASE_PATH . '/config/database.php';
 
 class ParcelasController extends BaseController
 {
@@ -46,7 +45,7 @@ class ParcelasController extends BaseController
             $db->close();
             echo json_encode(['success' => true, 'propietarios' => $propietarios]);
         } catch (\Exception $e) {
-            error_log("Error obteniendo propietarios: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo propietarios: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno']);
         }
     }
@@ -54,18 +53,18 @@ class ParcelasController extends BaseController
     public function buscar()
     {
         header('Content-Type: application/json');
-        error_log("Método buscar llamado en ParcelasController");
-        error_log("Query recibida: " . ($_GET['q'] ?? 'no definida'));
+        \Core\Logger::app()->error("Método buscar llamado en ParcelasController");
+        \Core\Logger::app()->error("Query recibida: " . ($_GET['q'] ?? 'no definida'));
 
         if (!isset($_GET['q']) || strlen($_GET['q']) < 3) {
-            error_log("Query muy corta o no definida");
+            \Core\Logger::app()->error("Query muy corta o no definida");
             echo json_encode([]);
             return;
         }
 
         try {
             $query = "%" . $_GET['q'] . "%";
-            error_log("Buscando parcelas con query: " . $query);
+            \Core\Logger::app()->error("Buscando parcelas con query: " . $query);
             $stmt = $this->db->prepare("
                 SELECT id, nombre, olivos
                 FROM parcelas 
@@ -86,7 +85,7 @@ class ParcelasController extends BaseController
             echo json_encode($parcelas);
 
         } catch (\Exception $e) {
-            error_log("Error en búsqueda de parcelas: " . $e->getMessage());
+            \Core\Logger::app()->error("Error en búsqueda de parcelas: " . $e->getMessage());
             echo json_encode(['error' => 'Error en la búsqueda']);
         }
     }
@@ -130,10 +129,19 @@ class ParcelasController extends BaseController
             $corta                = in_array($input['corta'] ?? '', ['par','impar','siempre'])
                                     ? $input['corta'] : null;
 
-            if (empty($nombre)) {
-                echo json_encode(['success' => false, 'message' => 'El nombre es requerido']);
+            $v = \Core\Validator::make($input, [
+                'nombre'      => 'required|max_length:100',
+                'olivos'      => 'integer|min:0',
+                'descripcion' => 'max_length:1000',
+            ]);
+            if ($v->fails()) {
+                echo json_encode(['success' => false, 'message' => implode(' ', $v->allErrors())]);
                 return;
             }
+
+            $nombre      = strip_tags($nombre);
+            $descripcion = strip_tags($descripcion);
+            $ubicacion   = strip_tags($ubicacion);
 
             $db = \Database::connect();
 
@@ -161,8 +169,8 @@ class ParcelasController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error creando parcela: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
+            \Core\Logger::app()->error("Error creando parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Stack trace: " . $e->getTraceAsString());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor: ' . $e->getMessage()]);
         }
     }
@@ -199,7 +207,7 @@ class ParcelasController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error obteniendo parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo parcela: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -244,15 +252,20 @@ class ParcelasController extends BaseController
             $corta                = in_array($input['corta'] ?? '', ['par','impar','siempre'])
                                     ? $input['corta'] : null;
 
-            if ($id <= 0) {
-                echo json_encode(['success' => false, 'message' => 'ID no válido']);
+            $v = \Core\Validator::make($input, [
+                'id'          => 'required|integer',
+                'nombre'      => 'required|max_length:100',
+                'olivos'      => 'integer|min:0',
+                'descripcion' => 'max_length:1000',
+            ]);
+            if ($v->fails()) {
+                echo json_encode(['success' => false, 'message' => implode(' ', $v->allErrors())]);
                 return;
             }
 
-            if (empty($nombre)) {
-                echo json_encode(['success' => false, 'message' => 'El nombre es requerido']);
-                return;
-            }
+            $nombre      = strip_tags($nombre);
+            $descripcion = strip_tags($descripcion);
+            $ubicacion   = strip_tags($ubicacion);
 
             $db = \Database::connect();
 
@@ -284,8 +297,8 @@ class ParcelasController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error actualizando parcela: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
+            \Core\Logger::app()->error("Error actualizando parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Stack trace: " . $e->getTraceAsString());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor: ' . $e->getMessage()]);
         }
     }
@@ -351,7 +364,7 @@ class ParcelasController extends BaseController
             $db->close();
 
         } catch (\Exception $e) {
-            error_log("Error eliminando parcela: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando parcela: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }

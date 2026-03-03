@@ -30,14 +30,12 @@ async function editJob(id, buttonElement = null) {
             }
         });
         
-        console.log('Response status:', response.status);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Data received:', data);
         
         if (data.success && data.trabajo) {
             const job = data.trabajo;
@@ -92,7 +90,6 @@ function reloadTable() {
 
 // Inicializar formularios cuando se carga el DOM
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Trabajos script loaded');
     
     // Manejo del formulario de crear
     const createForm = document.getElementById('createJobForm');

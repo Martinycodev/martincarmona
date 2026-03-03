@@ -1,6 +1,5 @@
 <?php
 namespace App\Controllers;
-require_once BASE_PATH . '/config/database.php';
 class TrabajosController extends BaseController
 {
     private $db;
@@ -14,11 +13,11 @@ class TrabajosController extends BaseController
     public function buscar()
     {
         header('Content-Type: application/json');
-        error_log("Método buscar llamado en TrabajosController");
-        error_log("Query recibida: " . ($_GET['q'] ?? 'no definida'));
+        \Core\Logger::app()->error("Método buscar llamado en TrabajosController");
+        \Core\Logger::app()->error("Query recibida: " . ($_GET['q'] ?? 'no definida'));
         
         if (!isset($_GET['q']) || strlen($_GET['q']) < 2) {
-            error_log("Query muy corta o no definida");
+            \Core\Logger::app()->error("Query muy corta o no definida");
             echo json_encode([]);
             return;
         }
@@ -30,7 +29,7 @@ class TrabajosController extends BaseController
             }
             
             $query = "%" . $_GET['q'] . "%";
-            error_log("Buscando trabajos con query: " . $query);
+            \Core\Logger::app()->error("Buscando trabajos con query: " . $query);
             
             $stmt = $this->db->prepare("
                 SELECT id, nombre
@@ -57,11 +56,11 @@ class TrabajosController extends BaseController
                 $trabajos[] = $row;
             }
             
-            error_log("Trabajos encontrados: " . json_encode($trabajos));
+            \Core\Logger::app()->error("Trabajos encontrados: " . json_encode($trabajos));
             echo json_encode($trabajos);
             
         } catch (\Exception $e) {
-            error_log("Error en búsqueda de trabajos: " . $e->getMessage());
+            \Core\Logger::app()->error("Error en búsqueda de trabajos: " . $e->getMessage());
             echo json_encode(['error' => 'Error en la búsqueda: ' . $e->getMessage()]);
         }
     }
@@ -147,7 +146,7 @@ class TrabajosController extends BaseController
             $db->close();
             
         } catch (\Exception $e) {
-            error_log("Error creando trabajo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error creando trabajo: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -184,7 +183,7 @@ class TrabajosController extends BaseController
             $db->close();
             
         } catch (\Exception $e) {
-            error_log("Error obteniendo trabajo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error obteniendo trabajo: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -261,7 +260,7 @@ class TrabajosController extends BaseController
             $db->close();
             
         } catch (\Exception $e) {
-            error_log("Error actualizando trabajo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error actualizando trabajo: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }
@@ -327,7 +326,7 @@ class TrabajosController extends BaseController
             $db->close();
             
         } catch (\Exception $e) {
-            error_log("Error eliminando trabajo: " . $e->getMessage());
+            \Core\Logger::app()->error("Error eliminando trabajo: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }

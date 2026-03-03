@@ -63,7 +63,6 @@ function getBaseUrl() {
 
 // Variable global para la ruta base
 window.APP_BASE_URL = getBaseUrl();
-console.log('Base URL detected:', window.APP_BASE_URL);
 
 // Función helper para construir URLs
 function buildUrl(path) {
@@ -74,7 +73,6 @@ function buildUrl(path) {
 
     // Combinar base URL con path
     const fullUrl = window.APP_BASE_URL + path;
-    console.log('buildUrl called with path:', path, 'result:', fullUrl);
     return fullUrl;
 }
 
@@ -139,7 +137,6 @@ function positionModalInViewport(modal) {
 
 // Función genérica para abrir modales
 function openModal(modalId, buttonElement = null) {
-    console.log('Opening modal:', modalId);
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.style.display = 'block';
@@ -150,7 +147,6 @@ function openModal(modalId, buttonElement = null) {
         if (firstInput) {
             setTimeout(() => firstInput.focus(), 100);
         }
-        console.log('Modal opened successfully:', modalId);
     } else {
         console.error('Modal not found:', modalId);
     }
@@ -158,7 +154,6 @@ function openModal(modalId, buttonElement = null) {
 
 // Función genérica para cerrar modales
 function closeModal(modalId) {
-    console.log('Closing modal:', modalId);
     const modal = document.getElementById(modalId);
     if (modal) {
         const modalContent = modal.querySelector('.modal-content');
@@ -174,7 +169,6 @@ function closeModal(modalId) {
         // Limpiar formularios
         const forms = modal.querySelectorAll('form');
         forms.forEach(form => form.reset());
-        console.log('Modal closed successfully:', modalId);
     } else {
         console.error('Modal not found for closing:', modalId);
     }
@@ -269,19 +263,16 @@ function confirmDelete(itemName, itemType = 'elemento') {
 
 // Inicializar modales cuando se carga el DOM
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('Modal functions loaded and initializing...');
     initializeGlobalModals();
 });
 
 // Función para inicializar modales globales
 function initializeGlobalModals() {
-    console.log('Initializing global modals...');
 
     // Event listeners para cerrar modales al hacer clic fuera
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('modal')) {
             const modalId = e.target.id;
-            console.log('Clicked on modal:', modalId);
             if (modalId) {
                 closeModal(modalId);
             }
@@ -292,14 +283,12 @@ function initializeGlobalModals() {
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('close') || e.target.classList.contains('close-btn')) {
             const modal = e.target.closest('.modal');
-            console.log('Clicked on close button, modal:', modal);
             if (modal) {
                 closeModal(modal.id);
             }
         }
     });
 
-    console.log('Global modals initialized');
 }
 
 // Función para reinicializar modales después de carga AJAX
@@ -323,13 +312,6 @@ window.confirmDelete = confirmDelete;
 window.reinitializeModals = reinitializeModals;
 window.buildUrl = buildUrl;
 
-// Verificar que las funciones se exportaron correctamente
-console.log('Functions exported to window:', {
-    showToast: typeof window.showToast,
-    openModal: typeof window.openModal,
-    closeModal: typeof window.closeModal,
-    reinitializeModals: typeof window.reinitializeModals
-});
 
 // ====== SISTEMA DE EDICIÓN DIRECTA (EDIT-IN-PLACE) ======
 document.addEventListener('blur', async function (e) {

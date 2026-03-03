@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-require_once BASE_PATH . '/config/database.php';
 
 class AuthController extends BaseController
 {
@@ -86,7 +85,7 @@ class AuthController extends BaseController
             return false;
 
         } catch (\Throwable $e) {
-            error_log("Error en autenticación: " . $e->getMessage());
+            \Core\Logger::security()->error("Error en autenticación: " . $e->getMessage());
             return false;
         }
     }

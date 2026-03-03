@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-require_once BASE_PATH . '/app/Models/Tarea.php';
 
 class DashboardController extends BaseController
 {
