@@ -186,19 +186,19 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 - [x] Si no hay campos que mostrar porque aún no existen podemos poner un mensaje de aun no hay nada y un botón justo despues que ponga crear para que empiece a insertar datos.
 - [x] Actualizar vista individual por id de parcelas, trabajadores, tareas.
 - [x] El rol de propietario puede ver la página individual de sus parcelas pulsando sobre ellas en la tabla listada.
+- Arreglar el estilo de parcelas/detalle
 - La deuda en lugar de poner 60€ pone 59,99.
-- El botón de nueva campaña no funciona
-- Arreglar la vista de propietarios, eliminar la columna de acciones y crear vista individual o de detalle.
+- El botón de nueva campaña no funciona y el de eliminar tampoco.
 
+- Arreglar la vista de propietarios, eliminar la columna de acciones y crear vista individual o de detalle.
 - arreglar modal de Gestion de trabajos.
 - Poner la opción de crear un trabajo desde la creación de tareas por si hay que añadir un trabajo nuevo.
-
 - Poner un widget en el dashboard con la previsión meteorológica
 - Hacer una sección con enlaces de interés
 - arreglar el botón del + del calendario que siempre pone la fecha actual.
-
-
-
+- Empezar a diseñar de manera funcional la vista de reportes.
+- el botón del dashboard de añadir movimiento no va.
+- Crear una landing en el home.php que cuente cómo funciona la web como si de un infoproducto o un saas se tratase.
 
 
 ---

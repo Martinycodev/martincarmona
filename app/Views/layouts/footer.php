@@ -2,7 +2,7 @@
 
     <footer class="site-footer">
         <div class="footer-content">
-            &copy; <?= date('Y') ?> MartinCarmona.com <a href="https://auth-db699.hstgr.io/">bbdd</a>
+            &copy; <?= date('Y') ?> MartinCarmona.com <a href="https://auth-db699.hstgr.io/" target="_blank">bbdd</a>
         </div>
     </footer>
 
