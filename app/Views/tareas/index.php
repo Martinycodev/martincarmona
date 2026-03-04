@@ -5,7 +5,7 @@ $title = 'Gestión de Tareas';
     <div class="page-header">
         <h1>📝 Gestión de Tareas</h1>
         <div class="header-actions">
-            <button class="btn btn-primary" onclick="window.taskSidebar && window.taskSidebar.open()">+</button>
+            <button class="btn btn-primary" onclick="window.taskSidebar && window.taskSidebar.open()">✏️ Nueva Tarea</button>
             <a href="<?= $this->url('/busqueda') ?>" class="btn btn-info">🔍 Búsqueda Avanzada</a>
             <a href="<?= $this->url('/datos') ?>" class="btn btn-secondary">← Volver</a>
         </div>
@@ -25,16 +25,15 @@ $title = 'Gestión de Tareas';
             <tbody id="tareasTableBody">
                 <?php if (!empty($tareas)): ?>
                     <?php foreach ($tareas as $tarea): ?>
-                        <tr data-id="<?= $tarea['id'] ?>">
+                        <tr data-id="<?= $tarea['id'] ?>"
+                            style="cursor:pointer;"
+                            onclick="if(event.target.closest('.btn-delete')) return; window.taskSidebar && window.taskSidebar.open(<?= $tarea['id'] ?>)">
                             <td><?= htmlspecialchars(date('d/m/Y', strtotime($tarea['fecha']))) ?></td>
-                            <td class="description-cell"><?= htmlspecialchars($tarea['titulo'] ?: ($tarea['descripcion'] ?? 'Sin título')) ?></td>
+                            <td class="description-cell">
+                                <?= htmlspecialchars($tarea['titulo'] ?: ($tarea['descripcion'] ?? 'Sin título')) ?>
+                            </td>
                             <td><?= $tarea['horas'] ? number_format($tarea['horas'], 1) . 'h' : '0h' ?></td>
                             <td class="actions">
-                                <button class="btn-icon btn-info"
-                                    onclick="window.taskSidebar && window.taskSidebar.open(<?= $tarea['id'] ?>)"
-                                    title="Ver / Editar">
-                                    👁️
-                                </button>
                                 <button class="btn-icon btn-delete"
                                     onclick="deleteTarea(<?= $tarea['id'] ?>, '<?= htmlspecialchars($tarea['titulo'] ?: ($tarea['descripcion'] ?? 'Sin título'), ENT_QUOTES) ?>')"
                                     title="Eliminar">

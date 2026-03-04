@@ -5,6 +5,8 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
     <div class="page-header">
         <h2>📍 <?= htmlspecialchars($parcela['nombre']) ?></h2>
         <div class="header-actions">
+            <button class="btn btn-primary" onclick="openEditModal()">✏️ Editar</button>
+            <button class="btn btn-danger" onclick="deleteParcela()">🗑️ Eliminar</button>
             <a href="<?= $this->url('/datos/parcelas') ?>" class="btn btn-secondary">← Volver</a>
         </div>
     </div>
@@ -119,6 +121,99 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
     </div>
     <?php endif; ?>
 
+    <!-- Modal de Edición -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Editar Parcela</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <form id="editParcelaForm">
+                <input type="hidden" name="id" value="<?= intval($parcela['id']) ?>">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre:</label>
+                        <input type="text" name="nombre" value="<?= htmlspecialchars($parcela['nombre'] ?? '') ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ubicación:</label>
+                        <input type="text" name="ubicacion" value="<?= htmlspecialchars($parcela['ubicacion'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Número de Olivos:</label>
+                        <input type="number" name="olivos" min="0" value="<?= intval($parcela['olivos'] ?? 0) ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Hidrante:</label>
+                        <input type="number" name="hidrante" min="0" value="<?= intval($parcela['hidrante'] ?? 0) ?>">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Referencia Catastral:</label>
+                        <input type="text" name="referencia_catastral" maxlength="50" value="<?= htmlspecialchars($parcela['referencia_catastral'] ?? '') ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Olivos:</label>
+                        <input type="text" name="tipo_olivos" maxlength="100" value="<?= htmlspecialchars($parcela['tipo_olivos'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Año de Plantación:</label>
+                        <input type="number" name="año_plantacion" min="1900" max="2100" value="<?= intval($parcela['año_plantacion'] ?? 0) ?: '' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Plantación:</label>
+                        <select name="tipo_plantacion">
+                            <option value="">-- Seleccionar --</option>
+                            <?php foreach (['tradicional','intensivo','superintensivo'] as $opt): ?>
+                            <option value="<?= $opt ?>" <?= ($parcela['tipo_plantacion'] ?? '') === $opt ? 'selected' : '' ?>><?= ucfirst($opt) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Riego / Secano:</label>
+                        <select name="riego_secano">
+                            <option value="">-- Seleccionar --</option>
+                            <?php foreach (['riego','secano'] as $opt): ?>
+                            <option value="<?= $opt ?>" <?= ($parcela['riego_secano'] ?? '') === $opt ? 'selected' : '' ?>><?= ucfirst($opt) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Corta:</label>
+                        <select name="corta">
+                            <option value="">-- Seleccionar --</option>
+                            <?php foreach (['par','impar','siempre'] as $opt): ?>
+                            <option value="<?= $opt ?>" <?= ($parcela['corta'] ?? '') === $opt ? 'selected' : '' ?>><?= ucfirst($opt) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Descripción:</label>
+                        <textarea name="descripcion" rows="3"><?= htmlspecialchars($parcela['descripcion'] ?? '') ?></textarea>
+                    </div>
+                </div>
+                <input type="hidden" name="propietario_id" value="<?= intval($parcela['propietario_id'] ?? 0) ?>">
+                <input type="hidden" name="propietario" value="<?= htmlspecialchars($parcela['propietario'] ?? '') ?>">
+                <div class="modal-buttons">
+                    <button type="button" class="btn-modal btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn-modal btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast de notificaciones -->
+    <div id="toast" class="toast"></div>
+
     <!-- Documentos -->
     <div class="card">
         <div class="card-header">
@@ -182,6 +277,73 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
 <script>
 var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 var basePath = window._APP_BASE_PATH || '';
+
+// --- Edit modal ---
+function openEditModal() {
+    document.getElementById('editModal').style.display = 'block';
+}
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+window.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('editModal')) closeEditModal();
+});
+
+document.getElementById('editParcelaForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(this));
+    try {
+        showToast('Actualizando...', 'info');
+        const res = await fetch(basePath + '/parcelas/actualizar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (json.success) {
+            closeEditModal();
+            location.reload();
+        } else {
+            showToast('Error: ' + (json.message || 'No se pudo guardar'), 'error');
+        }
+    } catch {
+        showToast('Error de conexión', 'error');
+    }
+});
+
+// --- Delete ---
+async function deleteParcela() {
+    if (!confirm('¿Eliminar esta parcela? Esta acción no se puede deshacer.')) return;
+    try {
+        const res = await fetch(basePath + '/parcelas/eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({ id: <?= intval($parcela['id']) ?> })
+        });
+        const json = await res.json();
+        if (json.success) {
+            window.location.href = basePath + '/datos/parcelas';
+        } else {
+            alert('Error al eliminar: ' + (json.message || 'Error desconocido'));
+        }
+    } catch {
+        alert('Error de conexión');
+    }
+}
+
+// --- Toast ---
+function showToast(message, type) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast toast-' + (type || 'info');
+    toast.offsetHeight;
+    toast.classList.add('show');
+    setTimeout(function() {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+        setTimeout(function() { toast.classList.remove('hide'); }, 400);
+    }, 3000);
+}
 
 document.getElementById('uploadDocForm').addEventListener('submit', function(e) {
     e.preventDefault();

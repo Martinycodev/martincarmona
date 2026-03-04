@@ -26,7 +26,8 @@
             </thead>
             <tbody>
                 <?php foreach ($parcelas as $p): ?>
-                <tr>
+                <tr onclick="window.location.href='<?= $this->url('/propietario/parcela?id=' . $p['id']) ?>'"
+                    style="cursor:pointer;">
                     <td><strong><?= htmlspecialchars($p['nombre']) ?></strong></td>
                     <td><?= htmlspecialchars($p['ubicacion'] ?? '—') ?></td>
                     <td><?= $p['olivos'] ? intval($p['olivos']) : '—' ?></td>

@@ -29,41 +29,26 @@ $title = 'Parcelas - Listado';
                     <th>Olivos</th>
                     <th>Ubicación</th>
                     <th>Propietario</th>
-                    <th class="actions-column">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($parcelas)): ?>
                     <tr>
-                        <td colspan="5" class="no-data">
-                            <p>No hay parcelas registradas.</p>
-                            <a href="<?= $this->url('/parcelas') ?>" class="btn btn-primary">Crear primera parcela</a>
+                        <td colspan="4" class="no-data">
+                            <p>🌾 No hay parcelas registradas.</p>
                         </td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($parcelas as $parcela): ?>
-                        <tr data-id="<?= htmlspecialchars($parcela['id']) ?>">
+                        <tr data-id="<?= htmlspecialchars($parcela['id']) ?>"
+                            onclick="window.location.href='<?= $this->url('/parcelas/detalle?id=' . $parcela['id']) ?>'"
+                            style="cursor:pointer;">
                             <td><?= htmlspecialchars($parcela['nombre']) ?></td>
                             <td>
                                 <span class="olivos-count"><?= number_format($parcela['olivos']) ?></span>
                             </td>
                             <td><?= htmlspecialchars($parcela['ubicacion']) ?></td>
                             <td><?= htmlspecialchars($parcela['propietario']) ?></td>
-                            <td class="actions">
-                                <a href="<?= $this->url('/datos/parcelas?id=' . $parcela['id']) ?>" class="btn-icon btn-view"
-                                    title="Ver detalles">
-                                    👁️
-                                </a>
-                                <a href="<?= $this->url('/parcelas/editar/' . $parcela['id']) ?>" class="btn-icon btn-edit"
-                                    title="Editar">
-                                    ✏️
-                                </a>
-                                <button class="btn-icon btn-delete"
-                                    onclick="deleteParcela(<?= $parcela['id'] ?>, '<?= htmlspecialchars($parcela['nombre']) ?>')"
-                                    title="Eliminar">
-                                    🗑️
-                                </button>
-                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

@@ -92,53 +92,54 @@ $title = 'Gestión de Trabajadores';
                     <th>DNI</th>
                     <th>Alta SS</th>
                     <th style="width:80px;text-align:center">Cuadrilla</th>
-                    <th class="actions-column">Acciones</th>
                 </tr>
             </thead>
             <tbody id="trabajadoresTableBody">
-                <?php foreach ($trabajadores as $trabajador): ?>
-                <?php
-                    $fotoSrc = !empty($trabajador['foto'])
-                        ? $this->url($trabajador['foto'])
-                        : null;
-                    $esCuadrilla = !empty($trabajador['cuadrilla']);
-                    $altaSs = !empty($trabajador['alta_ss'])
-                        ? date('d/m/Y', strtotime($trabajador['alta_ss']))
-                        : '—';
-                ?>
-                <tr data-id="<?= $trabajador['id'] ?>">
-                    <td>
-                        <?php if ($fotoSrc): ?>
-                            <img src="<?= htmlspecialchars($fotoSrc) ?>" alt="Foto" class="worker-avatar">
-                        <?php else: ?>
-                            <div class="worker-avatar worker-avatar--empty">👤</div>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?= htmlspecialchars($trabajador['nombre'] ?? '-') ?>
-                        <?php if ($esCuadrilla): ?>
-                            <span class="badge-cuadrilla" title="Cuadrilla">👷</span>
-                        <?php endif; ?>
-                    </td>
-                    <td><?= htmlspecialchars($trabajador['dni'] ?? '—') ?></td>
-                    <td><?= $altaSs ?></td>
-                    <td style="text-align:center">
-                        <?= $esCuadrilla ? '<span class="cuadrilla-check">✓</span>' : '<span class="cuadrilla-no">—</span>' ?>
-                    </td>
-                    <td class="actions">
-                        <a href="<?= $this->url('/trabajadores/detalle?id=' . $trabajador['id']) ?>" class="btn btn-info btn-sm" title="Ficha individual">📋 Ficha</a>
-                        <button class="btn-icon btn-view"
-                                onclick="window.location.href='<?= $this->url('/datos/trabajadores?id=' . $trabajador['id']) ?>'"
-                                title="Ver detalles">👁️</button>
-                        <button class="btn-icon btn-edit"
-                                onclick="editWorker(<?= $trabajador['id'] ?>, this)"
-                                title="Editar">✏️</button>
-                        <button class="btn-icon btn-delete"
-                                onclick="deleteWorker(<?= $trabajador['id'] ?>, '<?= htmlspecialchars($trabajador['nombre']) ?>')"
-                                title="Eliminar">🗑️</button>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                <?php if (empty($trabajadores)): ?>
+                    <tr>
+                        <td colspan="5" class="no-data">
+                            <div class="no-tareas">
+                                <h3>👷 No hay trabajadores registrados</h3>
+                                <p>Empieza añadiendo tu primer trabajador al equipo.</p>
+                                <button class="btn btn-primary" onclick="openCreateModal()">➕ Nuevo Trabajador</button>
+                            </div>
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($trabajadores as $trabajador): ?>
+                    <?php
+                        $fotoSrc = !empty($trabajador['foto'])
+                            ? $this->url($trabajador['foto'])
+                            : null;
+                        $esCuadrilla = !empty($trabajador['cuadrilla']);
+                        $altaSs = !empty($trabajador['alta_ss'])
+                            ? date('d/m/Y', strtotime($trabajador['alta_ss']))
+                            : '—';
+                    ?>
+                    <tr data-id="<?= $trabajador['id'] ?>"
+                        onclick="window.location.href='<?= $this->url('/trabajadores/detalle?id=' . $trabajador['id']) ?>'"
+                        style="cursor:pointer;">
+                        <td>
+                            <?php if ($fotoSrc): ?>
+                                <img src="<?= htmlspecialchars($fotoSrc) ?>" alt="Foto" class="worker-avatar">
+                            <?php else: ?>
+                                <div class="worker-avatar worker-avatar--empty">👤</div>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?= htmlspecialchars($trabajador['nombre'] ?? '-') ?>
+                            <?php if ($esCuadrilla): ?>
+                                <span class="badge-cuadrilla" title="Cuadrilla">👷</span>
+                            <?php endif; ?>
+                        </td>
+                        <td><?= htmlspecialchars($trabajador['dni'] ?? '—') ?></td>
+                        <td><?= $altaSs ?></td>
+                        <td style="text-align:center">
+                            <?= $esCuadrilla ? '<span class="cuadrilla-check">✓</span>' : '<span class="cuadrilla-no">—</span>' ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>

@@ -161,6 +161,7 @@ $router->post('/admin/eliminarUsuario', 'AdminController@eliminarUsuario');
 
 // Vistas de rol
 $router->get('/propietario', 'PropietarioController@index');
+$router->get('/propietario/parcela', 'PropietarioController@parcelaDetalle');
 $router->get('/trabajador', 'TrabajadorController@index');
 
 // Página 404

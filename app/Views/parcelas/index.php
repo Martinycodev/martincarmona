@@ -111,42 +111,41 @@ $title = 'Gestión de Parcelas';
         <table class="styled-table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nombre</th>
                     <th>Ubicación</th>
                     <th>Propietario</th>
                     <th>Olivos</th>
                     <th>Hidrante</th>
-                    <th class="actions-column">Acciones</th>
                 </tr>
             </thead>
             <tbody id="parcelasTableBody">
-                <?php foreach ($parcelas as $parcela): ?>
-                    <tr data-id="<?= $parcela['id'] ?>">
-                        <td><?= htmlspecialchars($parcela['id'] ?? '-') ?></td>
-                        <td><?= htmlspecialchars($parcela['nombre'] ?? '-') ?></td>
-                        <td><?= htmlspecialchars($parcela['ubicacion'] ?? '-') ?></td>
-                        <td><?= htmlspecialchars(
-                            !empty($parcela['propietario_nombre'])
-                            ? $parcela['propietario_nombre'] . ' ' . $parcela['propietario_apellidos']
-                            : ($parcela['propietario'] ?? '—')
-                        ) ?></td>
-                        <td><?= htmlspecialchars($parcela['olivos'] ?? '0') ?></td>
-                        <td><?= htmlspecialchars($parcela['hidrante'] ?? '0') ?></td>
-                        <td class="actions">
-                            <a href="<?= $this->url('/parcelas/detalle?id=' . $parcela['id']) ?>" class="btn btn-info btn-sm" title="Ver ficha">📋 Ficha</a>
-                            <button class="btn-icon btn-edit" onclick="editParcela(<?= $parcela['id'] ?>, this)"
-                                title="Editar">
-                                ✏️
-                            </button>
-                            <button class="btn-icon btn-delete"
-                                onclick="deleteParcela(<?= $parcela['id'] ?>, '<?= htmlspecialchars($parcela['nombre']) ?>')"
-                                title="Eliminar">
-                                🗑️
-                            </button>
+                <?php if (empty($parcelas)): ?>
+                    <tr>
+                        <td colspan="5" class="no-data">
+                            <div class="no-tareas">
+                                <h3>🌾 No hay parcelas registradas</h3>
+                                <p>Empieza añadiendo tu primera parcela para organizar el campo.</p>
+                                <button class="btn btn-primary" onclick="openCreateModal()">➕ Nueva Parcela</button>
+                            </div>
                         </td>
                     </tr>
-                <?php endforeach; ?>
+                <?php else: ?>
+                    <?php foreach ($parcelas as $parcela): ?>
+                        <tr data-id="<?= $parcela['id'] ?>"
+                            onclick="window.location.href='<?= $this->url('/parcelas/detalle?id=' . $parcela['id']) ?>'"
+                            style="cursor:pointer;">
+                            <td><?= htmlspecialchars($parcela['nombre'] ?? '-') ?></td>
+                            <td><?= htmlspecialchars($parcela['ubicacion'] ?? '—') ?></td>
+                            <td><?= htmlspecialchars(
+                                !empty($parcela['propietario_nombre'])
+                                ? $parcela['propietario_nombre'] . ' ' . $parcela['propietario_apellidos']
+                                : ($parcela['propietario'] ?? '—')
+                            ) ?></td>
+                            <td><?= htmlspecialchars($parcela['olivos'] ?? '0') ?></td>
+                            <td><?= htmlspecialchars($parcela['hidrante'] ?? '0') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -349,15 +348,11 @@ $title = 'Gestión de Parcelas';
                 }
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response URL:', response.url);
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log('Data received:', data);
 
             if (data.success && data.parcela) {
                 const parcela = data.parcela;
@@ -378,11 +373,9 @@ $title = 'Gestión de Parcelas';
                 openEditModal(buttonElement);
                 showToast('Datos cargados correctamente', 'success');
             } else {
-                console.error('Error en respuesta:', data);
                 showToast('Error: ' + (data.message || 'No se pudieron cargar los datos'), 'error');
             }
         } catch (error) {
-            console.error('Error completo:', error);
             showToast('Error de conexión: ' + error.message, 'error');
         }
     }
@@ -448,8 +441,6 @@ $title = 'Gestión de Parcelas';
         const formData = new FormData(this);
         const parcelaData = Object.fromEntries(formData);
 
-        console.log('Datos a enviar (crear):', parcelaData);
-
         try {
             showToast('Creando parcela...', 'info');
 
@@ -462,14 +453,11 @@ $title = 'Gestión de Parcelas';
                 body: JSON.stringify(parcelaData)
             });
 
-            console.log('Response status (crear):', response.status);
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log('Response data (crear):', data);
 
             if (data.success) {
                 closeCreateSection();
@@ -479,7 +467,6 @@ $title = 'Gestión de Parcelas';
                 showToast('Error al crear: ' + (data.message || 'Error desconocido'), 'error');
             }
         } catch (error) {
-            console.error('Error completo (crear):', error);
             showToast('Error de conexión: ' + error.message, 'error');
         }
     });
@@ -490,8 +477,6 @@ $title = 'Gestión de Parcelas';
 
         const formData = new FormData(this);
         const parcelaData = Object.fromEntries(formData);
-
-        console.log('Datos a enviar (editar):', parcelaData);
 
         try {
             showToast('Actualizando parcela...', 'info');
@@ -505,14 +490,11 @@ $title = 'Gestión de Parcelas';
                 body: JSON.stringify(parcelaData)
             });
 
-            console.log('Response status (actualizar):', response.status);
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log('Response data (actualizar):', data);
 
             if (data.success) {
                 closeEditModal();
@@ -522,7 +504,6 @@ $title = 'Gestión de Parcelas';
                 showToast('Error al actualizar: ' + (data.message || 'Error desconocido'), 'error');
             }
         } catch (error) {
-            console.error('Error completo (actualizar):', error);
             showToast('Error de conexión: ' + error.message, 'error');
         }
     });

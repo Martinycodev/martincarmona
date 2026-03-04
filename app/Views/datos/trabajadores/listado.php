@@ -30,34 +30,23 @@ $title = 'Listado de Trabajadores';
                 <th>Nombre</th>
                 <th>DNI</th>
                 <th>Teléfono</th>
-                <th class="actions-column">Acciones</th>
             </tr>
         </thead>
         <tbody>
             <?php if (!empty($trabajadores)): ?>
                 <?php foreach ($trabajadores as $trabajador): ?>
-                <tr data-id="<?= $trabajador['id'] ?>">
+                <tr data-id="<?= $trabajador['id'] ?>"
+                    onclick="window.location.href='<?= $this->url('/trabajadores/detalle?id=' . $trabajador['id']) ?>'"
+                    style="cursor:pointer;">
                     <td><?= htmlspecialchars($trabajador['nombre'] ?? '-') ?></td>
                     <td><?= htmlspecialchars($trabajador['dni'] ?? '-') ?></td>
                     <td><?= htmlspecialchars($trabajador['telefono'] ?? '-') ?></td>
-                    <td class="actions">
-                        <a href="<?= $this->url('/datos/trabajadores?id=' . $trabajador['id']) ?>" class="btn-icon btn-view" title="Ver detalles">
-                            👁️
-                        </a>
-                        <a href="<?= $this->url('/datos/trabajadores?id=' . $trabajador['id']) ?>" class="btn-icon btn-edit" title="Editar">
-                            ✏️
-                        </a>
-                        <button class="btn-icon btn-delete" onclick="deleteWorker(<?= $trabajador['id'] ?>, '<?= htmlspecialchars($trabajador['nombre']) ?>')" title="Eliminar">
-                            🗑️
-                        </button>
-                    </td>
                 </tr>
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="4" class="no-data">
-                        <p>No hay trabajadores registrados.</p>
-                        <a href="<?= $this->url('/datos/trabajadores') ?>" class="btn btn-primary">Crear primer trabajador</a>
+                    <td colspan="3" class="no-data">
+                        <p>👷 No hay trabajadores registrados.</p>
                     </td>
                 </tr>
             <?php endif; ?>

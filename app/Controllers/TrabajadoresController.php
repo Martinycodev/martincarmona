@@ -628,7 +628,7 @@ class TrabajadoresController extends BaseController
     public function __destruct()
     {
         if ($this->db) {
-            $this->db->close();
+            try { $this->db->close(); } catch (\Throwable $e) {}
         }
     }
 }

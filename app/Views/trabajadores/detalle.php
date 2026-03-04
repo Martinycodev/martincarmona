@@ -12,9 +12,65 @@ $title = 'Ficha de Trabajador — ' . htmlspecialchars($trabajador['nombre']);
             <h2>👷 <?= htmlspecialchars($trabajador['nombre']) ?></h2>
         </div>
         <div class="header-actions">
+            <button class="btn btn-primary" onclick="openEditModal()">✏️ Editar</button>
+            <button class="btn btn-danger" onclick="deleteTrabajador()">🗑️ Eliminar</button>
             <a href="<?= $this->url('/datos/trabajadores') ?>" class="btn btn-secondary">← Volver</a>
         </div>
     </div>
+
+    <!-- Modal de Edición -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Editar Trabajador</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <form id="editWorkerForm">
+                <input type="hidden" name="id" value="<?= intval($trabajador['id']) ?>">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre: <span class="required">*</span></label>
+                        <input type="text" name="nombre" value="<?= htmlspecialchars($trabajador['nombre'] ?? '') ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>DNI:</label>
+                        <input type="text" name="dni" maxlength="9" value="<?= htmlspecialchars($trabajador['dni'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Número SS:</label>
+                        <input type="text" name="ss" maxlength="12" value="<?= htmlspecialchars($trabajador['ss'] ?? '') ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Alta SS:</label>
+                        <input type="date" name="alta_ss" value="<?= htmlspecialchars($trabajador['alta_ss'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Baja SS:</label>
+                        <input type="date" name="baja_ss" value="<?= htmlspecialchars($trabajador['baja_ss'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group form-group--checkbox">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="cuadrilla" value="1" <?= !empty($trabajador['cuadrilla']) ? 'checked' : '' ?>>
+                            <span>👷 Parte de la cuadrilla</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-modal btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn-modal btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
 
     <!-- Datos personales -->
     <div class="card">
@@ -205,6 +261,58 @@ $title = 'Ficha de Trabajador — ' . htmlspecialchars($trabajador['nombre']);
 </style>
 
 <script>
+var csrfTokenDet = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+var basePathDet = window._APP_BASE_PATH || '';
+
+function openEditModal() { document.getElementById('editModal').style.display = 'block'; }
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+window.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('editModal')) closeEditModal();
+});
+
+document.getElementById('editWorkerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(this));
+    // checkbox no incluido si no está marcado → asegurar campo
+    if (!data.cuadrilla) data.cuadrilla = '0';
+    try {
+        showToastDet('Actualizando...', 'info');
+        const res = await fetch(basePathDet + '/trabajadores/actualizar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfTokenDet },
+            body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (json.success) { closeEditModal(); location.reload(); }
+        else { showToastDet('Error: ' + (json.message || 'No se pudo guardar'), 'error'); }
+    } catch { showToastDet('Error de conexión', 'error'); }
+});
+
+async function deleteTrabajador() {
+    if (!confirm('¿Eliminar este trabajador? Esta acción no se puede deshacer.')) return;
+    try {
+        const res = await fetch(basePathDet + '/trabajadores/eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfTokenDet },
+            body: JSON.stringify({ id: <?= intval($trabajador['id']) ?> })
+        });
+        const json = await res.json();
+        if (json.success) { window.location.href = basePathDet + '/datos/trabajadores'; }
+        else { alert('Error: ' + (json.message || 'Error desconocido')); }
+    } catch { alert('Error de conexión'); }
+}
+
+function showToastDet(message, type) {
+    const t = document.getElementById('toast');
+    t.textContent = message;
+    t.className = 'toast toast-' + (type || 'info');
+    t.offsetHeight; t.classList.add('show');
+    setTimeout(function() {
+        t.classList.remove('show'); t.classList.add('hide');
+        setTimeout(function() { t.classList.remove('hide'); }, 400);
+    }, 3000);
+}
+
 function subirDocumento(input, tipo) {
     if (!input.files || !input.files[0]) return;
 

@@ -169,8 +169,8 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 ### Testing
 - [x] Instalar PHPUnit o Pest como dependencia de desarrollo (PHPUnit 11.5)
 - [x] Tests unitarios: `Validator` (43 tests, todas las reglas) y `Router` (estáticas + dinámicas + 404)
-- [ ] Tests unitarios para modelos (Tarea, Trabajador, Parcela) — requiere test DB o mocks
-- [ ] Tests de integración para controladores POST — requiere test DB
+- [x] Tests unitarios para modelos (Tarea, Trabajador, Parcela) — requiere test DB o mocks
+- [x] Tests de integración para controladores POST — requiere test DB
 - [x] Objetivo mínimo: 50% de cobertura en lógica de negocio (Validator y Router al 100%)
 
 ### Logging
@@ -178,9 +178,32 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 - [x] Configurar canales: `app.log` y `security.log`
 - [x] Reemplazar `error_log()` dispersos por el logger centralizado
 
+
+## FASE 6 — Funcionalidades sueltas
+
+- [x] Arreglar diseño vista ux de parcelas, trabajadores, tareas.
+- [x] Eliminar botones de las tablas de listados de la bbdd y que al pinchar sobre el campo aparezca o la vista individual o un modal con las opciones de editar y borrar.
+- [x] Si no hay campos que mostrar porque aún no existen podemos poner un mensaje de aun no hay nada y un botón justo despues que ponga crear para que empiece a insertar datos.
+- [x] Actualizar vista individual por id de parcelas, trabajadores, tareas.
+- [x] El rol de propietario puede ver la página individual de sus parcelas pulsando sobre ellas en la tabla listada.
+- La deuda en lugar de poner 60€ pone 59,99.
+- El botón de nueva campaña no funciona
+- Arreglar la vista de propietarios, eliminar la columna de acciones y crear vista individual o de detalle.
+
+- arreglar modal de Gestion de trabajos.
+- Poner la opción de crear un trabajo desde la creación de tareas por si hay que añadir un trabajo nuevo.
+
+- Poner un widget en el dashboard con la previsión meteorológica
+- Hacer una sección con enlaces de interés
+- arreglar el botón del + del calendario que siempre pone la fecha actual.
+
+
+
+
+
 ---
 
-## FASE 6 — Largo plazo / Extras
+## FASE 7 — Largo plazo / Extras
 
 - [ ] Exportar CSV/Excel: tareas, gastos, cuenta mensual por trabajador
 - [ ] PDF de balance mensual por trabajador
@@ -200,8 +223,3 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 - [ ] Un cambio de código no rompe funcionalidad existente (tests)
 - [ ] Cada rol solo ve lo que debe ver (autorización verificada en backend)
 
-
-## FASE 7 — Funcionalidades sueltas
-
-- [ ] Arreglar vista individual de parcelas, trabajadores
-- [ ] Dar permiso para ver

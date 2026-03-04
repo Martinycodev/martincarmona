@@ -75,6 +75,11 @@ class TaskSidebar {
         // Limpiar cualquier debounce pendiente
         Object.values(this.debounceTimers).forEach(clearTimeout);
         this.debounceTimers = {};
+        // Vaciar contenido para que no se vea la tarea anterior al abrir la siguiente
+        const titleEl = document.getElementById('sidebar-title');
+        const bodyEl  = document.getElementById('sidebar-body');
+        if (titleEl) titleEl.textContent = '';
+        if (bodyEl)  bodyEl.innerHTML = '';
     }
 
     // ─── Carga y renderizado ──────────────────────────────────────────────────
