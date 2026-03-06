@@ -198,7 +198,7 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 - arreglar el botón del + del calendario que siempre pone la fecha actual.
 - Empezar a diseñar de manera funcional la vista de reportes.
 - el botón del dashboard de añadir movimiento no va.
-- Crear una landing en el home.php que cuente cómo funciona la web como si de un infoproducto o un saas se tratase.
+- el botón de fitosanitarios para añadir producto no va. por lo tanto las aplicaciones tampoco. Hay que darle una vuelta al funcionamiento de fitosanitarios, para automatizar y que se borren del inventario los productos que ya están aplicados.
 
 
 ---
