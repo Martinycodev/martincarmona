@@ -65,7 +65,7 @@ $title = 'Gestión de Propietarios';
                     <th>DNI</th>
                     <th>Teléfono</th>
                     <th>Email</th>
-                    <th class="actions-column">Acciones</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody id="propietariosTableBody">
@@ -77,12 +77,8 @@ $title = 'Gestión de Propietarios';
                     <td><?= htmlspecialchars($propietario['telefono'] ?? '—') ?></td>
                     <td><?= htmlspecialchars($propietario['email'] ?? '—') ?></td>
                     <td class="actions">
-                        <button class="btn-icon btn-edit"
-                                onclick="loadPropietario(<?= $propietario['id'] ?>)"
-                                title="Editar">Editar</button>
-                        <button class="btn-icon btn-delete"
-                                onclick="deletePropietario(<?= $propietario['id'] ?>, '<?= htmlspecialchars($propietario['nombre'], ENT_QUOTES) ?>')"
-                                title="Eliminar">Eliminar</button>
+                        <a href="<?= $this->url('/propietarios/detalle?id=' . $propietario['id']) ?>"
+                           class="btn-icon btn-edit" title="Ver ficha">Ver →</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -206,7 +202,7 @@ $title = 'Gestión de Propietarios';
 
 <script>
 (function () {
-    var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
     var basePath  = window._APP_BASE_PATH || '';
 
     function showToast(msg, type) {

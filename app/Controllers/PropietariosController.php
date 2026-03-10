@@ -29,6 +29,46 @@ class PropietariosController extends BaseController
     }
 
     /**
+     * Mostrar ficha detalle de un propietario
+     */
+    public function detalle()
+    {
+        $id = intval($_GET['id'] ?? 0);
+
+        if ($id <= 0) {
+            $this->redirect('/datos/propietarios');
+            return;
+        }
+
+        $db = \Database::connect();
+
+        $stmt = $db->prepare("SELECT * FROM propietarios WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->execute();
+        $propietario = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$propietario) {
+            $this->redirect('/datos/propietarios');
+            return;
+        }
+
+        // Parcelas asignadas a este propietario
+        $stmt2 = $db->prepare("SELECT id, nombre, ubicacion, olivos FROM parcelas WHERE propietario_id = ? AND id_user = ? ORDER BY nombre");
+        $stmt2->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt2->execute();
+        $parcelas = $stmt2->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt2->close();
+
+        $db->close();
+
+        $this->render('propietarios/detalle', [
+            'propietario' => $propietario,
+            'parcelas'    => $parcelas,
+        ]);
+    }
+
+    /**
      * Crear un nuevo propietario
      */
     public function crear()

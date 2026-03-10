@@ -42,6 +42,7 @@
         <a href="<?= $this->url('/tareas/pendientes') ?>">📋 Tareas Pendientes</a>
         <a href="<?= $this->url('/economia') ?>">💶 Economía</a>
         <a href="<?= $this->url('/reportes') ?>">📊 Reportes</a>
+        <a href="<?= $this->url('/enlaces') ?>">🔗 Enlaces de interés</a>
         <a href="<?= $this->url('/perfil') ?>">👤 Mi Perfil</a>
         <?php elseif ($rolActual === 'admin'): ?>
         <a href="<?= $this->url('/admin/usuarios') ?>">👥 Gestión de Usuarios</a>

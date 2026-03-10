@@ -275,7 +275,7 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
 </div>
 
 <script>
-var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
 var basePath = window._APP_BASE_PATH || '';
 
 // --- Edit modal ---

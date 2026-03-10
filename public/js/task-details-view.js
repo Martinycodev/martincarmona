@@ -159,7 +159,7 @@ function renderTaskDetailHtml(tarea) {
         html += '<div class="empty-state">No especificado</div>';
     }
 
-    // Selector para cambiar tipo de trabajo (actualiza al instante al cambiar)
+    // Selector para cambiar tipo de trabajo + botón crear nuevo
     html += `
                     </div>
                     <div class="inline-add-row">
@@ -167,6 +167,17 @@ function renderTaskDetailHtml(tarea) {
                                 onchange="cambiarTrabajo(${tarea.id}, this)">
                             <option value="">Cambiar tipo de trabajo...</option>
                         </select>
+                        <button class="btn-inline-add" title="Crear nuevo trabajo"
+                                onclick="toggleFormNuevoTrabajo(${tarea.id})">+</button>
+                    </div>
+                    <div class="form-nuevo-trabajo" id="formNuevoTrabajo_${tarea.id}"
+                         style="display:none; margin-top:8px; gap:6px; flex-wrap:wrap;">
+                        <input type="text" class="inline-select" id="nuevoTrabajoNombre_${tarea.id}"
+                               placeholder="Nombre del trabajo" style="flex:1; min-width:120px;">
+                        <input type="number" class="inline-select" id="nuevoTrabajoPrecio_${tarea.id}"
+                               placeholder="€/h" style="width:66px;" min="0" step="0.01">
+                        <button class="btn-inline-add" title="Guardar nuevo trabajo"
+                                onclick="crearTrabajoInline(${tarea.id})">✓</button>
                     </div>
                 </div>
             </div>
@@ -513,13 +524,85 @@ async function cambiarTrabajo(tareaId, select) {
     }
 }
 
+/**
+ * Muestra/oculta el formulario inline para crear un nuevo trabajo
+ * @param {number} tareaId
+ */
+function toggleFormNuevoTrabajo(tareaId) {
+    const form = document.getElementById(`formNuevoTrabajo_${tareaId}`);
+    if (!form) return;
+    const visible = form.style.display !== 'none';
+    form.style.display = visible ? 'none' : 'flex';
+    if (!visible) {
+        document.getElementById(`nuevoTrabajoNombre_${tareaId}`)?.focus();
+    }
+}
+
+/**
+ * Crea un nuevo trabajo desde el sidebar de tarea y lo asigna a la tarea actual
+ * @param {number} tareaId
+ */
+async function crearTrabajoInline(tareaId) {
+    const nombreInput  = document.getElementById(`nuevoTrabajoNombre_${tareaId}`);
+    const precioInput  = document.getElementById(`nuevoTrabajoPrecio_${tareaId}`);
+    const nombre       = nombreInput?.value.trim();
+    const precio_hora  = parseFloat(precioInput?.value) || 0;
+
+    if (!nombre) {
+        showToast('El nombre del trabajo es requerido', 'warning');
+        nombreInput?.focus();
+        return;
+    }
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
+    try {
+        const res = await fetch(buildUrl('/trabajos/crear'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({ nombre, precio_hora })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            // Añadir al select y asignar a la tarea
+            const select = document.getElementById(`selectTrabajo_${tareaId}`);
+            if (select) {
+                const opt = document.createElement('option');
+                opt.value = data.id;
+                opt.textContent = nombre;
+                select.appendChild(opt);
+                select.value = data.id;
+                await cambiarTrabajo(tareaId, select);
+            }
+            // Ocultar formulario y limpiar inputs
+            toggleFormNuevoTrabajo(tareaId);
+            if (nombreInput) nombreInput.value = '';
+            if (precioInput) precioInput.value = '';
+            showToast('Trabajo "' + nombre + '" creado y asignado', 'success');
+        } else {
+            showToast(data.message || 'Error al crear el trabajo', 'error');
+        }
+    } catch (err) {
+        console.error('Error creando trabajo inline:', err);
+        showToast('Error de conexión', 'error');
+    }
+}
+
 // Exportar funciones de edición inline globalmente
-window.cargarOpcionesModal = cargarOpcionesModal;
-window.añadirTrabajador    = añadirTrabajador;
-window.quitarTrabajador    = quitarTrabajador;
-window.añadirParcela       = añadirParcela;
-window.quitarParcela       = quitarParcela;
-window.cambiarTrabajo      = cambiarTrabajo;
+window.cargarOpcionesModal     = cargarOpcionesModal;
+window.añadirTrabajador        = añadirTrabajador;
+window.quitarTrabajador        = quitarTrabajador;
+window.añadirParcela           = añadirParcela;
+window.quitarParcela           = quitarParcela;
+window.cambiarTrabajo          = cambiarTrabajo;
+window.toggleFormNuevoTrabajo  = toggleFormNuevoTrabajo;
+window.crearTrabajoInline      = crearTrabajoInline;
 
 
 // =====================================================================

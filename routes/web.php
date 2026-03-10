@@ -9,6 +9,7 @@
 
 // General
 $router->get('/', 'HomeController@index');
+$router->get('/enlaces', 'EnlacesController@index');
 
 // Autenticación
 $router->post('/login', 'AuthController@login');
@@ -98,6 +99,7 @@ $router->get('/datos/parcelas/buscar', 'DatosParcelasController@buscar');
 
 // Propietarios
 $router->get('/datos/propietarios', 'PropietariosController@index');
+$router->get('/propietarios/detalle', 'PropietariosController@detalle');
 $router->post('/propietarios/crear', 'PropietariosController@crear');
 $router->get('/propietarios/obtener', 'PropietariosController@obtener');
 $router->post('/propietarios/actualizar', 'PropietariosController@actualizar');

@@ -14,6 +14,11 @@ $title = 'Datos - MartinCarmona.com';
     </div>
     <br>
 
+    <!-- Widget Meteorología -->
+    <div id="weather-widget" class="weather-widget">
+        <div class="weather-loading">🌤️ Cargando tiempo…</div>
+    </div>
+
     <!-- Calendario Dinámico -->
     <div class="calendar-section">
 
@@ -123,7 +128,7 @@ $title = 'Datos - MartinCarmona.com';
                 tasks[fecha] = [];
                 tasksData[fecha] = [];
             }
-            tasks[fecha].push(tarea.trabajo_nombre || tarea.descripcion || 'Sin descripción');
+            tasks[fecha].push(tarea.trabajo_nombre || tarea.titulo || 'Sin título');
             tasksData[fecha].push(tarea);
         });
     }
@@ -166,7 +171,7 @@ $title = 'Datos - MartinCarmona.com';
 
             if (tasksData[dateStr]) {
                 tasksData[dateStr].forEach((tarea, index) => {
-                    const displayText = tarea.trabajo_nombre || tarea.descripcion || 'Sin descripción';
+                    const displayText = tarea.trabajo_nombre || tarea.titulo || 'Sin título';
                     dayHTML += `<div class="task" draggable="true" data-id="${tarea.id}" data-fecha="${dateStr}" onclick="window.taskSidebar && window.taskSidebar.open(${tarea.id})" title="${tarea.descripcion || ''}">${displayText.length > 20 ? displayText.substring(0, 20) + '...' : displayText}</div>`;
                 });
             }
@@ -304,6 +309,106 @@ $title = 'Datos - MartinCarmona.com';
         await cargarYRenderizarCalendario();
         initDragDrop();
     });
+
+    // ── Widget Meteorología ────────────────────────────────────────────────────
+    (function initWeatherWidget() {
+        // ── Configuración de la explotación ──────────────────────────────────
+        const LAT  = 37.78;       // Latitud de la explotación
+        const LON  = -3.79;       // Longitud de la explotación
+        const CITY = 'Jaén';      // Nombre del municipio
+        // ─────────────────────────────────────────────────────────────────────
+
+        const WMO_ICONS = {
+            0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️',
+            45:'🌫️', 48:'🌫️',
+            51:'🌦️', 53:'🌦️', 55:'🌦️', 56:'🌧️', 57:'🌧️',
+            61:'🌧️', 63:'🌧️', 65:'🌧️', 66:'🌧️', 67:'🌧️',
+            71:'❄️',  73:'❄️',  75:'❄️',  77:'🌨️',
+            80:'🌦️', 81:'🌦️', 82:'🌦️',
+            85:'🌨️', 86:'🌨️',
+            95:'⛈️', 96:'⛈️', 99:'⛈️'
+        };
+
+        const WMO_DESC = {
+            0:'Despejado', 1:'Mayormente despejado', 2:'Parcialmente nublado', 3:'Nublado',
+            45:'Niebla', 48:'Niebla con escarcha',
+            51:'Llovizna ligera', 53:'Llovizna', 55:'Llovizna intensa',
+            56:'Llovizna helada', 57:'Llovizna helada intensa',
+            61:'Lluvia ligera', 63:'Lluvia', 65:'Lluvia intensa',
+            66:'Lluvia helada', 67:'Lluvia helada intensa',
+            71:'Nieve ligera', 73:'Nieve', 75:'Nieve intensa', 77:'Granizo',
+            80:'Chubascos ligeros', 81:'Chubascos', 82:'Chubascos intensos',
+            85:'Nieve con chubascos', 86:'Nieve intensa con chubascos',
+            95:'Tormenta', 96:'Tormenta con granizo', 99:'Tormenta con granizo intenso'
+        };
+
+        const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+        function icon(code) { return WMO_ICONS[code] ?? '🌡️'; }
+        function desc(code) { return WMO_DESC[code] ?? 'Desconocido'; }
+        function round(n)   { return Math.round(n); }
+
+        async function cargarTiempo() {
+            const url = `https://api.open-meteo.com/v1/forecast`
+                + `?latitude=${LAT}&longitude=${LON}`
+                + `&current_weather=true`
+                + `&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum`
+                + `&timezone=Europe%2FMadrid&forecast_days=7`;
+
+            try {
+                const res  = await fetch(url);
+                const data = await res.json();
+                renderWidget(data);
+            } catch (e) {
+                const w = document.getElementById('weather-widget');
+                if (w) w.innerHTML = '<div class="weather-error">No se pudo cargar el tiempo</div>';
+            }
+        }
+
+        function renderWidget(data) {
+            const w = document.getElementById('weather-widget');
+            if (!w) return;
+
+            const cw   = data.current_weather;
+            const temp = round(cw.temperature);
+            const code = cw.weathercode;
+            const daily = data.daily;
+
+            // Pronóstico 7 días
+            let forecastHTML = '';
+            for (let i = 0; i < 7; i++) {
+                const date  = new Date(daily.time[i] + 'T12:00:00');
+                const label = i === 0 ? 'Hoy' : DIAS[date.getDay()];
+                const wcode = daily.weathercode[i];
+                const tmax  = round(daily.temperature_2m_max[i]);
+                const tmin  = round(daily.temperature_2m_min[i]);
+                const prec  = daily.precipitation_sum[i];
+                forecastHTML += `
+                    <div class="weather-day">
+                        <span class="wd-label">${label}</span>
+                        <span class="wd-icon">${icon(wcode)}</span>
+                        <span class="wd-max">${tmax}°</span>
+                        <span class="wd-min">${tmin}°</span>
+                        ${prec > 0 ? `<span class="wd-prec">💧${prec.toFixed(1)}mm</span>` : '<span class="wd-prec"></span>'}
+                    </div>`;
+            }
+
+            w.innerHTML = `
+                <div class="weather-current">
+                    <span class="wc-icon">${icon(code)}</span>
+                    <div class="wc-info">
+                        <span class="wc-temp">${temp}°C</span>
+                        <span class="wc-desc">${desc(code)}</span>
+                        <span class="wc-city">📍 ${CITY}</span>
+                    </div>
+                </div>
+                <div class="weather-forecast">${forecastHTML}</div>`;
+        }
+
+        // Ejecutar inmediatamente (funciona en carga AJAX y carga directa)
+        cargarTiempo();
+    })();
+    // ───────────────────────────────────────────────────────────────────────────
 
 
 </script>

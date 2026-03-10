@@ -37,7 +37,10 @@
       "Bash(composer require monolog/monolog)",
       "Bash(php replace_errorlog.php)",
       "Bash(composer require --dev phpunit/phpunit)",
-      "Bash(./vendor/bin/phpunit --colors=always)"
+      "Bash(./vendor/bin/phpunit --colors=always)",
+      "Bash(php -l app/Controllers/ReportesController.php)",
+      "Read(//c/xampp/**)",
+      "Read(//c/xampp/apache/logs/**)"
     ]
   }
 }
