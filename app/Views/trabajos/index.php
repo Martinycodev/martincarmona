@@ -112,10 +112,7 @@ $title = 'Gestión de Trabajos';
 
         <!-- Toast de notificaciones -->
         <div id="toast" class="toast"></div>
+
+        <!-- Script específico para trabajos -->
+        <script src="<?= $this->url('/public/js/trabajos.js') ?>"></script>
     </div>
-
-    <!-- Script específico para trabajos -->
-    <script src="<?= $this->url('/public/js/trabajos.js') ?>"></script>
-
-</body>
-</html>

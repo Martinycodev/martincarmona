@@ -136,10 +136,10 @@ class PagoMensual
                     t.id          AS trabajador_id,
                     t.nombre      AS trabajador_nombre,
                     t.apellidos   AS trabajador_apellidos,
-                    COALESCE(
+                    ROUND(COALESCE(
                         SUM(tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0)),
                         0
-                    )             AS deuda_calculada
+                    ), 2)         AS deuda_calculada
                 FROM trabajadores t
                 JOIN tarea_trabajadores tt ON t.id = tt.trabajador_id
                 JOIN tareas ta            ON tt.tarea_id = ta.id

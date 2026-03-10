@@ -76,6 +76,11 @@
         </div>
     </div>
 
+    <!-- Acceso rápido: nuevo movimiento -->
+    <div style="display:flex; justify-content:flex-end; margin-bottom:20px;">
+        <button class="btn btn-primary" onclick="abrirModalMovimiento()">💰 Nuevo Movimiento</button>
+    </div>
+
     <!-- Últimos movimientos -->
     <div class="eco-two-col">
         <div>
@@ -128,3 +133,94 @@
     </div>
 
 </div>
+
+<!-- Modal nuevo movimiento (dentro del container para compatibilidad con AJAX navigation) -->
+<div id="modalMovimiento" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:480px;">
+        <div class="modal-header">
+            <h3>💰 Nuevo Movimiento</h3>
+            <button class="modal-close" onclick="cerrarModalMovimiento()">&times;</button>
+        </div>
+        <form id="formMovimiento" style="padding:1rem 1.5rem 1.5rem;">
+            <div class="form-group">
+                <label>Tipo <span class="required">*</span></label>
+                <select id="mov_tipo" name="tipo" required>
+                    <option value="gasto">💸 Gasto</option>
+                    <option value="ingreso">💵 Ingreso</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Concepto <span class="required">*</span></label>
+                <input type="text" id="mov_concepto" name="concepto" placeholder="Descripción del movimiento" required>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div class="form-group">
+                    <label>Importe (€) <span class="required">*</span></label>
+                    <input type="number" id="mov_importe" name="importe" step="0.01" min="0" placeholder="0,00" required>
+                </div>
+                <div class="form-group">
+                    <label>Fecha <span class="required">*</span></label>
+                    <input type="date" id="mov_fecha" name="fecha" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Cuenta</label>
+                <select id="mov_cuenta" name="cuenta">
+                    <option value="banco">🏦 Banco</option>
+                    <option value="efectivo">💶 Efectivo</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalMovimiento()">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="btnGuardarMov">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+var BASE_MOV = window._APP_BASE_PATH ?? '';
+var CSRF_MOV = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+
+function abrirModalMovimiento() {
+    document.getElementById('mov_fecha').value = new Date().toISOString().split('T')[0];
+    document.getElementById('formMovimiento').reset();
+    document.getElementById('mov_fecha').value = new Date().toISOString().split('T')[0];
+    document.getElementById('modalMovimiento').style.display = 'flex';
+    document.getElementById('mov_concepto').focus();
+}
+function cerrarModalMovimiento() {
+    document.getElementById('modalMovimiento').style.display = 'none';
+    document.getElementById('formMovimiento').reset();
+}
+
+document.getElementById('formMovimiento').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('btnGuardarMov');
+    btn.disabled = true;
+    var fd = new FormData(this);
+    fd.append('csrf_token', CSRF_MOV);
+    fetch(BASE_MOV + '/economia/crear', { method: 'POST', body: fd })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            btn.disabled = false;
+            if (res.success) {
+                cerrarModalMovimiento();
+                location.reload();
+            } else {
+                alert('Error: ' + (res.message || 'Error desconocido'));
+            }
+        })
+        .catch(function() { btn.disabled = false; alert('Error de conexión'); });
+});
+
+document.getElementById('modalMovimiento').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModalMovimiento();
+});
+
+// Auto-abrir si viene desde el botón del dashboard (?openModal=true)
+if (window.location.search.includes('openModal=true')) {
+    document.addEventListener('DOMContentLoaded', abrirModalMovimiento);
+    if (document.readyState !== 'loading') abrirModalMovimiento();
+}
+</script>

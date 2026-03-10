@@ -88,8 +88,8 @@ function reloadTable() {
     location.reload();
 }
 
-// Inicializar formularios cuando se carga el DOM
-document.addEventListener('DOMContentLoaded', function() {
+// Inicializar formularios — funciona tanto en carga normal como en carga AJAX dinámica
+function initTrabajosForms() {
     
     // Manejo del formulario de crear
     const createForm = document.getElementById('createJobForm');
@@ -160,7 +160,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
+}
+
+// Ejecutar al cargar: si DOMContentLoaded ya disparó (carga AJAX), inicializar ya; si no, esperar
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTrabajosForms);
+} else {
+    initTrabajosForms();
+}
 
 // Exportar funciones para uso global
 window.openCreateModal = openCreateModal;

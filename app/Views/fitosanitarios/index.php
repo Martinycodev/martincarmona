@@ -94,7 +94,6 @@
             </table>
         </div>
     </div>
-</div>
 
 <!-- Modal inventario -->
 <div id="modalInv" class="modal" style="display:none;">
@@ -194,8 +193,8 @@
 </style>
 
 <script>
-var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-var basePath  = window._APP_BASE_PATH || '';
+var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+var basePath  = window._APP_BASE_PATH ?? '';
 
 function mostrarTab(tab) {
     document.getElementById('tabInventario').style.display   = tab === 'inventario'   ? '' : 'none';
@@ -321,3 +320,5 @@ function eliminarApl(id) {
 document.getElementById('modalInv').addEventListener('click', function(e) { if (e.target === this) cerrarModalInv(); });
 document.getElementById('modalApl').addEventListener('click', function(e) { if (e.target === this) cerrarModalApl(); });
 </script>
+
+</div>

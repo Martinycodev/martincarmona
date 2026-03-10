@@ -53,7 +53,6 @@
             </tbody>
         </table>
     </div>
-</div>
 
 <!-- Modal nueva campaña -->
 <div id="modalNueva" class="modal" style="display:none;">
@@ -80,8 +79,8 @@
 </div>
 
 <script>
-var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-var basePath  = window._APP_BASE_PATH || '';
+var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+var basePath  = window._APP_BASE_PATH ?? '';
 
 function abrirModalNueva() {
     document.getElementById('nueva_fecha_inicio').value = new Date().toISOString().split('T')[0];
@@ -138,3 +137,5 @@ document.getElementById('modalNueva').addEventListener('click', function(e) {
     if (e.target === this) cerrarModalNueva();
 });
 </script>
+
+</div>
