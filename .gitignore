@@ -34,3 +34,6 @@ public/uploads/*
 !public/uploads/.gitkeep
 public/uploads/tareas/*
 !public/uploads/tareas/.gitkeep
+
+# Videos (assets pesados — subir manualmente al host)
+public/video/
