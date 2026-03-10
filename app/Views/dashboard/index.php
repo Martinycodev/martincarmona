@@ -162,7 +162,7 @@ $title = 'Datos - MartinCarmona.com';
 
             let dayHTML = `<div class="day ${isToday ? 'today' : ''}" data-date="${dateStr}" style="position: relative;">
                     <div class="day-number">${day}</div>
-                    <button class="add-task-btn" onclick="window.taskSidebar && window.taskSidebar.open()" title="Nueva tarea">+</button>`;
+                    <button class="add-task-btn" onclick="window.taskSidebar && window.taskSidebar.open(null, '${dateStr}')" title="Nueva tarea">+</button>`;
 
             if (tasksData[dateStr]) {
                 tasksData[dateStr].forEach((tarea, index) => {

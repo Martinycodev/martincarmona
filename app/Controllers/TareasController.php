@@ -172,8 +172,14 @@ class TareasController extends BaseController
         $this->validateCsrf();
 
         $userId = $_SESSION['user_id'];
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $fecha = (!empty($input['fecha']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $input['fecha']))
+            ? $input['fecha']
+            : date('Y-m-d');
+
         $tareaData = [
-            'fecha'       => date('Y-m-d'),
+            'fecha'       => $fecha,
             'titulo'      => '',
             'descripcion' => '',
             'trabajo'     => 0,
