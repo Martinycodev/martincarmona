@@ -77,7 +77,6 @@ $title = 'Datos - MartinCarmona.com';
 
 
 </div>
-<script src="<?= $this->url('/public/js/task-details-view.js') ?>"></script>
 <script>
     // Cache de tareas por mes para optimizar rendimiento
     const tareasCache = new Map();

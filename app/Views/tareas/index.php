@@ -114,7 +114,6 @@ $title = 'Gestión de Tareas';
 
 </div>
 
-<script src="<?= $this->url('/public/js/task-details-view.js') ?>"></script>
 <script>
     async function deleteTarea(id, descripcion) {
         if (!confirm(`¿Estás seguro de que quieres eliminar la tarea "${descripcion}"?`)) return;

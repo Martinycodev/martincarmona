@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <script src="<?= $this->url('/public/js/task-sidebar.js') ?>"></script>
+    <script src="<?= $this->url('/public/js/task-sidebar.js') ?>?v=<?= filemtime(BASE_PATH . '/public/js/task-sidebar.js') ?>"></script>
 
 </body>
 </html>

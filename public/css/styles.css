@@ -1104,13 +1104,14 @@ body {
     position: relative;
     flex: 1;
     min-width: 0;
+    z-index: 9998 !important;
 }
 .combobox-input {
     width: 100%;
     box-sizing: border-box;
 }
 .combobox-list {
-    position: absolute;
+    position: fixed;
     background: #1e1e1e;
     border: 1px solid #4a4a4a;
     border-radius: 6px;
