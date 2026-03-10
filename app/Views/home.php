@@ -88,6 +88,19 @@
             overflow: hidden;
         }
 
+        /* Video de fondo */
+        .lp-hero-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.22;
+            filter: brightness(0.55) grayscale(15%);
+        }
+
         /* Grid background */
         .lp-hero::before {
             content: '';
@@ -499,6 +512,12 @@
 
     <!-- HERO -->
     <section class="lp-hero">
+
+        <!-- Video de fondo: se elimina automáticamente en conexiones lentas o con ahorro de datos -->
+        <video class="lp-hero-video" autoplay muted loop playsinline preload="none">
+            <source src="<?= $this->url('/public/video/campo.mp4') ?>" type="video/mp4">
+        </video>
+
         <div class="lp-badge">Gestión de olivar · Plataforma completa</div>
         <h1>Tu finca,<br><em>gestionada con precisión</em></h1>
         <p class="lp-hero-desc">
@@ -665,5 +684,15 @@
         &copy; <?= date('Y') ?> MartinCarmona.com — Sistema de Gestión de Olivar
     </footer>
 
+    <script>
+        // Elimina el video de fondo si la conexión es lenta o el usuario tiene ahorro de datos activo
+        (function () {
+            var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn && (conn.saveData || conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g')) {
+                var v = document.querySelector('.lp-hero-video');
+                if (v) v.remove();
+            }
+        })();
+    </script>
 </body>
 </html>
