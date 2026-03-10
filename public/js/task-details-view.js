@@ -91,9 +91,11 @@ function renderTaskDetailHtml(tarea) {
     html += `
                     </div>
                     <div class="inline-add-row">
-                        <select class="inline-select" id="selectTrabajador_${tarea.id}">
-                            <option value="">+ Añadir trabajador...</option>
-                        </select>
+                        <div class="combobox-wrap" id="cbWrap-trab-${tarea.id}">
+                            <input class="combobox-input inline-select" placeholder="+ Añadir trabajador..." autocomplete="off" spellcheck="false">
+                            <input type="hidden" class="combobox-val" value="">
+                            <ul class="combobox-list"></ul>
+                        </div>
                         <button class="btn-inline-add" onclick="añadirTrabajador(${tarea.id})">✓</button>
                     </div>
                 </div>
@@ -124,9 +126,11 @@ function renderTaskDetailHtml(tarea) {
     html += `
                     </div>
                     <div class="inline-add-row">
-                        <select class="inline-select" id="selectParcela_${tarea.id}">
-                            <option value="">+ Añadir parcela...</option>
-                        </select>
+                        <div class="combobox-wrap" id="cbWrap-parc-${tarea.id}">
+                            <input class="combobox-input inline-select" placeholder="+ Añadir parcela..." autocomplete="off" spellcheck="false">
+                            <input type="hidden" class="combobox-val" value="">
+                            <ul class="combobox-list"></ul>
+                        </div>
                         <button class="btn-inline-add" onclick="añadirParcela(${tarea.id})">✓</button>
                     </div>
                 </div>
@@ -163,10 +167,11 @@ function renderTaskDetailHtml(tarea) {
     html += `
                     </div>
                     <div class="inline-add-row">
-                        <select class="inline-select" id="selectTrabajo_${tarea.id}"
-                                onchange="cambiarTrabajo(${tarea.id}, this)">
-                            <option value="">Cambiar tipo de trabajo...</option>
-                        </select>
+                        <div class="combobox-wrap" id="cbWrap-work-${tarea.id}">
+                            <input class="combobox-input inline-select" placeholder="Cambiar tipo de trabajo..." autocomplete="off" spellcheck="false">
+                            <input type="hidden" class="combobox-val" value="">
+                            <ul class="combobox-list"></ul>
+                        </div>
                         <button class="btn-inline-add" title="Crear nuevo trabajo"
                                 onclick="toggleFormNuevoTrabajo(${tarea.id})">+</button>
                     </div>
@@ -241,47 +246,16 @@ window.renderTaskDetailHtml = renderTaskDetailHtml;
  */
 async function cargarOpcionesModal(tareaId) {
     try {
-        // Un único endpoint devuelve trabajadores, parcelas y trabajos de una vez
         const res = await fetch(buildUrl('/tareas/opcionesModal'), {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         });
         if (!res.ok) return;
-
         const data = await res.json();
 
-        // Rellenar select de trabajadores
-        const selectTrabajador = document.getElementById(`selectTrabajador_${tareaId}`);
-        if (selectTrabajador && data.trabajadores) {
-            data.trabajadores.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t.id;
-                opt.textContent = t.nombre;
-                selectTrabajador.appendChild(opt);
-            });
-        }
-
-        // Rellenar select de parcelas
-        const selectParcela = document.getElementById(`selectParcela_${tareaId}`);
-        if (selectParcela && data.parcelas) {
-            data.parcelas.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p.id;
-                opt.textContent = p.nombre;
-                selectParcela.appendChild(opt);
-            });
-        }
-
-        // Rellenar select de trabajos
-        const selectTrabajo = document.getElementById(`selectTrabajo_${tareaId}`);
-        if (selectTrabajo && data.trabajos) {
-            data.trabajos.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t.id;
-                opt.textContent = t.nombre;
-                selectTrabajo.appendChild(opt);
-            });
-        }
-
+        if (data.trabajadores) initCombobox(`cbWrap-trab-${tareaId}`, data.trabajadores);
+        if (data.parcelas)     initCombobox(`cbWrap-parc-${tareaId}`, data.parcelas);
+        if (data.trabajos)     initCombobox(`cbWrap-work-${tareaId}`,  data.trabajos,
+            (opt) => cambiarTrabajo(tareaId, opt.id, opt.nombre));
     } catch (err) {
         console.error('Error cargando opciones del modal:', err);
     }
@@ -292,10 +266,7 @@ async function cargarOpcionesModal(tareaId) {
  * @param {number} tareaId
  */
 async function añadirTrabajador(tareaId) {
-    const select = document.getElementById(`selectTrabajador_${tareaId}`);
-    const trabajadorId = parseInt(select.value);
-    const trabajadorNombre = select.options[select.selectedIndex]?.text;
-
+    const { id: trabajadorId, text: trabajadorNombre } = _getComboboxSel(`cbWrap-trab-${tareaId}`);
     if (!trabajadorId) {
         showToast('Selecciona un trabajador primero', 'warning');
         return;
@@ -332,8 +303,8 @@ async function añadirTrabajador(tareaId) {
                 container.appendChild(card);
             }
 
-            // Resetear el select
-            select.value = '';
+            // Resetear el combobox
+            _resetCombobox(`cbWrap-trab-${tareaId}`);
             window.needsReload = true;
         } else {
             showToast(data.message || 'Error al añadir trabajador', 'error');
@@ -389,10 +360,7 @@ async function quitarTrabajador(tareaId, trabajadorId) {
  * @param {number} tareaId
  */
 async function añadirParcela(tareaId) {
-    const select = document.getElementById(`selectParcela_${tareaId}`);
-    const parcelaId = parseInt(select.value);
-    const parcelaNombre = select.options[select.selectedIndex]?.text;
-
+    const { id: parcelaId, text: parcelaNombre } = _getComboboxSel(`cbWrap-parc-${tareaId}`);
     if (!parcelaId) {
         showToast('Selecciona una parcela primero', 'warning');
         return;
@@ -427,7 +395,7 @@ async function añadirParcela(tareaId) {
                 container.appendChild(card);
             }
 
-            select.value = '';
+            _resetCombobox(`cbWrap-parc-${tareaId}`);
             window.needsReload = true;
         } else {
             showToast(data.message || 'Error al añadir parcela', 'error');
@@ -477,15 +445,13 @@ async function quitarParcela(tareaId, parcelaId) {
 }
 
 /**
- * Cambia el tipo de trabajo de la tarea al instante (onchange del select)
+ * Cambia el tipo de trabajo de la tarea al instante
  * @param {number} tareaId
- * @param {HTMLSelectElement} select
+ * @param {number} trabajoId
+ * @param {string} trabajoNombre
  */
-async function cambiarTrabajo(tareaId, select) {
-    const trabajoId = parseInt(select.value);
-    const trabajoNombre = select.options[select.selectedIndex]?.text;
-
-    if (!trabajoId) return; // Sin selección, no hacer nada
+async function cambiarTrabajo(tareaId, trabajoId, trabajoNombre) {
+    if (!trabajoId) return;
 
     try {
         const res = await fetch(buildUrl('/tareas/cambiarTrabajo'), {
@@ -500,7 +466,6 @@ async function cambiarTrabajo(tareaId, select) {
         const data = await res.json();
 
         if (data.success) {
-            // Reemplazar el contenido del contenedor con la nueva card
             const container = document.getElementById(`trabajos-container-${tareaId}`);
             if (container) {
                 container.innerHTML = `
@@ -509,18 +474,16 @@ async function cambiarTrabajo(tareaId, select) {
                     </div>
                 `;
             }
-
-            // Resetear el select a la opción por defecto
-            select.value = '';
+            _resetCombobox(`cbWrap-work-${tareaId}`);
             window.needsReload = true;
         } else {
             showToast(data.message || 'Error al cambiar trabajo', 'error');
-            select.value = '';
+            _resetCombobox(`cbWrap-work-${tareaId}`);
         }
     } catch (err) {
         console.error('Error cambiando trabajo:', err);
         showToast('Error de conexión', 'error');
-        select.value = '';
+        _resetCombobox(`cbWrap-work-${tareaId}`);
     }
 }
 
@@ -570,16 +533,8 @@ async function crearTrabajoInline(tareaId) {
         const data = await res.json();
 
         if (data.success) {
-            // Añadir al select y asignar a la tarea
-            const select = document.getElementById(`selectTrabajo_${tareaId}`);
-            if (select) {
-                const opt = document.createElement('option');
-                opt.value = data.id;
-                opt.textContent = nombre;
-                select.appendChild(opt);
-                select.value = data.id;
-                await cambiarTrabajo(tareaId, select);
-            }
+            // Asignar el nuevo trabajo a la tarea
+            await cambiarTrabajo(tareaId, data.id, nombre);
             // Ocultar formulario y limpiar inputs
             toggleFormNuevoTrabajo(tareaId);
             if (nombreInput) nombreInput.value = '';
@@ -594,6 +549,151 @@ async function crearTrabajoInline(tareaId) {
     }
 }
 
+/**
+ * Inicializa un combobox typeahead sobre un wrapper ya en el DOM.
+ * @param {string} wrapperId - ID del div.combobox-wrap
+ * @param {Array}  options   - Array de {id, nombre}
+ * @param {Function} [onSelect] - Callback opcional cuando se selecciona un item. Si se pasa, se ejecuta automáticamente al seleccionar (sin necesidad de pulsar ✓).
+ */
+function initCombobox(wrapperId, options, onSelect = null) {
+    const wrap = document.getElementById(wrapperId);
+    if (!wrap) return;
+
+    const input     = wrap.querySelector('.combobox-input');
+    const hiddenVal = wrap.querySelector('.combobox-val');
+    const list      = wrap.querySelector('.combobox-list');
+    if (!input || !hiddenVal || !list) return;
+
+    list.style.display = 'none';
+
+    function renderList(filter) {
+        const q = (filter || '').toLowerCase().trim();
+        list.innerHTML = '';
+        const filtered = q
+            ? options.filter(o => o.nombre.toLowerCase().includes(q))
+            : options;
+
+        if (!filtered.length) {
+            const li = document.createElement('li');
+            li.className = 'combobox-no-results';
+            li.textContent = 'Sin resultados';
+            list.appendChild(li);
+            return;
+        }
+
+        filtered.forEach(opt => {
+            const li = document.createElement('li');
+            li.className = 'combobox-item';
+            li.dataset.id = opt.id;
+            li.dataset.nombre = opt.nombre;
+
+            if (q) {
+                const idx = opt.nombre.toLowerCase().indexOf(q);
+                li.innerHTML = idx >= 0
+                    ? opt.nombre.substring(0, idx)
+                      + '<mark>' + opt.nombre.substring(idx, idx + q.length) + '</mark>'
+                      + opt.nombre.substring(idx + q.length)
+                    : opt.nombre;
+            } else {
+                li.textContent = opt.nombre;
+            }
+
+            li.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                selectItem(opt);
+            });
+            list.appendChild(li);
+        });
+    }
+
+    function selectItem(opt) {
+        input.value     = opt.nombre;
+        hiddenVal.value = opt.id;
+        closeList();
+        if (onSelect) onSelect(opt);
+    }
+
+    function positionList() {
+        const rect = input.getBoundingClientRect();
+        list.style.top   = (rect.bottom + window.scrollY) + 'px';
+        list.style.left  = (rect.left + window.scrollX) + 'px';
+        list.style.width = rect.width + 'px';
+    }
+
+    function openList() {
+        renderList(input.value);
+        positionList();
+        list.style.display = '';
+    }
+
+    function closeList() {
+        list.style.display = 'none';
+    }
+
+    // Remove old listeners by cloning (safe since initCombobox is called once per open)
+    input.addEventListener('focus', openList);
+    input.addEventListener('input', () => {
+        hiddenVal.value = '';
+        renderList(input.value);
+        positionList();
+        list.style.display = '';
+    });
+    input.addEventListener('blur', () => setTimeout(closeList, 150));
+
+    input.addEventListener('keydown', (e) => {
+        const items = list.querySelectorAll('.combobox-item');
+        const active = list.querySelector('.combobox-item.cb-active');
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (!active) {
+                items[0]?.classList.add('cb-active');
+            } else {
+                const next = active.nextElementSibling;
+                if (next?.classList.contains('combobox-item')) {
+                    active.classList.remove('cb-active');
+                    next.classList.add('cb-active');
+                }
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (active) {
+                const prev = active.previousElementSibling;
+                active.classList.remove('cb-active');
+                if (prev?.classList.contains('combobox-item')) prev.classList.add('cb-active');
+            }
+        } else if (e.key === 'Enter') {
+            const act = list.querySelector('.combobox-item.cb-active');
+            if (act) {
+                e.preventDefault();
+                selectItem({ id: act.dataset.id, nombre: act.dataset.nombre });
+            }
+        } else if (e.key === 'Escape') {
+            closeList();
+        }
+    });
+}
+
+/** Devuelve {id, text} del combobox indicado */
+function _getComboboxSel(wrapperId) {
+    const wrap = document.getElementById(wrapperId);
+    if (!wrap) return { id: '', text: '' };
+    return {
+        id:   parseInt(wrap.querySelector('.combobox-val')?.value || '0') || 0,
+        text: wrap.querySelector('.combobox-input')?.value ?? ''
+    };
+}
+
+/** Limpia el input y el valor oculto del combobox */
+function _resetCombobox(wrapperId) {
+    const wrap = document.getElementById(wrapperId);
+    if (!wrap) return;
+    const inp = wrap.querySelector('.combobox-input');
+    const val = wrap.querySelector('.combobox-val');
+    if (inp) inp.value = '';
+    if (val) val.value = '';
+}
+
 // Exportar funciones de edición inline globalmente
 window.cargarOpcionesModal     = cargarOpcionesModal;
 window.añadirTrabajador        = añadirTrabajador;
@@ -603,6 +703,9 @@ window.quitarParcela           = quitarParcela;
 window.cambiarTrabajo          = cambiarTrabajo;
 window.toggleFormNuevoTrabajo  = toggleFormNuevoTrabajo;
 window.crearTrabajoInline      = crearTrabajoInline;
+window.initCombobox            = initCombobox;
+window._getComboboxSel         = _getComboboxSel;
+window._resetCombobox          = _resetCombobox;
 
 
 // =====================================================================

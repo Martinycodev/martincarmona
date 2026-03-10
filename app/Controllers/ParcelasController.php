@@ -281,7 +281,7 @@ class ParcelasController extends BaseController
             $stmt->close();
 
             $stmt = $db->prepare("UPDATE parcelas SET nombre = ?, olivos = ?, ubicacion = ?, propietario = ?, propietario_id = ?, hidrante = ?, descripcion = ?, referencia_catastral = ?, tipo_olivos = ?, `año_plantacion` = ?, tipo_plantacion = ?, riego_secano = ?, corta = ? WHERE id = ?");
-            $stmt->bind_param("sisssissssssssi", $nombre, $olivos, $ubicacion, $propietario, $propietario_id, $hidrante, $descripcion, $referencia_catastral, $tipo_olivos, $año_plantacion, $tipo_plantacion, $riego_secano, $corta, $id);
+            $stmt->bind_param("sisssisssssssi", $nombre, $olivos, $ubicacion, $propietario, $propietario_id, $hidrante, $descripcion, $referencia_catastral, $tipo_olivos, $año_plantacion, $tipo_plantacion, $riego_secano, $corta, $id);
 
             if ($stmt->execute()) {
                 if ($stmt->affected_rows > 0) {
@@ -296,7 +296,7 @@ class ParcelasController extends BaseController
             $stmt->close();
             $db->close();
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Core\Logger::app()->error("Error actualizando parcela: " . $e->getMessage());
             \Core\Logger::app()->error("Stack trace: " . $e->getTraceAsString());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor: ' . $e->getMessage()]);
