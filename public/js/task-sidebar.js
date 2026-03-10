@@ -17,8 +17,9 @@ class TaskSidebar {
     /**
      * Abre el sidebar.
      * @param {number|null} taskId  null → crea tarea vacía primero
+     * @param {string|null} fecha   fecha en formato YYYY-MM-DD para asignar a la nueva tarea
      */
-    async open(taskId = null) {
+    async open(taskId = null, fecha = null) {
         this.savedFields.clear();
         this._opcionesCache = null;
         window.needsReload  = false;
@@ -26,9 +27,14 @@ class TaskSidebar {
         if (taskId === null) {
             this._showStatus('saving', 'Creando...');
             try {
+                const body = fecha ? JSON.stringify({ fecha }) : undefined;
                 const res  = await fetch(buildUrl('/tareas/crearVacio'), {
                     method:  'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        ...(fecha ? { 'Content-Type': 'application/json' } : {})
+                    },
+                    body
                 });
                 const data = await res.json();
                 if (!data.success) {
