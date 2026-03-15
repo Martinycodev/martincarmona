@@ -1,0 +1,19 @@
+{
+    "name": "MartinCarmona — Gestión Agrícola",
+    "short_name": "MartinCarmona",
+    "description": "Sistema de gestión integral para explotaciones agrícolas de olivar",
+    "start_url": "/martincarmona/dashboard",
+    "display": "standalone",
+    "background_color": "#1a1a1a",
+    "theme_color": "#4caf50",
+    "orientation": "any",
+    "lang": "es",
+    "icons": [
+        {
+            "src": "/martincarmona/public/img/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}

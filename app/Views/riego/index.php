@@ -6,6 +6,41 @@
         <button class="btn btn-primary" onclick="abrirModalNuevo()">+ Nuevo Riego</button>
     </div>
 
+    <!-- Panel resumen -->
+    <div class="resumen-riego" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+        <div class="card" style="padding:1.2rem; text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color:#2196f3;">
+                <?= number_format($resumen['total_m3'] ?? 0, 1) ?> m³
+            </div>
+            <div style="color:#ccc; font-size:0.9rem;">Total consumido</div>
+        </div>
+        <div class="card" style="padding:1.2rem; text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color:#4caf50;">
+                <?= intval($resumen['total_riegos'] ?? 0) ?>
+            </div>
+            <div style="color:#ccc; font-size:0.9rem;">Riegos registrados</div>
+        </div>
+        <div class="card" style="padding:1.2rem; text-align:center;">
+            <div style="font-size:2rem; font-weight:700; color:#ff9800;">
+                <?= intval($resumen['total_dias'] ?? 0) ?>
+            </div>
+            <div style="color:#ccc; font-size:0.9rem;">Días de riego</div>
+        </div>
+    </div>
+
+    <!-- Selector de año -->
+    <div style="margin-bottom:1rem; display:flex; align-items:center; gap:0.75rem;">
+        <label for="filtroAnio" style="color:#ccc; font-weight:600;">Filtrar por año:</label>
+        <select id="filtroAnio" onchange="filtrarPorAnio(this.value)" style="padding:0.4rem 0.8rem; border-radius:8px; background:#2a2a2a; color:#fff; border:1px solid #404040;">
+            <option value="">Todos los años</option>
+            <?php foreach ($anios as $a): ?>
+            <option value="<?= intval($a) ?>" <?= ($anioActual !== null && intval($a) === $anioActual) ? 'selected' : '' ?>>
+                <?= intval($a) ?>
+            </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
     <!-- Tabla de riegos -->
     <div class="card">
         <table class="styled-table" id="riegosTable">
@@ -40,7 +75,7 @@
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($riegos)): ?>
-                <tr><td colspan="9" class="text-center">No hay registros de riego</td></tr>
+                <tr><td colspan="9" class="text-center">No hay registros de riego<?= $anioActual ? ' para ' . $anioActual : '' ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -75,16 +110,16 @@
                 </div>
                 <div class="form-group">
                     <label for="hidrante">Hidrante:</label>
-                    <input type="text" id="hidrante" name="hidrante" placeholder="Nº de hidrante">
+                    <input type="number" id="hidrante" name="hidrante" placeholder="Nº de hidrante" min="0" oninput="autoRellenarParcela()">
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="parcela_id">Parcela:</label>
-                <select id="parcela_id" name="parcela_id">
-                    <option value="">— Sin parcela asignada —</option>
+                <select id="parcela_id" name="parcela_id" onchange="autoRellenarHidrante()">
+                    <option value="" data-hidrante="">— Seleccionar parcela —</option>
                     <?php foreach ($parcelas as $p): ?>
-                    <option value="<?= intval($p['id']) ?>"><?= htmlspecialchars($p['nombre']) ?></option>
+                    <option value="<?= intval($p['id']) ?>" data-hidrante="<?= intval($p['hidrante']) ?>"><?= htmlspecialchars($p['nombre']) ?> (H<?= intval($p['hidrante']) ?>)</option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -114,9 +149,44 @@
 </div>
 
 <script>
-var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
 var basePath  = window._APP_BASE_PATH || '';
 var modoEdicion = false;
+
+/* ── Auto-relleno parcela ↔ hidrante ──────────────────────────────────
+   Al seleccionar una parcela → se rellena el campo hidrante.
+   Al escribir un nº de hidrante → se selecciona la parcela que lo tiene. */
+
+function autoRellenarHidrante() {
+    var sel = document.getElementById('parcela_id');
+    var opt = sel.options[sel.selectedIndex];
+    var h   = opt ? opt.getAttribute('data-hidrante') : '';
+    if (h) {
+        document.getElementById('hidrante').value = h;
+    }
+}
+
+function autoRellenarParcela() {
+    var valor = document.getElementById('hidrante').value.trim();
+    if (!valor) return;
+    var sel = document.getElementById('parcela_id');
+    // Buscar la opción cuyo data-hidrante coincide
+    for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].getAttribute('data-hidrante') === valor) {
+            sel.selectedIndex = i;
+            return;
+        }
+    }
+    // Si no hay coincidencia, dejar sin seleccionar
+    sel.selectedIndex = 0;
+}
+
+/* Filtrar por año — recarga la página con el parámetro */
+function filtrarPorAnio(anio) {
+    var url = basePath + '/datos/riego';
+    if (anio) url += '?anio=' + anio;
+    window.location.href = url;
+}
 
 function abrirModalNuevo() {
     modoEdicion = false;
@@ -159,7 +229,7 @@ function editarRiego(id) {
     fetch(basePath + '/riego/obtener?id=' + id)
     .then(function(r) { return r.json(); })
     .then(function(res) {
-        if (!res.success) { alert('Error: ' + res.message); return; }
+        if (!res.success) { showToast(res.message, 'error'); return; }
         var r = res.riego;
         modoEdicion = true;
         document.getElementById('modalRiegoTitle').textContent = 'Editar Riego';
@@ -174,7 +244,7 @@ function editarRiego(id) {
         calcularM3();
         document.getElementById('modalRiego').style.display = 'flex';
     })
-    .catch(function() { alert('Error de conexión'); });
+    .catch(function() { showToast('Error de conexión', 'error'); });
 }
 
 function eliminarRiego(id) {
@@ -187,13 +257,14 @@ function eliminarRiego(id) {
     .then(function(r) { return r.json(); })
     .then(function(res) {
         if (res.success) {
+            showToast('Riego eliminado', 'success');
             var row = document.getElementById('riego-row-' + id);
             if (row) row.remove();
         } else {
-            alert('Error: ' + res.message);
+            showToast(res.message, 'error');
         }
     })
-    .catch(function() { alert('Error de conexión'); });
+    .catch(function() { showToast('Error de conexión', 'error'); });
 }
 
 document.getElementById('formRiego').addEventListener('submit', function(e) {
@@ -227,12 +298,12 @@ document.getElementById('formRiego').addEventListener('submit', function(e) {
             cerrarModal();
             location.reload();
         } else {
-            alert('Error: ' + res.message);
+            showToast(res.message, 'error');
         }
     })
     .catch(function() {
         btn.disabled = false;
-        alert('Error de conexión');
+        showToast('Error de conexión', 'error');
     });
 });
 

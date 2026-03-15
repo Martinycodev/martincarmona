@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Martín Carmona — Gestión de Olivar en Arjonilla, Jaén</title>
-    <meta name="description" content="Plataforma de gestión integral de olivar en Arjonilla, Jaén. Martín Carmona digitaliza parcelas, personal, tareas, economía, campañas de aceituna y fitosanitarios. Sin papeles, sin hojas de cálculo.">
+    <title>Gestión del Olivar - MartinCarmona</title>
+    <meta name="description" content="Gestiona tu olivar de forma integral: parcelas, trabajadores, tareas de campo, economía, campañas de aceituna y fitosanitarios. Plataforma digital para agricultores en Jaén y toda España.">
     <meta name="keywords" content="Martín Carmona, MartinCarmona, gestión del olivar, olivar Jaén, Arjonilla, gestión agrícola, gestión de fincas, aceite de oliva, control de parcelas, tareas agrícolas">
     <link rel="canonical" href="https://martincarmona.com/">
     <meta name="author" content="Martín Carmona">
@@ -12,15 +12,15 @@
     <!-- Open Graph (Facebook, WhatsApp, Telegram) -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://martincarmona.com/">
-    <meta property="og:title" content="Martín Carmona — Gestión de Olivar en Jaén">
-    <meta property="og:description" content="Plataforma digital para la gestión integral de olivar. Parcelas, personal, tareas, economía y campañas de aceituna centralizados.">
+    <meta property="og:title" content="Gestión del Olivar - MartinCarmona">
+    <meta property="og:description" content="Gestiona tu olivar de forma integral: parcelas, trabajadores, tareas de campo, economía, campañas de aceituna y fitosanitarios. Plataforma digital para agricultores.">
     <meta property="og:image" content="https://martincarmona.com/public/img/og-cover.jpg">
     <meta property="og:locale" content="es_ES">
     <meta property="og:site_name" content="MartinCarmona.com">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Martín Carmona — Gestión de Olivar en Jaén">
-    <meta name="twitter:description" content="Plataforma digital para la gestión integral de olivar. Parcelas, personal, tareas, economía y campañas de aceituna.">
+    <meta name="twitter:title" content="Gestión del Olivar - MartinCarmona">
+    <meta name="twitter:description" content="Gestiona tu olivar de forma integral: parcelas, trabajadores, tareas de campo, economía, campañas de aceituna y fitosanitarios. Plataforma digital para agricultores.">
     <meta name="twitter:image" content="https://martincarmona.com/public/img/og-cover.jpg">
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">

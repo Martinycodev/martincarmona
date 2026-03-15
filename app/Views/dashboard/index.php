@@ -19,16 +19,16 @@ $title = 'Datos - MartinCarmona.com';
 
         <div class="calendar-header">
             <div class="calendar-nav-left">
-                <button class="calendar-nueva-btn" onclick="window.taskSidebar && window.taskSidebar.open()" title="Nueva tarea">+</button>
-                <button onclick="prevMonth()" class="calendar-nav-btn">◀</button>
+                <button class="calendar-nueva-btn" onclick="window.taskSidebar && window.taskSidebar.open()" title="Nueva tarea" aria-label="Crear nueva tarea">+</button>
+                <button onclick="prevMonth()" class="calendar-nav-btn" aria-label="Mes anterior">◀</button>
             </div>
 
 
-            <h3 id="monthYear"></h3>
+            <h3 id="monthYear" aria-live="polite"></h3>
             <div class="calendar-nav-right">
 
-                <button onclick="nextMonth()" class="calendar-nav-btn">▶</button>
-                <button onclick="goToToday()" class="calendar-today-btn">📅 Hoy</button>
+                <button onclick="nextMonth()" class="calendar-nav-btn" aria-label="Mes siguiente">▶</button>
+                <button onclick="goToToday()" class="calendar-today-btn" aria-label="Ir al mes actual">📅 Hoy</button>
             </div>
         </div>
 
@@ -144,6 +144,10 @@ $title = 'Datos - MartinCarmona.com';
         const daysInPrevMonth = new Date(year, month, 0).getDate();
 
         const calendar = document.getElementById("calendar");
+
+        // Animación fade-in al cambiar de mes
+        calendar.classList.add('ajax-fade-in');
+        setTimeout(function() { calendar.classList.remove('ajax-fade-in'); }, 350);
         calendar.innerHTML = "";
 
         // Espacios en blanco antes del día 1 (ajustado para que la semana empiece en lunes)
@@ -301,10 +305,159 @@ $title = 'Datos - MartinCarmona.com';
         await cargarYRenderizarCalendario();
     };
 
+    // ── Modal de día en móvil ────────────────────────────────────────────
+    // Al pulsar un día en pantallas ≤768px, se abre un bottom-sheet
+    // con las tareas de ese día y un botón "Nueva tarea".
+    // En desktop el click directo en la tarea abre el sidebar (sin cambios).
+
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+
+    function initMobileDayModal() {
+        // Crear el modal en el DOM si no existe
+        if (!document.getElementById('mobileDayModal')) {
+            var modalHTML = '<div id="mobileDayModal">'
+                + '<div class="mobile-day-sheet">'
+                +   '<div class="mobile-day-sheet-header">'
+                +     '<h3 id="mobileDayTitle">—</h3>'
+                +     '<button class="mobile-day-sheet-close" onclick="cerrarModalDia()">&times;</button>'
+                +   '</div>'
+                +   '<div class="mobile-day-sheet-body" id="mobileDayBody"></div>'
+                + '</div>'
+                + '</div>';
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+            // Cerrar al pulsar fuera del sheet
+            document.getElementById('mobileDayModal').addEventListener('click', function(e) {
+                if (e.target === this) cerrarModalDia();
+            });
+        }
+    }
+
+    function abrirModalDia(dateStr) {
+        var modal = document.getElementById('mobileDayModal');
+        var title = document.getElementById('mobileDayTitle');
+        var body  = document.getElementById('mobileDayBody');
+
+        // Formatear fecha legible: "15 de marzo"
+        var parts = dateStr.split('-');
+        var meses = ['enero','febrero','marzo','abril','mayo','junio',
+                     'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+        title.textContent = parseInt(parts[2]) + ' de ' + meses[parseInt(parts[1]) - 1];
+
+        // Construir lista de tareas del día
+        var html = '';
+        var tareasDelDia = tasksData[dateStr] || [];
+
+        if (tareasDelDia.length === 0) {
+            html += '<div class="mobile-day-empty">No hay tareas este día</div>';
+        } else {
+            tareasDelDia.forEach(function(tarea) {
+                var nombre = tarea.trabajo_nombre || tarea.titulo || 'Sin título';
+                html += '<div class="mobile-day-task" onclick="cerrarModalDia(); window.taskSidebar && window.taskSidebar.open(' + tarea.id + ')">'
+                    + '<span class="mobile-day-task-name">' + nombre + '</span>'
+                    + '<span class="mobile-day-task-arrow">›</span>'
+                    + '</div>';
+            });
+        }
+
+        html += '<button class="mobile-day-new-btn" onclick="cerrarModalDia(); window.taskSidebar && window.taskSidebar.open(null, \'' + dateStr + '\')">'
+            + '+ Nueva tarea</button>';
+
+        body.innerHTML = html;
+        modal.classList.add('open');
+    }
+
+    window.cerrarModalDia = function() {
+        var modal = document.getElementById('mobileDayModal');
+        if (modal) modal.classList.remove('open');
+    };
+
+    // Interceptar clicks en días del calendario en móvil
+    function initMobileDayTap() {
+        var calendar = document.getElementById('calendar');
+        calendar.addEventListener('click', function(e) {
+            if (!isMobile()) return;
+
+            // Si el click fue directamente en un .task, dejar que el onclick nativo actúe
+            if (e.target.closest('.task')) return;
+            // Si fue en el botón "+", dejar que actúe
+            if (e.target.closest('.add-task-btn')) return;
+
+            var dayEl = e.target.closest('.day:not(.other-month)');
+            if (!dayEl) return;
+
+            var dateStr = dayEl.dataset.date;
+            if (dateStr) {
+                e.preventDefault();
+                e.stopPropagation();
+                abrirModalDia(dateStr);
+            }
+        });
+    }
+
+    // ── Swipe horizontal para cambiar de mes ─────────────────────────────
+    // Detecta gestos de deslizamiento en el calendario y cambia de mes
+    // con una animación CSS (clases .swipe-left / .swipe-right ya definidas).
+
+    function initSwipeCalendar() {
+        var calendar = document.getElementById('calendar');
+        var touchStartX = 0;
+        var touchStartY = 0;
+        var swiping = false;
+
+        calendar.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            swiping = true;
+        }, { passive: true });
+
+        calendar.addEventListener('touchmove', function(e) {
+            if (!swiping) return;
+            // Si el movimiento vertical es mayor que el horizontal, no es swipe
+            var diffY = Math.abs(e.touches[0].clientY - touchStartY);
+            var diffX = Math.abs(e.touches[0].clientX - touchStartX);
+            if (diffY > diffX) {
+                swiping = false;
+            }
+        }, { passive: true });
+
+        calendar.addEventListener('touchend', function(e) {
+            if (!swiping) return;
+            swiping = false;
+
+            var touchEndX = e.changedTouches[0].clientX;
+            var diff = touchEndX - touchStartX;
+            var MIN_SWIPE = 60; // px mínimos para considerar swipe
+
+            if (Math.abs(diff) < MIN_SWIPE) return;
+
+            if (diff < 0) {
+                // Swipe izquierda → mes siguiente
+                calendar.classList.add('swipe-left');
+                setTimeout(async function() {
+                    await nextMonth();
+                    calendar.classList.remove('swipe-left');
+                }, 300);
+            } else {
+                // Swipe derecha → mes anterior
+                calendar.classList.add('swipe-right');
+                setTimeout(async function() {
+                    await prevMonth();
+                    calendar.classList.remove('swipe-right');
+                }, 300);
+            }
+        }, { passive: true });
+    }
+
     // Inicializar el calendario con datos del mes actual
     document.addEventListener('DOMContentLoaded', async function () {
         await cargarYRenderizarCalendario();
         initDragDrop();
+        initMobileDayModal();
+        initMobileDayTap();
+        initSwipeCalendar();
     });
 
     // ── Widget Meteorología ────────────────────────────────────────────────────
@@ -409,6 +562,3 @@ $title = 'Datos - MartinCarmona.com';
 
 
 </script>
-</body>
-
-</html>

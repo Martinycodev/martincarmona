@@ -31,4 +31,22 @@ class DashboardController extends BaseController
         
         $this->render('dashboard/index', $data);
     }
+
+    /**
+     * Hub de bases de datos — muestra links a todos los módulos de datos
+     */
+    public function datos()
+    {
+        $this->requireEmpresa();
+
+        $data = [
+            'user' => [
+                'id' => $_SESSION['user_id'],
+                'name' => $_SESSION['user_name'] ?? 'Usuario',
+                'email' => $_SESSION['user_email'] ?? ''
+            ]
+        ];
+
+        $this->render('datos/index', $data);
+    }
 }

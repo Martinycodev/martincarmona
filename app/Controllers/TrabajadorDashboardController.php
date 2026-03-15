@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 
-class TrabajadorController extends BaseController
+class TrabajadorDashboardController extends BaseController
 {
     public function __construct()
     {

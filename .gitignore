@@ -6,20 +6,18 @@ config/local.php
 # Librerías de Composer
 vendor/
 
-# Archivos temporales
+# Archivos temporales y logs
 *.log
-*.tmp
-
-# Archivos de log
-*.log
-
-# Archivos temporales
 *.tmp
 *.temp
 
 # Archivos de IDE
 .vscode/
 .idea/
+*.code-workspace
+
+# Cache de PHPUnit
+.phpunit.result.cache
 
 # Git worktrees
 .worktrees/
@@ -37,3 +35,5 @@ public/uploads/tareas/*
 
 # Videos (assets pesados — subir manualmente al host)
 public/video/
+# Base de datos con datos (no subir a git)
+u873002419_campo.sql

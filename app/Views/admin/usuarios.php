@@ -189,9 +189,9 @@ document.getElementById('formUsuario').addEventListener('submit', function(e) {
     .then(function(res) {
         btn.disabled = false;
         if (res.success) { cerrarModal(); location.reload(); }
-        else alert('Error: ' + (res.message || 'Error desconocido'));
+        else showToast(res.message || 'Error desconocido', 'error');
     })
-    .catch(function() { btn.disabled = false; alert('Error de conexión'); });
+    .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
 });
 
 function eliminarUsuario(id, name) {
@@ -206,9 +206,9 @@ function eliminarUsuario(id, name) {
         if (res.success) {
             var row = document.getElementById('user-row-' + id);
             if (row) row.remove();
-        } else alert('Error: ' + res.message);
+        } else showToast(res.message, 'error');
     })
-    .catch(function() { alert('Error de conexión'); });
+    .catch(function() { showToast('Error de conexión', 'error'); });
 }
 
 document.getElementById('modalUsuario').addEventListener('click', function(e) {

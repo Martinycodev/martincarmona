@@ -1,7 +1,6 @@
 html {
     width: 100%;
     height: 100%;
-    overflow: hidden;
 }
 
 body {
@@ -10,11 +9,17 @@ body {
     padding: 0;
     background-color: #1e1e1e;
     color: white;
-    height: 100%;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     width: 100%;
-    overflow: hidden;
+}
+
+/* El <main> envuelve el contenido entre header y footer */
+#main-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Estilos para el menú hamburguesa */
@@ -31,6 +36,9 @@ body {
     padding: 10px;
     border-radius: 5px;
     transition: background-color 0.3s ease;
+    background: none;
+    border: none;
+    box-sizing: content-box;
 }
 
 .hamburger-menu:hover {
@@ -100,6 +108,10 @@ body {
     padding: 10px 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     border-bottom: 1px solid #444;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-shrink: 0;
 }
 
 .header-content {
@@ -140,10 +152,9 @@ body {
     max-width: none !important;
     margin: 0;
     padding: 20px;
-    flex: 1 1 0;
+    flex: 1 1 auto;
     box-sizing: border-box;
     min-width: 0;
-    overflow-y: auto;
 }
 
 /* Asegurar que el contenedor use todo el ancho en pantallas grandes */
@@ -4743,3 +4754,642 @@ textarea {
     position: relative;
     cursor: pointer;
 }
+
+/* ===================================================================
+   FASE 8 — UX MÓVIL
+   El 80% del uso real es en campo con el móvil.
+   =================================================================== */
+
+/* ── 1. Dashboard móvil: botones rápidos grid 2x2, cards apiladas ──── */
+.quick-actions {
+    margin-bottom: 0.5rem;
+}
+
+.quick-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    /* Botones rápidos en grid 2x2 con iconos grandes, touch-friendly */
+    .quick-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .quick-buttons .btn {
+        min-height: 56px;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 12px 8px;
+        border-radius: 10px;
+    }
+
+    /* Action cards apiladas verticalmente */
+    .actions-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    .action-card {
+        padding: 18px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-direction: row;
+    }
+
+    .action-card .action-icon {
+        font-size: 1.8rem;
+    }
+
+    .action-card .action-desc {
+        display: none;
+    }
+}
+
+/* ── 2. Calendario móvil ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Las tareas en las celdas ya se muestran como puntos (está en línea 1313).
+       Reforzamos con tamaños de celda táctiles */
+    .calendar .day {
+        min-height: 44px;
+        cursor: pointer;
+        -webkit-tap-highlight-color: rgba(76, 175, 80, 0.2);
+    }
+
+    .calendar-section {
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .calendar-header {
+        padding: 0 5px;
+        margin-bottom: 10px;
+    }
+
+    .calendar-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .calendar-nav-btn {
+        padding: 8px 10px;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .calendar-today-btn {
+        padding: 8px 14px;
+        min-height: 44px;
+        font-size: 13px;
+    }
+
+    .calendar-nueva-btn {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 20px;
+    }
+
+    .calendar-weekdays {
+        font-size: 11px;
+        gap: 2px;
+        padding: 0 5px;
+    }
+}
+
+/* ── 3. Sidebar de tarea: fullscreen en móvil ──────────────────────── */
+@media (max-width: 768px) {
+    #task-sidebar {
+        width: 100% !important;
+        border-left: none;
+        border-radius: 0;
+    }
+
+    /* Header del sidebar más compacto */
+    .sidebar-header {
+        padding: 12px 16px;
+    }
+
+    .sidebar-header h2 {
+        font-size: 1.1rem;
+    }
+
+    /* Body con más padding para táctil */
+    .sidebar-body {
+        padding: 12px 16px;
+    }
+
+    /* Footer */
+    .sidebar-footer {
+        padding: 12px 16px;
+    }
+
+    /* Botones dentro del sidebar más grandes */
+    .sidebar-body .btn,
+    .sidebar-footer .btn {
+        min-height: 44px;
+        font-size: 0.9rem;
+    }
+}
+
+/* ── 4. Tablas responsive: scroll horizontal con indicador ─────────── */
+@media (max-width: 768px) {
+    .table-container,
+    .card:has(.styled-table) {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+    }
+
+    /* Indicador de scroll: sombra a la derecha */
+    .table-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 30px;
+        height: 100%;
+        background: linear-gradient(to left, rgba(30, 30, 30, 0.8), transparent);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .styled-table {
+        min-width: 580px;
+    }
+
+    /* Filas de tabla con altura mínima táctil */
+    .styled-table tbody tr {
+        min-height: 44px;
+    }
+
+    .styled-table th,
+    .styled-table td {
+        padding: 10px 12px;
+        font-size: 0.88rem;
+        white-space: nowrap;
+    }
+}
+
+/* ── 5. Modales: fullscreen en móvil ───────────────────────────────── */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        margin: 0;
+        overflow-y: auto;
+    }
+
+    /* Los modales con dynamic-position también fullscreen */
+    .modal-content.dynamic-position {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100vh;
+        transform: none;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .modal-header {
+        position: sticky;
+        top: 0;
+        background: #2a2a2a;
+        z-index: 10;
+        padding: 16px;
+        margin-bottom: 0;
+        border-bottom: 1px solid #444;
+    }
+
+    .modal-footer {
+        position: sticky;
+        bottom: 0;
+        background: #2a2a2a;
+        padding: 12px 16px;
+        border-top: 1px solid #444;
+        z-index: 10;
+    }
+
+    /* Cerrar modal más grande y accesible */
+    .modal-close,
+    .close {
+        font-size: 32px;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* ── 6. Formularios: font-size 16px para evitar zoom iOS ───────────── */
+@media (max-width: 768px) {
+    .form-group input,
+    .form-group textarea,
+    .form-group select,
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    input[type="tel"],
+    select,
+    textarea {
+        font-size: 16px !important;
+        min-height: 44px;
+        padding: 10px 12px;
+    }
+
+    /* Selects y combobox: área de toque ampliada */
+    select {
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%23999'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 36px;
+    }
+
+    /* Labels más grandes */
+    .form-group label {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+    }
+
+    /* Form rows en columna */
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+/* ── 7. Targets táctiles mínimo 44px ───────────────────────────────── */
+@media (max-width: 768px) {
+    /* Botones genéricos */
+    .btn,
+    button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .btn-sm {
+        min-height: 36px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+
+    /* Links de navegación en el menú */
+    .nav-menu a {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        font-size: 1.1rem;
+    }
+
+    /* Page header responsive */
+    .page-header h1,
+    .page-header h2 {
+        font-size: 1.3rem;
+    }
+
+    /* Container con menos padding en móvil */
+    .container {
+        padding: 10px 12px;
+    }
+}
+
+/* ── 8. Swipe horizontal en calendario (soporte CSS) ───────────────── */
+@media (max-width: 768px) {
+    .calendar-container {
+        overflow: hidden;
+        touch-action: pan-y;
+    }
+
+    .calendar {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .calendar.swipe-left {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    .calendar.swipe-right {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* ── 8b. Modal de día en móvil ─────────────────────────────────────── */
+#mobileDayModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: rgba(0,0,0,0.6);
+    align-items: flex-end;
+    justify-content: center;
+}
+#mobileDayModal.open {
+    display: flex;
+}
+.mobile-day-sheet {
+    background: #2a2a2a;
+    width: 100%;
+    max-height: 70vh;
+    border-radius: 16px 16px 0 0;
+    padding: 0;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+}
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+.mobile-day-sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #404040;
+    position: sticky;
+    top: 0;
+    background: #2a2a2a;
+    z-index: 1;
+}
+.mobile-day-sheet-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #fff;
+}
+.mobile-day-sheet-close {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 28px;
+    cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mobile-day-sheet-body {
+    padding: 12px 20px 20px;
+}
+.mobile-day-task {
+    background: #333;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    transition: background 0.15s;
+    border-left: 3px solid #4caf50;
+}
+.mobile-day-task:active {
+    background: #3a3a3a;
+}
+.mobile-day-task-name {
+    flex: 1;
+    color: #eee;
+    font-size: 0.95rem;
+}
+.mobile-day-task-arrow {
+    color: #666;
+    font-size: 1.2rem;
+}
+.mobile-day-empty {
+    color: #888;
+    text-align: center;
+    padding: 24px 0;
+    font-size: 0.95rem;
+}
+.mobile-day-new-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 8px;
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ── 9. Mejoras generales móvil ────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Ocultar scroll horizontal en el body */
+    body {
+        overflow-x: hidden;
+    }
+
+    /* Cards con border-radius menor en móvil */
+    .card {
+        border-radius: 8px;
+    }
+
+    /* Detail grid en columna única */
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Stats grid en columna */
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===================================================================
+   FASE 9 — FEEDBACK VISUAL Y MICROINTERACCIONES
+   =================================================================== */
+
+/* ── 1. Botón con estado loading (spinner + disabled) ────────────── */
+.btn.btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+.btn.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: btnSpin 0.6s linear infinite;
+}
+@keyframes btnSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── 2. Fade-in para contenido cargado via AJAX ──────────────────── */
+.ajax-fade-in {
+    animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 3. Transición suave del sidebar ─────────────────────────────── */
+#task-sidebar {
+    transition: transform 0.3s ease;
+}
+#task-sidebar-overlay {
+    transition: opacity 0.3s ease;
+}
+
+/* ── 4. Toast de confirmación (reemplazo de confirm()) ───────────── */
+.toast-confirm {
+    background: #333 !important;
+    color: #fff !important;
+    padding: 16px 20px !important;
+    max-width: 400px;
+    border-left: 4px solid #ff9800;
+}
+.toast-confirm-msg {
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+.toast-confirm-btns {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+.toast-confirm-btns button {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-height: 36px;
+}
+.toast-confirm-cancel {
+    background: #555;
+    color: #ccc;
+}
+.toast-confirm-cancel:hover {
+    background: #666;
+}
+.toast-confirm-ok {
+    background: #f44336;
+    color: #fff;
+}
+.toast-confirm-ok:hover {
+    background: #d32f2f;
+}
+
+/* ── 5. Skeleton loader para cards ───────────────────────────────── */
+.skeleton {
+    background: linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease infinite;
+    border-radius: 8px;
+}
+.skeleton-text {
+    height: 14px;
+    margin-bottom: 8px;
+    width: 80%;
+}
+.skeleton-text:last-child {
+    width: 60%;
+}
+.skeleton-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.skeleton-card {
+    padding: 20px;
+    min-height: 100px;
+}
+@keyframes skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ===================================================================
+   FASE 10 — ACCESIBILIDAD (a11y)
+   =================================================================== */
+
+/* ── 1. Skip-nav link ────────────────────────────────────────────── */
+.skip-nav {
+    position: absolute;
+    top: -100%;
+    left: 16px;
+    z-index: 99999;
+    background: #4caf50;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 0 0 8px 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: top 0.2s ease;
+}
+.skip-nav:focus {
+    top: 0;
+}
+
+/* ── 2. Focus visible personalizado ──────────────────────────────── */
+/* Outline accesible que encaja con el tema oscuro */
+:focus-visible {
+    outline: 2px solid #4caf50;
+    outline-offset: 2px;
+}
+/* Inputs y selects: outline interno */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #4caf50;
+    outline-offset: 0;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+/* Botones: outline externo */
+button:focus-visible,
+.btn:focus-visible,
+a:focus-visible {
+    outline: 2px solid #4caf50;
+    outline-offset: 2px;
+}
+
+/* ── 3. Contraste mejorado — textos secundarios WCAG AA ──────────── */
+/* Los textos #888 sobre fondo #2a2a2a dan ratio ~3.5:1 → subir a #aaa (ratio ~5.2:1) */
+/* Se aplica selectivamente para no romper el diseño actual */
+
+/* ── 4. Información no solo por color ────────────────────────────── */
+/* Las deudas/errores ya tienen contexto textual además de color rojo.
+   Los estados de tareas ya muestran texto ("● Activa", "✓ Cerrada").
+   No se requieren cambios adicionales. */

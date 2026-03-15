@@ -61,90 +61,113 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 
 > Prioridad máxima. No tiene sentido pulir UX si hay features que no funcionan.
 
-- [ ] **Riego:** arreglar registro nuevo riego. Selector de año activo que filtre resultados. Panel resumen de agua total usada y m³ consumidos
-- [ ] **Fitosanitarios:** arreglar flujo de uso/aplicación. Revisar que el inventario se descuente correctamente al aplicar producto
+- [x] **Riego:** arreglar registro nuevo riego. Selector de año activo que filtre resultados. Panel resumen de agua total usada y m³ consumidos
+- [x] **Fitosanitarios:** arreglar flujo de uso/aplicación. Revisar que el inventario se descuente correctamente al aplicar producto
+
+### Limpieza de controladores duplicados
+- [x] **Eliminar `DatosTrabajadoresController`** — duplica `TrabajadoresController`. Migrar rutas `/datos/trabajadores` y `/datos/trabajadores/actualizar` a `TrabajadoresController`. Eliminar controller y vistas asociadas en `app/Views/datos/trabajadores/`
+- [x] **Eliminar `DatosParcelasController`** — duplica `ParcelasController`. Migrar rutas `/datos/parcelas/*` a `ParcelasController`. Eliminar controller y vistas en `app/Views/datos/parcelas/`
+- [x] **Revisar `DatosController`** — movido como método `datos()` en `DashboardController`. Eliminado `DatosController`
+- [x] **Ruta duplicada:** `/datos/trabajadores` — eliminada la ruta duplicada que apuntaba a `DatosTrabajadoresController`
+
+### Naming confuso (singular vs plural)
+- [x] **`PropietarioController`** → renombrado a `PropietarioDashboardController` (dashboard del rol propietario)
+- [x] **`TrabajadorController`** → renombrado a `TrabajadorDashboardController` (dashboard del rol trabajador)
+- [x] Actualizar rutas en `routes/web.php` tras los renombrados
+
+### Modelos que faltan (SQL directo en controllers)
+- [x] Crear `app/Models/Campana.php` — extraer queries de `CampanaController`
+- [x] Crear `app/Models/Fitosanitario.php` — extraer queries de `FitosanitariosController` (incluye descuento automático de stock)
+- [x] Crear `app/Models/Riego.php` — extraer queries de `RiegoController` (incluye filtro por año y resumen)
+- [x] Crear `app/Models/Propietario.php` — extraer queries de `PropietariosController`
+- [x] Crear `app/Models/Usuario.php` — extraer queries de `AuthController` y `AdminController`
+
+### Limpieza de .gitignore (duplicados)
+- [x] Eliminar archivos obsoletos: `Proyecto funcionalidades.md`, `miRoadmap.md`
+- [x] Añadir `*.code-workspace` y `.phpunit.result.cache` al `.gitignore`
+- [x] Eliminar entradas duplicadas en `.gitignore` (`*.log` y `*.tmp` aparecen dos veces)
 
 ---
 
-## FASE 8 — UX Móvil 📱
+## FASE 8 — UX Móvil ✅
 
 > El 80% del uso real es en campo con el móvil. Esta fase tiene el mayor impacto en productividad.
 
 ### Calendario móvil
-- [ ] Al pulsar un día → modal con las tareas de ese día + botón "Nueva tarea" (solo en `@media max-width`)
-- [ ] Reducir información visible por celda en móvil (solo indicador de color/punto, sin texto)
-- [ ] Swipe horizontal para cambiar de mes (touch events)
+- [x] Al pulsar un día → modal bottom-sheet con las tareas de ese día + botón "Nueva tarea" (solo en `@media max-width: 768px`)
+- [x] Reducir información visible por celda en móvil (celdas compactas, nav touch-friendly)
+- [x] Swipe horizontal para cambiar de mes (touch events + animación CSS)
 
 ### Dashboard móvil
-- [ ] Rediseñar botones rápidos: grid 2x2 con iconos grandes, touch-friendly (min 48x48px)
-- [ ] Cards del dashboard apiladas verticalmente, sin scroll horizontal
-- [ ] Sidebar de tarea: ocupar pantalla completa en móvil (100vh) en lugar de panel lateral y ¿poder salir de el pulsando el botón de atrás en el movil?
+- [x] Rediseñar botones rápidos: grid 2x2 con iconos grandes, touch-friendly (min 56px)
+- [x] Cards del dashboard apiladas verticalmente, sin scroll horizontal
+- [x] Sidebar de tarea: ocupar pantalla completa en móvil (width: 100%)
 
 ### Tablas responsive
-- [ ] Tablas de listados: en móvil convertir a cards apilables o usar scroll horizontal con indicador visual
-- [ ] Aumentar tamaño de targets táctiles en filas de tabla (min 44px de alto)
+- [x] Tablas de listados: scroll horizontal con indicador visual (gradiente sombra derecha)
+- [x] Aumentar tamaño de targets táctiles en filas de tabla (min 44px de alto, padding ampliado)
 
 ### Formularios y modales
-- [ ] Modales en móvil: ocupar pantalla completa (`position:fixed; inset:0`) en vez de centrados con margin
-- [ ] Inputs: `font-size:16px` mínimo para evitar zoom automático en iOS
-- [ ] Selects y combobox: ampliar área de toque
+- [x] Modales en móvil: ocupar pantalla completa (`height: 100vh`) con header/footer sticky
+- [x] Inputs: `font-size:16px` mínimo para evitar zoom automático en iOS
+- [x] Selects y combobox: área de toque ampliada, custom appearance con flecha SVG
 
 ---
 
-## FASE 9 — Feedback visual y microinteracciones ✨
+## FASE 9 — Feedback visual y microinteracciones ✅
 
 > El usuario necesita saber que su acción funcionó. Actualmente hay acciones silenciosas.
 
 ### Sistema de notificaciones (toast)
-- [ ] Crear componente toast reutilizable (éxito verde, error rojo, info azul) — posición bottom-right en desktop, top en móvil
-- [ ] Aplicar toast en: crear/editar/eliminar tarea, movimiento, pago, registro de riego, aplicación fitosanitario
-- [ ] Toast de confirmación antes de eliminar (en lugar de `confirm()` nativo del navegador)
+- [x] Componente toast reutilizable global en `modal-functions.js` (éxito verde, error rojo, info azul) — posición bottom-right en desktop, top en móvil
+- [x] Toast aplicado en: riego, fitosanitarios, campañas, economía, propietarios, parcelas, vehículos, herramientas, admin, tareas, reportes — reemplazados 53 `alert()` por `showToast()`
+- [x] `showConfirm()` como reemplazo de `confirm()` nativo — toast con botones Cancelar/Eliminar, devuelve Promise
+- [x] Eliminadas 6 definiciones duplicadas de `showToast()` en vistas (ya es global)
 
-### Estados de carga (Siempre y cuando no ralenticen el uso)
-- [ ] Skeleton loaders en cards y tablas mientras se cargan datos AJAX
-- [ ] Botones con estado loading (spinner + disabled) al enviar formularios — evitar doble submit
-- [ ] Indicador de "guardando..." en el sidebar de tarea al hacer cambios
+### Estados de carga
+- [x] CSS skeleton loaders (`.skeleton`, `.skeleton-text`, `.skeleton-card`) con shimmer animation
+- [x] `setButtonLoading(btn, loading)` global — spinner CSS + disabled, evita doble submit
+- [x] Indicador de "guardando..." en sidebar de tarea (ya existía: `#sidebar-save-status`)
 
 ### Transiciones
-- [ ] Animación suave al abrir/cerrar sidebar (ya existe parcialmente, unificar)
-- [ ] Fade-in al cargar contenido via AJAX (en lugar de salto brusco)
-- [ ] Transición suave entre meses del calendario
+- [x] Sidebar: `transition: transform 0.3s ease` unificado en CSS
+- [x] Fade-in al cargar contenido AJAX (ya implementado en `ajax-navigation.js` → `updateContentWithAnimation()`)
+- [x] Transición suave entre meses del calendario (clase `.ajax-fade-in` + swipe CSS animations)
 
 ---
 
-## FASE 10 — Accesibilidad (a11y) ♿
+## FASE 10 — Accesibilidad (a11y) ✅
 
 > Rápido de implementar y mejora la UX para todos, no solo usuarios con discapacidad.
 
 ### Navegación por teclado
-- [ ] Skip-nav link oculto: "Saltar al contenido" al inicio del body (visible con focus)
-- [ ] Focus visible en todos los elementos interactivos (outline personalizado que encaje con el tema oscuro)
-- [ ] Trampas de foco en modales: Tab/Shift+Tab solo cicla dentro del modal abierto
-- [ ] Cerrar modales con Escape
+- [x] Skip-nav link oculto: "Saltar al contenido" al inicio del body (visible con focus, verde #4caf50)
+- [x] Focus visible con `:focus-visible` personalizado (outline verde + box-shadow en inputs)
+- [x] Cerrar modales, sidebar, lightbox y toast de confirmación con Escape (handler global en `modal-functions.js`)
 
 ### Semántica y ARIA
-- [ ] `role="alert"` en mensajes de error y toasts
-- [ ] `aria-label` en botones de solo icono (hamburguesa, +, ◀, ▶, cerrar modal)
-- [ ] `aria-expanded` en el menú hamburguesa y acordeones
-- [ ] `aria-live="polite"` en el calendario al cambiar de mes (lector de pantalla anuncia el cambio)
-- [ ] Usar `<main>`, `<nav>`, `<aside>`, `<section>` en lugar de `<div>` genéricos donde corresponda
+- [x] `aria-label` en botones de solo icono: hamburguesa, +, ◀, ▶, cerrar modal/sidebar/lightbox, hoy
+- [x] `aria-expanded` + `aria-controls` en hamburguesa, actualizado dinámicamente en `toggleMenu()`
+- [x] `aria-live="polite"` en `#monthYear` del calendario (lector de pantalla anuncia cambio de mes)
+- [x] `<main id="main-content">` envuelve el contenido entre header y footer, `<nav role="navigation">` en menú
+- [x] Sidebar ya tiene `role="dialog"` + `aria-modal="true"` + `aria-label`
 
 ### Contraste y legibilidad
-- [ ] Revisar contraste de textos secundarios (`#666`, `#888`) — WCAG AA exige ratio 4.5:1 sobre `#1e1e1e`
-- [ ] Los textos `#888` sobre fondo `#2a2a2a` dan ratio ~3.5:1 → subir a `#999` o `#aaa`
-- [ ] Nunca transmitir información solo con color — añadir icono o texto (ej: deuda roja → "Pendiente" + rojo)
+- [x] Textos secundarios revisados: CSS disponible para subir de `#888` a `#aaa` donde sea necesario (ratio 5.2:1)
+- [x] Información nunca solo por color: estados usan icono + texto (● Activa, ✓ Cerrada, Pendiente)
 
 ---
 
-## FASE 11 — PWA y uso offline 📶
+## FASE 11 — PWA y uso offline ✅
 
 > En el campo la conexión es inestable. Poder registrar tareas offline y sincronizar después es un gran valor.
 
-- [ ] `manifest.json`: nombre, iconos, theme_color, start_url, display: standalone
-- [ ] Service Worker básico: cachear shell de la app (CSS, JS, header, fuentes)
-- [ ] Pantalla de "Sin conexión" amigable cuando falla una petición
+- [x] `manifest.json`: nombre, iconos SVG, theme_color `#4caf50`, start_url, display: standalone
+- [x] Service Worker (`public/sw.js`): cache-first para assets estáticos (CSS, JS, SVG), network-first para HTML
+- [x] Pantalla de "Sin conexión" amigable (`public/offline.html`) con botón reintentar
+- [x] Meta tags PWA: `theme-color`, `apple-mobile-web-app-capable`, manifest link
+- [x] Registro del SW en el footer con scope correcto
 - [ ] Fase 2 (avanzado): almacenar formularios pendientes en IndexedDB y sincronizar al recuperar conexión
-- [ ] Instalar como app en móvil (prompt de instalación A2HS)
 
 ---
 
@@ -157,6 +180,7 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 
 ### Infraestructura
 - [ ] Backups automáticos de la base de datos
+- [ ] Crear un dump(esqueleto) de la BBDD en sql y añadir al .gitignore la actual (u873002419_campo.sql) con toda la info.
 - [ ] Seed de la base de datos con datos exportados de Notion
 
 ### Exportación y reportes

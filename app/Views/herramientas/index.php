@@ -70,10 +70,10 @@ document.getElementById('fileInputHerramienta').addEventListener('change', funct
         if (res.success) {
             location.reload();
         } else {
-            alert('Error: ' + res.message);
+            showToast(res.message, 'error');
         }
     })
-    .catch(function () { alert('Error de conexión'); });
+    .catch(function () { showToast('Error de conexión', 'error'); });
 
     this.value = '';
 });

@@ -230,10 +230,10 @@ document.getElementById('formRegistro').addEventListener('submit', function(e) {
             cerrarModalRegistro();
             location.reload();
         } else {
-            alert('Error: ' + (res.message || 'Error desconocido'));
+            showToast(res.message || 'Error desconocido', 'error');
         }
     })
-    .catch(function() { btn.disabled = false; alert('Error de conexión'); });
+    .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
 });
 
 function eliminarRegistro(id) {
@@ -249,10 +249,10 @@ function eliminarRegistro(id) {
             var row = document.getElementById('registro-row-' + id);
             if (row) row.remove();
         } else {
-            alert('Error: ' + res.message);
+            showToast(res.message, 'error');
         }
     })
-    .catch(function() { alert('Error de conexión'); });
+    .catch(function() { showToast('Error de conexión', 'error'); });
 }
 
 // ── Modal cerrar campaña ──────────────────────────────────────────────────
@@ -284,9 +284,9 @@ document.getElementById('formCerrar').addEventListener('submit', function(e) {
     .then(function(res) {
         btn.disabled = false;
         if (res.success) location.reload();
-        else alert('Error: ' + res.message);
+        else showToast(res.message, 'error');
     })
-    .catch(function() { btn.disabled = false; alert('Error de conexión'); });
+    .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
 });
 
 document.getElementById('modalRegistro').addEventListener('click', function(e) { if (e.target === this) cerrarModalRegistro(); });

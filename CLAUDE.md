@@ -221,3 +221,10 @@ Widget en dashboard: Open-Meteo API (gratuita, sin API key)
 | `app/Controllers/EconomiaController.php` | Módulo economía |
 | `app/Controllers/TareasController.php` | Módulo tareas |
 | `app/Controllers/ReportesController.php` | Reportes con datos reales |
+
+
+## 11. Metodología de trabajo
+- NO propongas cambios sin explicar
+- Explica PASO A PASO cada acción
+- Usa comentarios en el código
+- Enseña o educa mientras codificamos

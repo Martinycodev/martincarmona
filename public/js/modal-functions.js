@@ -261,6 +261,46 @@ function confirmDelete(itemName, itemType = 'elemento') {
     return confirm(`¿Estás seguro de que quieres eliminar ${itemType} "${itemName}"?`);
 }
 
+// ── Cerrar modales con Escape ────────────────────────────────────────────
+document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+
+    // Cerrar toast de confirmación si existe
+    var confirmEl = document.getElementById('toast-confirm');
+    if (confirmEl) { confirmEl.remove(); return; }
+
+    // Cerrar modal de día móvil
+    if (typeof cerrarModalDia === 'function') {
+        var mobileDayModal = document.getElementById('mobileDayModal');
+        if (mobileDayModal && mobileDayModal.classList.contains('open')) {
+            cerrarModalDia();
+            return;
+        }
+    }
+
+    // Cerrar el sidebar de tarea si está abierto
+    var sidebar = document.getElementById('task-sidebar');
+    if (sidebar && sidebar.classList.contains('open')) {
+        if (window.taskSidebar) window.taskSidebar.close();
+        return;
+    }
+
+    // Cerrar el modal visible más cercano
+    var modals = document.querySelectorAll('.modal');
+    for (var i = modals.length - 1; i >= 0; i--) {
+        if (modals[i].style.display === 'flex' || modals[i].style.display === 'block') {
+            modals[i].style.display = 'none';
+            return;
+        }
+    }
+
+    // Cerrar lightbox
+    var lightbox = document.getElementById('img-lightbox');
+    if (lightbox && lightbox.classList.contains('open')) {
+        if (typeof closeLightbox === 'function') closeLightbox();
+    }
+});
+
 // Inicializar modales cuando se carga el DOM
 document.addEventListener('DOMContentLoaded', function () {
     initializeGlobalModals();
@@ -296,8 +336,53 @@ function reinitializeModals() {
     initializeGlobalModals();
 }
 
+// ── Toast de confirmación (reemplazo de confirm() nativo) ────────────────
+// Devuelve una Promise que resuelve true/false según el botón pulsado.
+// Uso: showConfirm('¿Eliminar?').then(ok => { if (ok) ... })
+function showConfirm(message, okText, cancelText) {
+    okText     = okText     || 'Eliminar';
+    cancelText = cancelText || 'Cancelar';
+
+    return new Promise(function(resolve) {
+        // Eliminar confirmación previa si existe
+        var prev = document.getElementById('toast-confirm');
+        if (prev) prev.remove();
+
+        var el = document.createElement('div');
+        el.id = 'toast-confirm';
+        el.className = 'toast toast-confirm show';
+        el.innerHTML = '<div class="toast-confirm-msg">' + message + '</div>'
+            + '<div class="toast-confirm-btns">'
+            +   '<button class="toast-confirm-cancel">' + cancelText + '</button>'
+            +   '<button class="toast-confirm-ok">' + okText + '</button>'
+            + '</div>';
+        document.body.appendChild(el);
+
+        el.querySelector('.toast-confirm-ok').addEventListener('click', function() {
+            el.remove(); resolve(true);
+        });
+        el.querySelector('.toast-confirm-cancel').addEventListener('click', function() {
+            el.remove(); resolve(false);
+        });
+    });
+}
+
+// ── Botón con estado loading ─────────────────────────────────────────────
+// Uso: setButtonLoading(btn, true) al enviar, setButtonLoading(btn, false) al terminar
+function setButtonLoading(btn, loading) {
+    if (loading) {
+        btn.classList.add('btn-loading');
+        btn.disabled = true;
+    } else {
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
+    }
+}
+
 // Exportar funciones para uso global
 window.showToast = showToast;
+window.showConfirm = showConfirm;
+window.setButtonLoading = setButtonLoading;
 window.positionModalInViewport = positionModalInViewport;
 window.openModal = openModal;
 window.closeModal = closeModal;

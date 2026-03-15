@@ -135,10 +135,10 @@ function eliminarPendiente(id) {
             var row = document.getElementById('pendiente-row-' + id);
             if (row) row.remove();
         } else {
-            alert('Error: ' + res.message);
+            showToast(res.message, 'error');
         }
     })
-    .catch(function() { alert('Error de conexión'); });
+    .catch(function() { showToast('Error de conexión', 'error'); });
 }
 
 document.getElementById('formCrearPendiente').addEventListener('submit', function(e) {
@@ -161,10 +161,10 @@ document.getElementById('formCrearPendiente').addEventListener('submit', functio
             cerrarFormNueva();
             location.reload();
         } else {
-            alert('Error: ' + res.message);
+            showToast(res.message, 'error');
         }
     })
-    .catch(function() { btn.disabled = false; alert('Error de conexión'); });
+    .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
 });
 
 document.getElementById('formFechar').addEventListener('submit', function(e) {
@@ -188,10 +188,10 @@ document.getElementById('formFechar').addEventListener('submit', function(e) {
             var row = document.getElementById('pendiente-row-' + id);
             if (row) row.remove();
         } else {
-            alert('Error: ' + res.message);
+            showToast(res.message, 'error');
         }
     })
-    .catch(function() { btn.disabled = false; alert('Error de conexión'); });
+    .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
 });
 
 document.getElementById('modalFechar').addEventListener('click', function(e) {

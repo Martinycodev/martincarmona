@@ -111,10 +111,10 @@ document.getElementById('formNuevaCampana').addEventListener('submit', function(
         if (res.success) {
             window.location = basePath + '/campana/detalle?id=' + res.id;
         } else {
-            alert('Error: ' + res.message);
+            showToast(res.message, 'error');
         }
     })
-    .catch(function() { btn.disabled = false; alert('Error de conexión'); });
+    .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
 });
 
 function eliminarCampana(id, nombre) {
@@ -128,9 +128,9 @@ function eliminarCampana(id, nombre) {
     .then(function(r) { return r.json(); })
     .then(function(res) {
         if (res.success) location.reload();
-        else alert('Error: ' + res.message);
+        else showToast(res.message, 'error');
     })
-    .catch(function() { alert('Error de conexión'); });
+    .catch(function() { showToast('Error de conexión', 'error'); });
 }
 
 document.getElementById('modalNueva').addEventListener('click', function(e) {

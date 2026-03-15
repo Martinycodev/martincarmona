@@ -247,9 +247,9 @@ document.getElementById('formInv').addEventListener('submit', function(e) {
     .then(function(res) {
         btn.disabled = false;
         if (res.success) { cerrarModalInv(); location.reload(); }
-        else alert('Error: ' + (res.message || 'Error desconocido'));
+        else showToast(res.message || 'Error desconocido', 'error');
     })
-    .catch(function() { btn.disabled = false; alert('Error de conexión'); });
+    .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
 });
 
 function eliminarInv(id) {
@@ -262,9 +262,9 @@ function eliminarInv(id) {
     .then(function(r) { return r.json(); })
     .then(function(res) {
         if (res.success) { var row = document.getElementById('inv-row-' + id); if (row) row.remove(); }
-        else alert('Error: ' + res.message);
+        else showToast(res.message, 'error');
     })
-    .catch(function() { alert('Error de conexión'); });
+    .catch(function() { showToast('Error de conexión', 'error'); });
 }
 
 // ── Aplicaciones ──────────────────────────────────────────────────────────
@@ -297,9 +297,9 @@ document.getElementById('formApl').addEventListener('submit', function(e) {
     .then(function(res) {
         btn.disabled = false;
         if (res.success) { cerrarModalApl(); location.reload(); }
-        else alert('Error: ' + (res.message || 'Error desconocido'));
+        else showToast(res.message || 'Error desconocido', 'error');
     })
-    .catch(function() { btn.disabled = false; alert('Error de conexión'); });
+    .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
 });
 
 function eliminarApl(id) {
@@ -312,9 +312,9 @@ function eliminarApl(id) {
     .then(function(r) { return r.json(); })
     .then(function(res) {
         if (res.success) { var row = document.getElementById('apl-row-' + id); if (row) row.remove(); }
-        else alert('Error: ' + res.message);
+        else showToast(res.message, 'error');
     })
-    .catch(function() { alert('Error de conexión'); });
+    .catch(function() { showToast('Error de conexión', 'error'); });
 }
 
 document.getElementById('modalInv').addEventListener('click', function(e) { if (e.target === this) cerrarModalInv(); });

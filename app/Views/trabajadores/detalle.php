@@ -298,8 +298,8 @@ async function deleteTrabajador() {
         });
         const json = await res.json();
         if (json.success) { window.location.href = basePathDet + '/datos/trabajadores'; }
-        else { alert('Error: ' + (json.message || 'Error desconocido')); }
-    } catch { alert('Error de conexión'); }
+        else { showToastDet(json.message || 'Error desconocido', 'error'); }
+    } catch { showToastDet('Error de conexión', 'error'); }
 }
 
 function showToastDet(message, type) {
@@ -336,11 +336,11 @@ function subirDocumento(input, tipo) {
         if (res.success) {
             location.reload();
         } else {
-            alert('Error: ' + res.message);
+            showToastDet(res.message, 'error');
         }
     })
     .catch(function(err) {
-        alert('Error de conexión: ' + err.message);
+        showToastDet('Error de conexión', 'error');
     });
 }
 </script>

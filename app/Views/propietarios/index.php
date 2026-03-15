@@ -205,13 +205,7 @@ $title = 'Gestión de Propietarios';
     var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
     var basePath  = window._APP_BASE_PATH || '';
 
-    function showToast(msg, type) {
-        var toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.className = 'toast' + (type === 'error' ? ' toast-error' : ' toast-success');
-        toast.style.display = 'block';
-        setTimeout(function () { toast.style.display = 'none'; }, 3500);
-    }
+    // showToast() ya definida globalmente en modal-functions.js
 
     window.openCreateSection = function () {
         document.getElementById('createSection').style.display = 'block';

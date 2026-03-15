@@ -267,7 +267,7 @@ $title = 'Reportes - MartinCarmona.com';
 document.addEventListener('DOMContentLoaded', function() {
     // Botón de exportar
     document.querySelector('.btn-export')?.addEventListener('click', function() {
-        alert('Funcionalidad de exportación en desarrollo...');
+        showToast('Funcionalidad de exportación en desarrollo...', 'info');
     });
     
     // Botón de actualizar
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Botón de configuración
     document.querySelector('.btn-settings')?.addEventListener('click', function() {
-        alert('Panel de configuración en desarrollo...');
+        showToast('Panel de configuración en desarrollo...', 'info');
     });
     
     // Animación de entrada para las tarjetas
@@ -299,4 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+</div>
 

@@ -408,31 +408,7 @@ $title = 'Gestión de Parcelas';
         }
     }
 
-    // Función para mostrar notificaciones
-    function showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        toast.textContent = message;
-
-        // Limpiar clases previas
-        toast.className = `toast toast-${type}`;
-
-        // Forzar reflow para reiniciar animación
-        toast.offsetHeight;
-
-        // Mostrar con animación de entrada
-        toast.classList.add('show');
-
-        // Ocultar con animación de salida después de 3 segundos
-        setTimeout(() => {
-            toast.classList.remove('show');
-            toast.classList.add('hide');
-
-            // Limpiar clase hide después de la animación
-            setTimeout(() => {
-                toast.classList.remove('hide');
-            }, 400); // Duración de la transición
-        }, 3000);
-    }
+    // showToast() ya definida globalmente en modal-functions.js
 
     // Manejo del formulario de crear
     document.getElementById('createParcelaForm').addEventListener('submit', async function (e) {

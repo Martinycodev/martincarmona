@@ -221,10 +221,10 @@ document.getElementById('formMovimiento').addEventListener('submit', function(e)
                 cerrarModalMovimiento();
                 location.reload();
             } else {
-                alert('Error: ' + (res.message || 'Error desconocido'));
+                showToast(res.message || 'Error desconocido', 'error');
             }
         })
-        .catch(function() { btn.disabled = false; alert('Error de conexión'); });
+        .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
 });
 
 document.getElementById('modalMovimiento').addEventListener('click', function(e) {

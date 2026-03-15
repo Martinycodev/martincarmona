@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 
-class PropietarioController extends BaseController
+class PropietarioDashboardController extends BaseController
 {
     public function __construct()
     {

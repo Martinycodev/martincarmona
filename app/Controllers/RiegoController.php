@@ -3,38 +3,41 @@ namespace App\Controllers;
 
 class RiegoController extends BaseController
 {
+    private $modelo;
+
     public function __construct()
     {
         $this->requireEmpresa();
+        $this->modelo = new \App\Models\Riego();
     }
 
     public function index()
     {
-        $db = \Database::connect();
-        $stmt = $db->prepare("
-            SELECT r.*, p.nombre as parcela_nombre
-            FROM riegos r
-            LEFT JOIN parcelas p ON r.parcela_id = p.id
-            WHERE r.id_user = ?
-            ORDER BY r.fecha_ini DESC
-        ");
-        $stmt->bind_param("i", $_SESSION['user_id']);
-        $stmt->execute();
-        $riegos = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
+        $userId = $_SESSION['user_id'];
 
-        // Cargar parcelas del usuario para el select del formulario
-        $stmt = $db->prepare("SELECT id, nombre FROM parcelas WHERE id_user = ? ORDER BY nombre");
-        $stmt->bind_param("i", $_SESSION['user_id']);
+        // Año seleccionado (GET param o null para todos)
+        $anio = isset($_GET['anio']) && $_GET['anio'] !== '' ? intval($_GET['anio']) : null;
+
+        // Datos del modelo
+        $riegos   = $this->modelo->getAll($userId, $anio);
+        $anios    = $this->modelo->getAniosDisponibles($userId);
+        $resumen  = $this->modelo->getResumen($userId, $anio);
+
+        // Parcelas del usuario que tienen hidrante asignado (para el select del formulario)
+        $db = \Database::connect();
+        $stmt = $db->prepare("SELECT id, nombre, hidrante FROM parcelas WHERE id_user = ? AND hidrante IS NOT NULL AND hidrante > 0 ORDER BY nombre");
+        $stmt->bind_param("i", $userId);
         $stmt->execute();
         $parcelas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
-        $db->close();
 
         $this->render('riego/index', [
-            'riegos'   => $riegos,
-            'parcelas' => $parcelas,
-            'user'     => ['name' => $_SESSION['user_name'] ?? 'Usuario']
+            'riegos'      => $riegos,
+            'parcelas'    => $parcelas,
+            'anios'       => $anios,
+            'anioActual'  => $anio,
+            'resumen'     => $resumen,
+            'user'        => ['name' => $_SESSION['user_name'] ?? 'Usuario']
         ]);
     }
 
@@ -54,37 +57,23 @@ class RiegoController extends BaseController
                 return;
             }
 
-            $parcela_id   = !empty($input['parcela_id']) ? intval($input['parcela_id']) : null;
-            $hidrante     = trim($input['hidrante'] ?? '');
-            $fecha_ini    = !empty($input['fecha_ini']) ? $input['fecha_ini'] : null;
-            $fecha_fin    = !empty($input['fecha_fin']) ? $input['fecha_fin'] : null;
-            $cantidad_ini = isset($input['cantidad_ini']) ? floatval($input['cantidad_ini']) : null;
-            $cantidad_fin = isset($input['cantidad_fin']) ? floatval($input['cantidad_fin']) : null;
-            $dias         = !empty($input['dias']) ? intval($input['dias']) : null;
+            $data = [
+                'parcela_id'   => !empty($input['parcela_id']) ? intval($input['parcela_id']) : null,
+                'hidrante'     => trim($input['hidrante'] ?? ''),
+                'fecha_ini'    => !empty($input['fecha_ini']) ? $input['fecha_ini'] : null,
+                'fecha_fin'    => !empty($input['fecha_fin']) ? $input['fecha_fin'] : null,
+                'cantidad_ini' => isset($input['cantidad_ini']) ? floatval($input['cantidad_ini']) : null,
+                'cantidad_fin' => isset($input['cantidad_fin']) ? floatval($input['cantidad_fin']) : null,
+                'dias'         => !empty($input['dias']) ? intval($input['dias']) : null,
+            ];
 
-            // Calcular total_m3 automáticamente
-            $total_m3 = ($cantidad_fin !== null && $cantidad_ini !== null)
-                        ? round($cantidad_fin - $cantidad_ini, 2)
-                        : null;
+            $id = $this->modelo->create($data, $_SESSION['user_id']);
 
-            $db   = \Database::connect();
-            $stmt = $db->prepare("
-                INSERT INTO riegos (parcela_id, hidrante, fecha_ini, fecha_fin, dias, cantidad_ini, cantidad_fin, total_m3, id_user)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ");
-            $stmt->bind_param("isssidddi",
-                $parcela_id, $hidrante, $fecha_ini, $fecha_fin,
-                $dias, $cantidad_ini, $cantidad_fin, $total_m3,
-                $_SESSION['user_id']
-            );
-
-            if ($stmt->execute()) {
-                echo json_encode(['success' => true, 'id' => $db->insert_id]);
+            if ($id) {
+                echo json_encode(['success' => true, 'id' => $id]);
             } else {
-                echo json_encode(['success' => false, 'message' => 'Error al crear el riego: ' . $stmt->error]);
+                echo json_encode(['success' => false, 'message' => 'Error al crear el riego']);
             }
-            $stmt->close();
-            $db->close();
 
         } catch (\Exception $e) {
             \Core\Logger::app()->error("Error creando riego: " . $e->getMessage());
@@ -102,14 +91,7 @@ class RiegoController extends BaseController
         }
 
         try {
-            $db   = \Database::connect();
-            $stmt = $db->prepare("SELECT * FROM riegos WHERE id = ? AND id_user = ?");
-            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
-            $stmt->execute();
-            $row = $stmt->get_result()->fetch_assoc();
-            $stmt->close();
-            $db->close();
-
+            $row = $this->modelo->find($id, $_SESSION['user_id']);
             if ($row) {
                 echo json_encode(['success' => true, 'riego' => $row]);
             } else {
@@ -137,44 +119,29 @@ class RiegoController extends BaseController
                 return;
             }
 
-            $id           = intval($input['id'] ?? 0);
-            $parcela_id   = !empty($input['parcela_id']) ? intval($input['parcela_id']) : null;
-            $hidrante     = trim($input['hidrante'] ?? '');
-            $fecha_ini    = !empty($input['fecha_ini']) ? $input['fecha_ini'] : null;
-            $fecha_fin    = !empty($input['fecha_fin']) ? $input['fecha_fin'] : null;
-            $cantidad_ini = isset($input['cantidad_ini']) ? floatval($input['cantidad_ini']) : null;
-            $cantidad_fin = isset($input['cantidad_fin']) ? floatval($input['cantidad_fin']) : null;
-            $dias         = !empty($input['dias']) ? intval($input['dias']) : null;
-
+            $id = intval($input['id'] ?? 0);
             if ($id <= 0) {
                 echo json_encode(['success' => false, 'message' => 'ID no válido']);
                 return;
             }
 
-            $total_m3 = ($cantidad_fin !== null && $cantidad_ini !== null)
-                        ? round($cantidad_fin - $cantidad_ini, 2)
-                        : null;
+            $data = [
+                'parcela_id'   => !empty($input['parcela_id']) ? intval($input['parcela_id']) : null,
+                'hidrante'     => trim($input['hidrante'] ?? ''),
+                'fecha_ini'    => !empty($input['fecha_ini']) ? $input['fecha_ini'] : null,
+                'fecha_fin'    => !empty($input['fecha_fin']) ? $input['fecha_fin'] : null,
+                'cantidad_ini' => isset($input['cantidad_ini']) ? floatval($input['cantidad_ini']) : null,
+                'cantidad_fin' => isset($input['cantidad_fin']) ? floatval($input['cantidad_fin']) : null,
+                'dias'         => !empty($input['dias']) ? intval($input['dias']) : null,
+            ];
 
-            $db   = \Database::connect();
-            $stmt = $db->prepare("
-                UPDATE riegos
-                SET parcela_id = ?, hidrante = ?, fecha_ini = ?, fecha_fin = ?,
-                    dias = ?, cantidad_ini = ?, cantidad_fin = ?, total_m3 = ?
-                WHERE id = ? AND id_user = ?
-            ");
-            $stmt->bind_param("isssidddii",
-                $parcela_id, $hidrante, $fecha_ini, $fecha_fin,
-                $dias, $cantidad_ini, $cantidad_fin, $total_m3,
-                $id, $_SESSION['user_id']
-            );
+            $ok = $this->modelo->update($id, $data, $_SESSION['user_id']);
 
-            if ($stmt->execute()) {
+            if ($ok) {
                 echo json_encode(['success' => true, 'message' => 'Riego actualizado correctamente']);
             } else {
-                echo json_encode(['success' => false, 'message' => 'Error al actualizar: ' . $stmt->error]);
+                echo json_encode(['success' => false, 'message' => 'Error al actualizar']);
             }
-            $stmt->close();
-            $db->close();
 
         } catch (\Exception $e) {
             \Core\Logger::app()->error("Error actualizando riego: " . $e->getMessage());
@@ -200,17 +167,13 @@ class RiegoController extends BaseController
                 return;
             }
 
-            $db   = \Database::connect();
-            $stmt = $db->prepare("DELETE FROM riegos WHERE id = ? AND id_user = ?");
-            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+            $ok = $this->modelo->delete($id, $_SESSION['user_id']);
 
-            if ($stmt->execute() && $stmt->affected_rows > 0) {
+            if ($ok) {
                 echo json_encode(['success' => true, 'message' => 'Riego eliminado correctamente']);
             } else {
                 echo json_encode(['success' => false, 'message' => 'No se encontró el riego']);
             }
-            $stmt->close();
-            $db->close();
 
         } catch (\Exception $e) {
             \Core\Logger::app()->error("Error eliminando riego: " . $e->getMessage());

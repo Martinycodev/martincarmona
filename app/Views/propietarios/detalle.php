@@ -214,13 +214,7 @@ function closeEditModal() {
     document.getElementById('editModal').style.display = 'none';
 }
 
-function showToast(msg, type) {
-    var toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.className = 'toast' + (type === 'error' ? ' toast-error' : ' toast-success');
-    toast.style.display = 'block';
-    setTimeout(function () { toast.style.display = 'none'; }, 3500);
-}
+// showToast() ya definida globalmente en modal-functions.js
 
 document.getElementById('editPropietarioForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -262,10 +256,10 @@ function deletePropietario() {
         if (res.success) {
             window.location.href = basePath + '/datos/propietarios';
         } else {
-            alert('Error al eliminar: ' + (res.message || 'Error desconocido'));
+            showToast(res.message || 'Error al eliminar', 'error');
         }
     })
-    .catch(function() { alert('Error de conexión'); });
+    .catch(function() { showToast('Error de conexión', 'error'); });
 }
 
 function subirDni(input, lado) {

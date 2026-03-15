@@ -324,26 +324,14 @@ async function deleteParcela() {
         if (json.success) {
             window.location.href = basePath + '/datos/parcelas';
         } else {
-            alert('Error al eliminar: ' + (json.message || 'Error desconocido'));
+            showToast(json.message || 'Error desconocido', 'error');
         }
     } catch {
-        alert('Error de conexión');
+        showToast('Error de conexión', 'error');
     }
 }
 
-// --- Toast ---
-function showToast(message, type) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.className = 'toast toast-' + (type || 'info');
-    toast.offsetHeight;
-    toast.classList.add('show');
-    setTimeout(function() {
-        toast.classList.remove('show');
-        toast.classList.add('hide');
-        setTimeout(function() { toast.classList.remove('hide'); }, 400);
-    }, 3000);
-}
+// showToast() ya definida globalmente en modal-functions.js
 
 document.getElementById('uploadDocForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -360,11 +348,11 @@ document.getElementById('uploadDocForm').addEventListener('submit', function(e) 
         if (res.success) {
             location.reload();
         } else {
-            alert('Error: ' + res.message);
+            showToast(res.message, 'error');
         }
     })
     .catch(function() {
-        alert('Error de conexión');
+        showToast('Error de conexión', 'error');
     });
 });
 
@@ -384,7 +372,7 @@ function eliminarDocumento(id) {
             var row = document.getElementById('doc-row-' + id);
             if (row) row.remove();
         } else {
-            alert('Error: ' + res.message);
+            showToast(res.message, 'error');
         }
     });
 }

@@ -13,29 +13,37 @@
     <script>window._APP_BASE_PATH = '<?= APP_BASE_PATH ?>';</script>
     <!-- Token CSRF para peticiones AJAX -->
     <?= \Core\CsrfMiddleware::getMetaTag() ?>
+    <!-- PWA: manifest + theme-color -->
+    <link rel="manifest" href="<?= $this->url('/public/manifest.json') ?>">
+    <meta name="theme-color" content="#4caf50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <!-- Estilos -->
     <link rel="stylesheet" href="<?= $this->url('/public/css/styles.css') ?>">
     <link rel="stylesheet" href="<?= $this->url('/public/css/autocomplete.css') ?>">
     
 </head>
 <body>
+    <!-- Skip-nav: visible solo con focus (Tab) para usuarios de teclado -->
+    <a href="#main-content" class="skip-nav">Saltar al contenido</a>
+
     <div class="header">
         <div class="header-content">
             <h1><a href="<?= $this->url('/') ?>" style="text-decoration: none; color:white"> 🌳</a></h1>
             <div class="user-info">
                 <span><strong><?= isset($user) && isset($user['name']) ? htmlspecialchars($user['name']) : 'Invitado' ?></strong></span>
-                <div class="hamburger-menu" onclick="toggleMenu()">
+                <button class="hamburger-menu" onclick="toggleMenu()" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="navMenu">
                     <span></span>
                     <span></span>
                     <span></span>
-                </div>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Menú de navegación -->
     <?php $rolActual = $_SESSION['user_rol'] ?? 'empresa'; ?>
-    <nav class="nav-menu" id="navMenu">
+    <nav class="nav-menu" id="navMenu" role="navigation" aria-label="Menú principal">
         <br>
         <?php if ($rolActual === 'empresa'): ?>
         <a href="<?= $this->url('/datos') ?>">📚 Bases de datos</a>
@@ -61,19 +69,23 @@
         function toggleMenu() {
             const navMenu = document.getElementById('navMenu');
             const overlay = document.getElementById('overlay');
-            const spans = document.querySelectorAll('.hamburger-menu span');
+            const hamburger = document.querySelector('.hamburger-menu');
+            const spans = hamburger.querySelectorAll('span');
 
             navMenu.classList.toggle('active');
+            var isOpen = navMenu.classList.contains('active');
 
-            if (navMenu.classList.contains('active')) {
+            // Actualizar ARIA
+            hamburger.setAttribute('aria-expanded', isOpen);
+            hamburger.setAttribute('aria-label', isOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación');
+
+            if (isOpen) {
                 overlay.style.display = 'block';
-                // Animación del icono hamburguesa a X
                 spans[0].style.transform = 'rotate(45deg) translate(6px, 6px)';
                 spans[1].style.opacity = '0';
                 spans[2].style.transform = 'rotate(-45deg) translate(6px, -6px)';
             } else {
                 overlay.style.display = 'none';
-                // Restaurar icono hamburguesa
                 spans[0].style.transform = 'none';
                 spans[1].style.opacity = '1';
                 spans[2].style.transform = 'none';
@@ -92,4 +104,6 @@
     <!-- Scripts principales -->
     <script src="<?= $this->url('/public/js/modal-functions.js') ?>"></script>
     <script src="<?= $this->url('/public/js/ajax-navigation.js') ?>"></script>
+
+    <main id="main-content">
 

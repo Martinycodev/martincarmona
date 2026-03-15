@@ -21,7 +21,7 @@ $router->post('/perfil/actualizarNombre', 'PerfilController@actualizarNombre');
 
 // Dashboard
 $router->get('/dashboard', 'DashboardController@index');
-$router->get('/datos', 'DatosController@index');
+$router->get('/datos', 'DashboardController@datos');
 
 // Búsqueda avanzada
 $router->get('/busqueda', 'BusquedaController@index');
@@ -70,8 +70,6 @@ $router->post('/trabajadores/subirFoto', 'TrabajadoresController@subirFoto');
 $router->get('/trabajadores/cuadrilla', 'TrabajadoresController@obtenerCuadrilla');
 $router->get('/trabajadores/detalle', 'TrabajadoresController@detalle');
 $router->post('/trabajadores/subirDocumento', 'TrabajadoresController@subirDocumento');
-$router->get('/datos/trabajadores', 'DatosTrabajadoresController@index');
-$router->post('/datos/trabajadores/actualizar', 'DatosTrabajadoresController@actualizar');
 
 // Trabajos
 $router->get('/datos/trabajos', 'TrabajosController@index');
@@ -92,10 +90,6 @@ $router->post('/parcelas/eliminar', 'ParcelasController@eliminar');
 $router->get('/parcelas/detalle', 'ParcelasController@detalle');
 $router->post('/parcelas/subirDocumento', 'ParcelasController@subirDocumento');
 $router->post('/parcelas/eliminarDocumento', 'ParcelasController@eliminarDocumento');
-$router->get('/datos/parcelas', 'DatosParcelasController@index');
-$router->get('/datos/parcelas/detalle', 'DatosParcelasController@getParcelaDetalle');
-$router->post('/datos/parcelas/eliminar', 'DatosParcelasController@eliminar');
-$router->get('/datos/parcelas/buscar', 'DatosParcelasController@buscar');
 
 // Propietarios
 $router->get('/datos/propietarios', 'PropietariosController@index');
@@ -162,9 +156,9 @@ $router->post('/admin/actualizarUsuario', 'AdminController@actualizarUsuario');
 $router->post('/admin/eliminarUsuario', 'AdminController@eliminarUsuario');
 
 // Vistas de rol
-$router->get('/propietario', 'PropietarioController@index');
-$router->get('/propietario/parcela', 'PropietarioController@parcelaDetalle');
-$router->get('/trabajador', 'TrabajadorController@index');
+$router->get('/propietario', 'PropietarioDashboardController@index');
+$router->get('/propietario/parcela', 'PropietarioDashboardController@parcelaDetalle');
+$router->get('/trabajador', 'TrabajadorDashboardController@index');
 
 // Página 404
 $router->notFound(function () {

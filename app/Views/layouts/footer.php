@@ -1,4 +1,4 @@
-</div>
+    </main>
 
     <footer class="site-footer">
         <div class="footer-content">
@@ -8,7 +8,7 @@
 
     <!-- ===== LIGHTBOX DE IMÁGENES ===== -->
     <div id="img-lightbox" onclick="closeLightbox()">
-        <button id="img-lightbox-close" onclick="closeLightbox()" title="Cerrar">✕</button>
+        <button id="img-lightbox-close" onclick="closeLightbox()" title="Cerrar" aria-label="Cerrar visor de imagen">✕</button>
         <img id="img-lightbox-img" src="" alt="" onclick="event.stopPropagation()">
         <button id="img-lightbox-delete" class="btn btn-danger btn-sm" onclick="event.stopPropagation()">
             🗑 Eliminar imagen
@@ -47,6 +47,14 @@
     </div>
 
     <script src="<?= $this->url('/public/js/task-sidebar.js') ?>?v=<?= filemtime(BASE_PATH . '/public/js/task-sidebar.js') ?>"></script>
+
+    <!-- Registro del Service Worker para PWA -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('<?= $this->url('/public/sw.js') ?>', { scope: '<?= APP_BASE_PATH ?>/' })
+            .catch(function() { /* SW no soportado o error silencioso */ });
+    }
+    </script>
 
 </body>
 </html>
