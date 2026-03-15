@@ -14,11 +14,6 @@ $title = 'Datos - MartinCarmona.com';
     </div>
     <br>
 
-    <!-- Widget Meteorología -->
-    <div id="weather-widget" class="weather-widget">
-        <div class="weather-loading">🌤️ Cargando tiempo…</div>
-    </div>
-
     <!-- Calendario Dinámico -->
     <div class="calendar-section">
 
@@ -51,7 +46,10 @@ $title = 'Datos - MartinCarmona.com';
         <div class="calendar" id="calendar"></div>
     </div>
 
-    <!-- Los modales de crear/editar/ver tarea han sido reemplazados por el sidebar (task-sidebar.js) -->
+    <!-- Widget Meteorología -->
+    <div id="weather-widget" class="weather-widget">
+        <div class="weather-loading">🌤️ Cargando tiempo…</div>
+    </div>
 
 
     <div class="actions-grid">
@@ -312,9 +310,9 @@ $title = 'Datos - MartinCarmona.com';
     // ── Widget Meteorología ────────────────────────────────────────────────────
     (function initWeatherWidget() {
         // ── Configuración de la explotación ──────────────────────────────────
-        const LAT  = 37.78;       // Latitud de la explotación
-        const LON  = -3.79;       // Longitud de la explotación
-        const CITY = 'Jaén';      // Nombre del municipio
+        const LAT  = 38.00;       // Latitud de la explotación
+        const LON  = -4.11;       // Longitud de la explotación
+        const CITY = 'Arjonilla';      // Nombre del municipio
         // ─────────────────────────────────────────────────────────────────────
 
         const WMO_ICONS = {

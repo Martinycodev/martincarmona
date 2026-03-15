@@ -3,7 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MartinCarmona.com — Gestión de Olivar</title>
+    <title>Martín Carmona — Gestión de Olivar en Arjonilla, Jaén</title>
+    <meta name="description" content="Plataforma de gestión integral de olivar en Arjonilla, Jaén. Martín Carmona digitaliza parcelas, personal, tareas, economía, campañas de aceituna y fitosanitarios. Sin papeles, sin hojas de cálculo.">
+    <meta name="keywords" content="Martín Carmona, MartinCarmona, gestión del olivar, olivar Jaén, Arjonilla, gestión agrícola, gestión de fincas, aceite de oliva, control de parcelas, tareas agrícolas">
+    <link rel="canonical" href="https://martincarmona.com/">
+    <meta name="author" content="Martín Carmona">
+    <meta name="robots" content="index, follow">
+    <!-- Open Graph (Facebook, WhatsApp, Telegram) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://martincarmona.com/">
+    <meta property="og:title" content="Martín Carmona — Gestión de Olivar en Jaén">
+    <meta property="og:description" content="Plataforma digital para la gestión integral de olivar. Parcelas, personal, tareas, economía y campañas de aceituna centralizados.">
+    <meta property="og:image" content="https://martincarmona.com/public/img/og-cover.jpg">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:site_name" content="MartinCarmona.com">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Martín Carmona — Gestión de Olivar en Jaén">
+    <meta name="twitter:description" content="Plataforma digital para la gestión integral de olivar. Parcelas, personal, tareas, economía y campañas de aceituna.">
+    <meta name="twitter:image" content="https://martincarmona.com/public/img/og-cover.jpg">
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "MartinCarmona.com",
+        "description": "Plataforma de gestión integral de olivar en Arjonilla, Jaén",
+        "url": "https://martincarmona.com",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "author": {
+            "@type": "Person",
+            "name": "Martín Carmona",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Arjonilla",
+                "addressRegion": "Jaén",
+                "addressCountry": "ES"
+            }
+        }
+    }
+    </script>
     <link rel="icon" href="<?= $this->url('/public/img/favicon.svg') ?>" type="image/svg+xml">
     <style>
         /* ===== RESET & BASE ===== */
@@ -534,12 +574,12 @@
     <!-- STATS BAR -->
     <div class="lp-stats">
         <div class="lp-stat">
-            <span class="lp-stat-value">4</span>
+            <span class="lp-stat-value">17</span>
             <span class="lp-stat-label">Módulos integrados</span>
         </div>
         <div class="lp-stat">
-            <span class="lp-stat-value">360°</span>
-            <span class="lp-stat-label">Visión del negocio</span>
+            <span class="lp-stat-value">4</span>
+            <span class="lp-stat-label">Roles de acceso</span>
         </div>
         <div class="lp-stat">
             <span class="lp-stat-value">100%</span>
