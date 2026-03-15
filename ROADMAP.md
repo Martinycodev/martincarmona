@@ -189,18 +189,27 @@ La aplicación está **operativa** con arquitectura MVC funcional, 8 módulos CR
 - [x] arreglar el botón del + del calendario que siempre pone la fecha actual.
 
 
-- Arreglar el estilo de parcelas/detalle
-- La deuda en lugar de poner 60€ pone 59,99.
-- El botón de nueva campaña no funciona y el de eliminar tampoco.
-- Arreglar la vista de propietarios, eliminar la columna de acciones y crear vista individual o de detalle.
-- arreglar modal de Gestion de trabajos.
-- Poner la opción de crear un trabajo desde la creación de tareas por si hay que añadir un trabajo nuevo.
-- Poner un widget en el dashboard con la previsión meteorológica
-- Hacer una sección con enlaces de interés
+- [x]Arreglar el estilo de parcelas/detalle
+- [x]La deuda en lugar de poner 60€ pone 59,99.
+- [x]El botón de nueva campaña no funciona y el de eliminar tampoco.
+- [x]Arreglar la vista de propietarios, eliminar la columna de acciones y crear vista individual o de detalle.
+- [x]arreglar modal de Gestion de trabajos.
+- [x]Poner la opción de crear un trabajo desde la creación de tareas por si hay que añadir un trabajo nuevo.
+- [x]Poner un widget en el dashboard con la previsión meteorológica
+- [x]Hacer una sección con enlaces de interés
 
-- Empezar a diseñar de manera funcional la vista de reportes.
-- el botón del dashboard de añadir movimiento no va.
-- el botón de fitosanitarios para añadir producto no va. por lo tanto las aplicaciones tampoco. Hay que darle una vuelta al funcionamiento de fitosanitarios, para automatizar y que se borren del inventario los productos que ya están aplicados.
+- [x]Empezar a diseñar de manera funcional la vista de reportes.
+- [x]el botón del dashboard de añadir movimiento no va.
+- [x]el botón de fitosanitarios para añadir producto no va. por lo tanto las aplicaciones tampoco. Hay que darle una vuelta al funcionamiento de fitosanitarios, para automatizar y que se borren del inventario los productos que ya están aplicados.
+
+
+- [x] La funcionalidad de crear trabajo(en caso de que falte) en el mismo sidebar
+- [x] Solo pulsar el trabajador y la parcela los selecciona, sin pulsar "+"
+- [x] La deuda de trabajadores en el dashboard de economía.
+- [x] Suma del total de banco y efectivo en dashboard.
+- [ ] Registro de Nuevo Riego no va. Poner un selector de año.
+- [ ] Arreglar el uso de fitosanitarios.
+
 
 
 ---

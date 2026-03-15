@@ -52,8 +52,9 @@ class EconomiaController extends BaseController
      */
     public function index(): void
     {
-        $resumen        = $this->movimiento->getResumen();
-        $deudaPendiente = $this->pagoMensual->getTotalPendiente($this->userId());
+        $resumen         = $this->movimiento->getResumen();
+        $deudaMesActual  = $this->pagoMensual->getDeudaMesActual($this->userId());
+        $deudaPendiente  = array_sum(array_column($deudaMesActual, 'deuda_calculada'));
         $ultimosGastos  = array_slice($this->movimiento->getAllGastos(), 0, 5);
         $ultimosIngresos = array_slice($this->movimiento->getAllIngresos(), 0, 5);
 

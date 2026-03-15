@@ -17,10 +17,13 @@
 .eco-card.banco    { border-left-color:#2196f3; }
 .eco-card.efectivo { border-left-color:#4caf50; }
 .eco-card.deuda    { border-left-color:#f44336; }
+.eco-card.total    { border-left-color:#a8d5ab; background:#1e2e1f; grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
 .eco-card .label { font-size:.8rem; color:#888; margin-bottom:6px; text-transform:uppercase; letter-spacing:.05em; }
 .eco-card .valor { font-size:1.6rem; font-weight:700; color:#fff; }
 .eco-card .valor.neg { color:#f44336; }
 .eco-card .sub   { font-size:.8rem; color:#666; margin-top:4px; }
+.eco-card.total .valor { font-size:2.2rem; }
+.eco-card.total .label { font-size:.85rem; margin-bottom:4px; }
 
 .eco-section-title { font-size:1rem; font-weight:600; color:#ccc; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
 .eco-section-title a { font-size:.8rem; color:#4caf50; text-decoration:none; font-weight:400; }
@@ -56,9 +59,19 @@
     <!-- Cards resumen -->
     <div class="eco-cards">
         <?php
-        $sb = (float)($resumen['saldo_banco']    ?? 0);
-        $se = (float)($resumen['saldo_efectivo'] ?? 0);
+        $sb    = (float)($resumen['saldo_banco']    ?? 0);
+        $se    = (float)($resumen['saldo_efectivo'] ?? 0);
+        $total = $sb + $se;
         ?>
+        <div class="eco-card total">
+            <div>
+                <div class="label">Saldo total</div>
+                <div class="valor <?= $total < 0 ? 'neg' : '' ?>"><?= number_format($total, 2, ',', '.') ?> €</div>
+            </div>
+            <div class="sub" style="text-align:right;">
+                Banco <?= number_format($sb, 2, ',', '.') ?> € + Efectivo <?= number_format($se, 2, ',', '.') ?> €
+            </div>
+        </div>
         <div class="eco-card banco">
             <div class="label">Saldo banco</div>
             <div class="valor <?= $sb < 0 ? 'neg' : '' ?>"><?= number_format($sb, 2, ',', '.') ?> €</div>
@@ -72,7 +85,7 @@
         <div class="eco-card deuda">
             <div class="label">Deuda trabajadores</div>
             <div class="valor neg"><?= number_format($deudaPendiente, 2, ',', '.') ?> €</div>
-            <div class="sub">Pagos mensuales pendientes</div>
+            <div class="sub">Horas trabajadas × precio (mes actual)</div>
         </div>
     </div>
 

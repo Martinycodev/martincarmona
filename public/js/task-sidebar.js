@@ -192,10 +192,7 @@ class TaskSidebar {
             tags.appendChild(this._makeTag(t.nombre, () => this._quitarTrabajador(t.id, tags)));
         });
 
-        const addRow = this._makeAddRow(
-            `cb-sidebar-trab-${this.taskId}`,
-            () => this._agregarTrabajador(tags)
-        );
+        const addRow = this._makeAddRow(`cb-sidebar-trab-${this.taskId}`);
 
         // Botón "Añadir cuadrilla"
         const cuadrillaBtn = document.createElement('button');
@@ -247,10 +244,7 @@ class TaskSidebar {
             tags.appendChild(this._makeTag(p.nombre, () => this._quitarParcela(p.id, tags)));
         });
 
-        const addRow = this._makeAddRow(
-            `cb-sidebar-parc-${this.taskId}`,
-            () => this._agregarParcela(tags)
-        );
+        const addRow = this._makeAddRow(`cb-sidebar-parc-${this.taskId}`);
 
         wrap.appendChild(tags);
         wrap.appendChild(addRow);
@@ -409,18 +403,15 @@ class TaskSidebar {
         return tag;
     }
 
-    _makeAddRow(comboboxId, onAdd) {
-        const row = document.createElement('div');
-        row.className = 'sidebar-inline-add';
-
+    _makeAddRow(comboboxId) {
         const wrap = document.createElement('div');
-        wrap.className = 'combobox-wrap';
+        wrap.className = 'combobox-wrap sidebar-inline-add';
         wrap.id = comboboxId;
 
         const input = document.createElement('input');
         input.type = 'text';
         input.className = 'combobox-input sidebar-inline-select';
-        input.placeholder = '— Buscar...';
+        input.placeholder = '— Buscar y seleccionar...';
         input.autocomplete = 'off';
         input.spellcheck = false;
 
@@ -436,15 +427,7 @@ class TaskSidebar {
         wrap.appendChild(hiddenVal);
         wrap.appendChild(list);
 
-        const btn = document.createElement('button');
-        btn.type      = 'button';
-        btn.className = 'sidebar-btn-add';
-        btn.textContent = '＋';
-        btn.addEventListener('click', onAdd);
-
-        row.appendChild(wrap);
-        row.appendChild(btn);
-        return row;
+        return wrap;
     }
 
     // ─── Carga de opciones (trabajadores, parcelas, trabajos) ─────────────────
@@ -460,11 +443,17 @@ class TaskSidebar {
 
             const { trabajadores = [], parcelas = [], trabajos = [] } = this._opcionesCache;
 
-            initCombobox(`cb-sidebar-trab-${this.taskId}`, trabajadores);
-            initCombobox(`cb-sidebar-parc-${this.taskId}`, parcelas);
+            initCombobox(`cb-sidebar-trab-${this.taskId}`, trabajadores, (opt) => {
+                this._agregarTrabajador(opt.id, opt.nombre);
+            });
+            initCombobox(`cb-sidebar-parc-${this.taskId}`, parcelas, (opt) => {
+                this._agregarParcela(opt.id, opt.nombre);
+            });
             initCombobox(`cb-sidebar-work-${this.taskId}`, trabajos, (opt) => {
                 this._cambiarTrabajo(opt.id, opt.nombre);
                 this._actualizarCoste();
+            }, (nombre) => {
+                this._crearYAsignarTrabajo(nombre);
             });
 
             // Restaurar nombre del trabajo actual en el input si ya tenía ID pre-cargado
@@ -557,9 +546,9 @@ class TaskSidebar {
 
     // ─── Trabajadores ─────────────────────────────────────────────────────────
 
-    async _agregarTrabajador(tagsContainer) {
-        const { id: trabajadorId, text: trabajadorNombre } = _getComboboxSel(`cb-sidebar-trab-${this.taskId}`);
-        if (!trabajadorId) return;
+    async _agregarTrabajador(trabajadorId, trabajadorNombre) {
+        const tagsContainer = document.getElementById(`sidebar-tags-trabajadores-${this.taskId}`);
+        if (!tagsContainer) return;
 
         try {
             const res  = await fetch(buildUrl('/tareas/agregarTrabajador'), {
@@ -639,9 +628,9 @@ class TaskSidebar {
 
     // ─── Parcelas ─────────────────────────────────────────────────────────────
 
-    async _agregarParcela(tagsContainer) {
-        const { id: parcelaId, text: parcelaNombre } = _getComboboxSel(`cb-sidebar-parc-${this.taskId}`);
-        if (!parcelaId) return;
+    async _agregarParcela(parcelaId, parcelaNombre) {
+        const tagsContainer = document.getElementById(`sidebar-tags-parcelas-${this.taskId}`);
+        if (!tagsContainer) return;
 
         try {
             const res  = await fetch(buildUrl('/tareas/agregarParcela'), {
@@ -737,6 +726,56 @@ class TaskSidebar {
         }
     }
 
+    async _crearYAsignarTrabajo(nombre) {
+        try {
+            const res  = await fetch(buildUrl('/trabajos/crear'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ nombre })
+            });
+            const data = await res.json();
+
+            if (!data.success) {
+                showToast(data.message || 'Error al crear el trabajo', 'error');
+                return;
+            }
+
+            const nuevoTrabajo = { id: data.id, nombre, precio_hora: null };
+
+            // Actualizar cache para que el combobox tenga la nueva opción
+            if (this._opcionesCache) {
+                this._opcionesCache.trabajos = [...(this._opcionesCache.trabajos || []), nuevoTrabajo];
+            }
+
+            // Re-inicializar combobox con la lista actualizada y pre-seleccionar el nuevo trabajo
+            const cbId = `cb-sidebar-work-${this.taskId}`;
+            initCombobox(cbId, this._opcionesCache.trabajos, (opt) => {
+                this._cambiarTrabajo(opt.id, opt.nombre);
+                this._actualizarCoste();
+            }, (n) => {
+                this._crearYAsignarTrabajo(n);
+            });
+
+            // Pre-seleccionar en el input
+            const cbWrap = document.getElementById(cbId);
+            if (cbWrap) {
+                const inp = cbWrap.querySelector('.combobox-input');
+                const val = cbWrap.querySelector('.combobox-val');
+                if (inp) inp.value = nombre;
+                if (val) val.value = data.id;
+            }
+
+            await this._cambiarTrabajo(data.id, nombre);
+            this._actualizarCoste();
+            showToast(`Trabajo "${nombre}" creado y asignado`, 'success');
+        } catch (e) {
+            showToast('Error de conexión', 'error');
+        }
+    }
+
     // ─── Eliminar tarea ───────────────────────────────────────────────────────
 
     async _eliminarTarea() {
@@ -826,7 +865,7 @@ window.taskSidebar = new TaskSidebar();
  * @param {Array}    options   - Array de {id, nombre}
  * @param {Function} [onSelect] - Callback opcional al seleccionar un item
  */
-function initCombobox(wrapperId, options, onSelect = null) {
+function initCombobox(wrapperId, options, onSelect = null, onCreate = null) {
     const wrap = document.getElementById(wrapperId);
     if (!wrap) return;
 
@@ -856,14 +895,6 @@ function initCombobox(wrapperId, options, onSelect = null) {
             ? options.filter(o => o.nombre.toLowerCase().includes(q))
             : options;
 
-        if (!filtered.length) {
-            const li = document.createElement('li');
-            li.className = 'combobox-no-results';
-            li.textContent = 'Sin resultados';
-            list.appendChild(li);
-            return;
-        }
-
         filtered.forEach(opt => {
             const li = document.createElement('li');
             li.className = 'combobox-item';
@@ -887,6 +918,29 @@ function initCombobox(wrapperId, options, onSelect = null) {
             });
             list.appendChild(li);
         });
+
+        // Opción "Crear" si hay texto y no hay coincidencia exacta
+        if (onCreate && q) {
+            const exactMatch = options.some(o => o.nombre.toLowerCase() === q);
+            if (!exactMatch) {
+                const li = document.createElement('li');
+                li.className = 'combobox-create-item';
+                li.innerHTML = `+ Crear "<strong>${filter.trim()}</strong>"`;
+                li.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    closeList();
+                    onCreate(filter.trim());
+                });
+                list.appendChild(li);
+            }
+        }
+
+        if (!list.children.length) {
+            const li = document.createElement('li');
+            li.className = 'combobox-no-results';
+            li.textContent = 'Sin resultados';
+            list.appendChild(li);
+        }
     }
 
     function selectItem(opt) {
