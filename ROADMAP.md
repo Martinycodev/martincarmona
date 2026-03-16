@@ -181,6 +181,10 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 - [x] En la vista de trabajador no se actualiza la deuda pendiente
 - [x] En la vista de riego el select de filtro por años no funciona.
 
+- [ ] Todos los trabajos valen 0 hasta que se editen. no quiero que se pueda quedar null
+- [ ] Los trabajadores pasan a ser inactivos cada dia 1 de mes y si hacen alguna tarea pasan a activos hasta que se acabe el mes.
+- [ ] En el dashboard la opción de crear tarea pendiente.
+
 ### Infraestructura
 - [x] Backups automáticos de la base de datos
 - [x] Seed de la base de datos con datos exportados de Notion (Exportar csv de Notion y traducirlo a SQL respetando las conexiones) queremos añadirlo para estadísticas y comparar con datos del año anterior pero que no se refleje en la economía actual. Que aparezca como todas las tareas completadas y pagadas o que no generen ningún gasto ni deuda.

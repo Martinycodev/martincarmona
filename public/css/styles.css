@@ -446,123 +446,7 @@ body {
     }
 }
 
-/* ── Widget Meteorología ─────────────────────────────────────────────────── */
-.weather-widget {
-    background: #2a2a2a;
-    border: 1px solid #444;
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    min-height: 64px;
-}
 
-.weather-loading, .weather-error {
-    color: #888;
-    font-size: .875rem;
-}
-
-/* Sección actual */
-.weather-current {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 160px;
-}
-
-.wc-icon { font-size: 2.4rem; line-height: 1; }
-
-.wc-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-}
-
-.wc-temp {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #fff;
-    line-height: 1;
-}
-
-.wc-desc {
-    font-size: .78rem;
-    color: #aaa;
-}
-
-.wc-city {
-    font-size: .72rem;
-    color: #666;
-}
-
-/* Separador vertical */
-.weather-current::after {
-    content: '';
-    display: block;
-    width: 1px;
-    height: 48px;
-    background: #444;
-    margin-left: 8px;
-}
-
-/* Pronóstico 7 días */
-.weather-forecast {
-    display: flex;
-    gap: 4px;
-    flex: 1;
-    flex-wrap: wrap;
-}
-
-.weather-day {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    padding: 6px 8px;
-    border-radius: 8px;
-    min-width: 48px;
-    transition: background .15s;
-}
-
-.weather-day:hover { background: #333; }
-
-.wd-label {
-    font-size: .72rem;
-    color: #888;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .03em;
-}
-
-.wd-icon { font-size: 1.3rem; line-height: 1; }
-
-.wd-max {
-    font-size: .82rem;
-    font-weight: 700;
-    color: #ffcc80;
-}
-
-.wd-min {
-    font-size: .75rem;
-    color: #90caf9;
-}
-
-.wd-prec {
-    font-size: .68rem;
-    color: #64b5f6;
-    min-height: .9rem;
-}
-
-@media (max-width: 600px) {
-    .weather-widget { gap: 12px; }
-    .weather-day { min-width: 40px; padding: 4px 5px; }
-    .wc-icon { font-size: 2rem; }
-    .wc-temp { font-size: 1.4rem; }
-}
-/* ─────────────────────────────────────────────────────────────────────────── */
 
 /* Estilos del Calendario */
 .calendar-section {
@@ -5779,5 +5663,4 @@ a:focus-visible {
 
 .toggle-switch input:checked + .toggle-slider::before {
     transform: translateX(20px);
-}
 }
