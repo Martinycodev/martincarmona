@@ -118,7 +118,7 @@ $title = 'Gestión de Trabajadores';
                     ?>
                     <tr data-id="<?= $trabajador['id'] ?>"
                         onclick="window.location.href='<?= $this->url('/trabajadores/detalle?id=' . $trabajador['id']) ?>'"
-                        style="cursor:pointer;">
+                        class="clickable-row">
                         <td>
                             <?php if ($fotoSrc): ?>
                                 <img src="<?= htmlspecialchars($fotoSrc) ?>" alt="Foto" class="worker-avatar">

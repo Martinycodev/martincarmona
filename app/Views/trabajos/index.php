@@ -49,26 +49,19 @@ $title = 'Gestión de Trabajos';
             <table class="styled-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Nombre</th>
                         <th>Precio/Hora</th>
-                        <th class="actions-column">Acciones</th>
+                        <th>Descripción</th>
                     </tr>
                 </thead>
                 <tbody id="trabajosTableBody">
                     <?php foreach ($trabajos as $trabajo): ?>
-                    <tr data-id="<?= $trabajo['id'] ?>">
-                        <td><?= htmlspecialchars($trabajo['id'] ?? '-') ?></td>
+                    <tr data-id="<?= $trabajo['id'] ?>"
+                        class="clickable-row"
+                        onclick="editJob(<?= $trabajo['id'] ?>, this)">
                         <td><?= htmlspecialchars($trabajo['nombre'] ?? '-') ?></td>
                         <td><?= isset($trabajo['precio_hora']) ? '€' . number_format($trabajo['precio_hora'], 2) : '-' ?></td>
-                        <td class="actions">
-                            <button class="btn-icon btn-edit" onclick="editJob(<?= $trabajo['id'] ?>, this)" title="Editar">
-                                ✏️
-                            </button>
-                            <button class="btn-icon btn-delete" onclick="deleteJob(<?= $trabajo['id'] ?>, '<?= htmlspecialchars($trabajo['nombre']) ?>')" title="Eliminar">
-                                🗑️
-                            </button>
-                        </td>
+                        <td><?= htmlspecialchars($trabajo['descripcion'] ?? '') ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -103,6 +96,10 @@ $title = 'Gestión de Trabajos';
                     </div>
 
                     <div class="modal-buttons">
+                        <button type="button" class="btn-modal btn-danger-outline"
+                                onclick="deleteJob(document.getElementById('editId').value, document.getElementById('editNombre').value)">
+                            Eliminar
+                        </button>
                         <button type="button" class="btn-modal btn-secondary" onclick="closeEditModal()">Cancelar</button>
                         <button type="submit" class="btn-modal btn-primary">Guardar Cambios</button>
                     </div>

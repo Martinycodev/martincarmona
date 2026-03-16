@@ -133,7 +133,7 @@ $title = 'Gestión de Parcelas';
                     <?php foreach ($parcelas as $parcela): ?>
                         <tr data-id="<?= $parcela['id'] ?>"
                             onclick="window.location.href='<?= $this->url('/parcelas/detalle?id=' . $parcela['id']) ?>'"
-                            style="cursor:pointer;">
+                            class="clickable-row">
                             <td><?= htmlspecialchars($parcela['nombre'] ?? '-') ?></td>
                             <td><?= htmlspecialchars($parcela['ubicacion'] ?? '—') ?></td>
                             <td><?= htmlspecialchars(

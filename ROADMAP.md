@@ -174,10 +174,9 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 ## Pendiente — Backlog suelto
 
 ### Funcionalidades
-- [ ] Tareas pendientes en dashboard: panel dragable al calendario. Casilla "sin fecha" debajo del calendario para arrastrar tareas
-- [ ] Recordatorios/notificaciones push en perfil: cerrar cuentas del mes, ITV vehículos, otros. En el perfil poder activar y desactivar notificaciones. Abriendo la posibilidad de crear notificaciones personalizadas
+- [x] Tareas pendientes en dashboard: panel dragable al calendario. Casilla "sin fecha" debajo del calendario para arrastrar tareas
+- [x] Recordatorios/notificaciones push en perfil: cerrar cuentas del mes, ITV vehículos, otros. En el perfil poder activar y desactivar notificaciones. Abriendo la posibilidad de crear notificaciones personalizadas
 
-- [ ] Video de fondo en hero de la homepage con fallback si mala conexión
 - [x] La cuenta del valor de la tarea en el sidebar tiene que tener en cuenta el número de empleados.
 - [x] En la vista de trabajador no se actualiza la deuda pendiente
 - [x] En la vista de riego el select de filtro por años no funciona.

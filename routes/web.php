@@ -120,6 +120,10 @@ $router->post('/herramientas/subirInstrucciones', 'HerramientasController@subirI
 
 // Proveedores
 $router->get('/datos/proveedores', 'ProveedoresController@index');
+$router->get('/proveedores/obtener', 'ProveedoresController@obtener');
+$router->post('/proveedores/crear', 'ProveedoresController@crear');
+$router->post('/proveedores/actualizar', 'ProveedoresController@actualizar');
+$router->post('/proveedores/eliminar', 'ProveedoresController@eliminar');
 
 // Riego
 $router->get('/datos/riego', 'RiegoController@index');

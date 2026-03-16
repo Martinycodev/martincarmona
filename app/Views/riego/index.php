@@ -54,12 +54,13 @@
                     <th>Contador ini</th>
                     <th>Contador fin</th>
                     <th>Total m³</th>
-                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($riegos as $r): ?>
-                <tr id="riego-row-<?= intval($r['id']) ?>">
+                <tr id="riego-row-<?= intval($r['id']) ?>"
+                    class="clickable-row"
+                    onclick="editarRiego(<?= intval($r['id']) ?>)">
                     <td><?= htmlspecialchars($r['fecha_ini'] ?? '—') ?></td>
                     <td><?= htmlspecialchars($r['fecha_fin'] ?? '—') ?></td>
                     <td><?= $r['dias'] !== null ? intval($r['dias']) : '—' ?></td>
@@ -68,14 +69,10 @@
                     <td><?= $r['cantidad_ini'] !== null ? number_format($r['cantidad_ini'], 1) : '—' ?></td>
                     <td><?= $r['cantidad_fin'] !== null ? number_format($r['cantidad_fin'], 1) : '—' ?></td>
                     <td><strong><?= $r['total_m3'] !== null ? number_format($r['total_m3'], 1) . ' m³' : '—' ?></strong></td>
-                    <td>
-                        <button class="btn btn-secondary btn-sm" onclick="editarRiego(<?= intval($r['id']) ?>)">Editar</button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarRiego(<?= intval($r['id']) ?>)">Eliminar</button>
-                    </td>
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($riegos)): ?>
-                <tr><td colspan="9" class="text-center">No hay registros de riego<?= $anioActual ? ' para ' . $anioActual : '' ?></td></tr>
+                <tr><td colspan="8" class="text-center">No hay registros de riego<?= $anioActual ? ' para ' . $anioActual : '' ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -141,6 +138,11 @@
             </div>
 
             <div class="modal-footer">
+                <button type="button" class="btn btn-danger-outline" id="btnEliminarRiego"
+                        style="display:none; margin-right:auto;"
+                        onclick="eliminarRiego(document.getElementById('riego_id').value)">
+                    Eliminar
+                </button>
                 <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
                 <button type="submit" class="btn btn-primary" id="btnGuardarRiego">Guardar</button>
             </div>
@@ -196,6 +198,7 @@ function abrirModalNuevo() {
     document.getElementById('formRiego').reset();
     document.getElementById('riego_id').value = '';
     document.getElementById('totalM3Display').textContent = '—';
+    document.getElementById('btnEliminarRiego').style.display = 'none';
     document.getElementById('modalRiego').style.display = 'flex';
 }
 
@@ -244,6 +247,7 @@ function editarRiego(id) {
         document.getElementById('cantidad_ini').value = r.cantidad_ini || '';
         document.getElementById('cantidad_fin').value = r.cantidad_fin || '';
         calcularM3();
+        document.getElementById('btnEliminarRiego').style.display = 'inline-block';
         document.getElementById('modalRiego').style.display = 'flex';
     })
     .catch(function() { showToast('Error de conexión', 'error'); });

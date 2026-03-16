@@ -23,20 +23,20 @@
                     <td><?= htmlspecialchars($v['matricula'] ?? '—') ?></td>
                     <td><?= htmlspecialchars($v['pasa_itv'] ?? '—') ?></td>
                     <td>
-                        <?php if (!empty($v['ficha_tecnica'])): ?>
-                            <a href="<?= $this->url($v['ficha_tecnica']) ?>" target="_blank" class="btn btn-secondary btn-sm">📄 Ver</a>
-                        <?php endif; ?>
-                        <button class="btn btn-sm" onclick="subirDoc(<?= intval($v['id']) ?>, 'ficha_tecnica')">
-                            📤 <?= empty($v['ficha_tecnica']) ? 'Subir' : 'Reemplazar' ?>
-                        </button>
+                        <div style="display:flex;gap:4px;justify-content:center;">
+                            <?php if (!empty($v['ficha_tecnica'])): ?>
+                                <a href="<?= $this->url($v['ficha_tecnica']) ?>" target="_blank" class="btn-icon" title="Ver ficha técnica">📄</a>
+                            <?php endif; ?>
+                            <button class="btn-icon" onclick="subirDoc(<?= intval($v['id']) ?>, 'ficha_tecnica')" title="<?= empty($v['ficha_tecnica']) ? 'Subir ficha técnica' : 'Reemplazar ficha técnica' ?>">📤</button>
+                        </div>
                     </td>
                     <td>
-                        <?php if (!empty($v['poliza_seguro'])): ?>
-                            <a href="<?= $this->url($v['poliza_seguro']) ?>" target="_blank" class="btn btn-secondary btn-sm">📄 Ver</a>
-                        <?php endif; ?>
-                        <button class="btn btn-sm" onclick="subirDoc(<?= intval($v['id']) ?>, 'poliza_seguro')">
-                            📤 <?= empty($v['poliza_seguro']) ? 'Subir' : 'Reemplazar' ?>
-                        </button>
+                        <div style="display:flex;gap:4px;justify-content:center;">
+                            <?php if (!empty($v['poliza_seguro'])): ?>
+                                <a href="<?= $this->url($v['poliza_seguro']) ?>" target="_blank" class="btn-icon" title="Ver póliza de seguro">📄</a>
+                            <?php endif; ?>
+                            <button class="btn-icon" onclick="subirDoc(<?= intval($v['id']) ?>, 'poliza_seguro')" title="<?= empty($v['poliza_seguro']) ? 'Subir póliza' : 'Reemplazar póliza' ?>">📤</button>
+                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>

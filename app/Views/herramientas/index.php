@@ -22,12 +22,12 @@
                     <td><?= htmlspecialchars($h['cantidad'] ?? '—') ?></td>
                     <td><?= isset($h['precio']) ? number_format($h['precio'], 2) . ' €' : '—' ?></td>
                     <td>
-                        <?php if (!empty($h['instrucciones_pdf'])): ?>
-                            <a href="<?= $this->url($h['instrucciones_pdf']) ?>" target="_blank" class="btn btn-secondary btn-sm">📄 Ver PDF</a>
-                        <?php endif; ?>
-                        <button class="btn btn-sm" onclick="subirInstrucciones(<?= intval($h['id']) ?>)">
-                            📤 <?= empty($h['instrucciones_pdf']) ? 'Subir' : 'Reemplazar' ?>
-                        </button>
+                        <div style="display:flex;gap:4px;justify-content:center;">
+                            <?php if (!empty($h['instrucciones_pdf'])): ?>
+                                <a href="<?= $this->url($h['instrucciones_pdf']) ?>" target="_blank" class="btn-icon" title="Ver PDF de instrucciones">📄</a>
+                            <?php endif; ?>
+                            <button class="btn-icon" onclick="subirInstrucciones(<?= intval($h['id']) ?>)" title="<?= empty($h['instrucciones_pdf']) ? 'Subir instrucciones' : 'Reemplazar instrucciones' ?>">📤</button>
+                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>

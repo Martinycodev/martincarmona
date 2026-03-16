@@ -65,21 +65,18 @@ $title = 'Gestión de Propietarios';
                     <th>DNI</th>
                     <th>Teléfono</th>
                     <th>Email</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody id="propietariosTableBody">
                 <?php foreach ($propietarios as $propietario): ?>
-                <tr data-id="<?= $propietario['id'] ?>">
+                <tr data-id="<?= $propietario['id'] ?>"
+                    class="clickable-row"
+                    onclick="window.location.href='<?= $this->url('/propietarios/detalle?id=' . $propietario['id']) ?>'">
                     <td><?= htmlspecialchars($propietario['nombre'] ?? '-') ?></td>
                     <td><?= htmlspecialchars($propietario['apellidos'] ?? '—') ?></td>
                     <td><?= htmlspecialchars($propietario['dni'] ?? '—') ?></td>
                     <td><?= htmlspecialchars($propietario['telefono'] ?? '—') ?></td>
                     <td><?= htmlspecialchars($propietario['email'] ?? '—') ?></td>
-                    <td class="actions">
-                        <a href="<?= $this->url('/propietarios/detalle?id=' . $propietario['id']) ?>"
-                           class="btn-icon btn-edit" title="Ver ficha">Ver →</a>
-                    </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
