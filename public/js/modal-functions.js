@@ -11,6 +11,9 @@
 // =====================================================================
 (function () {
     const _fetch = window.fetch;
+    // Guardar referencia al fetch original para que offline-queue.js
+    // pueda reenviar sin pasar por el interceptor
+    window._originalFetch = _fetch;
 
     window.fetch = function (url, options = {}) {
         const method = (options.method || 'GET').toUpperCase();
@@ -33,7 +36,29 @@
             }
         }
 
-        return _fetch.call(this, url, options);
+        return _fetch.call(this, url, options).catch(function(error) {
+            // Si es una petición de escritura y falló por red → encolar offline
+            if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)
+                && typeof OfflineQueue !== 'undefined') {
+                return OfflineQueue.enqueue(url, options).then(function() {
+                    if (typeof showToast === 'function') {
+                        showToast('Sin conexión — guardado para enviar después', 'warning');
+                    }
+                    // Devolver una Response simulada para que el código llamante
+                    // no lance error no controlado
+                    return new Response(JSON.stringify({
+                        success: true,
+                        offline: true,
+                        message: 'Guardado offline, se enviará al reconectar'
+                    }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                });
+            }
+            // Si es GET o no hay OfflineQueue, propagar el error
+            throw error;
+        });
     };
 })();
 

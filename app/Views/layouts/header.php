@@ -32,6 +32,7 @@
             <h1><a href="<?= $this->url('/') ?>" style="text-decoration: none; color:white"> 🌳</a></h1>
             <div class="user-info">
                 <span><strong><?= isset($user) && isset($user['name']) ? htmlspecialchars($user['name']) : 'Invitado' ?></strong></span>
+                <span id="offline-queue-badge" class="offline-queue-badge" style="display:none" title="Formularios pendientes de enviar">0</span>
                 <button class="hamburger-menu" onclick="toggleMenu()" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="navMenu">
                     <span></span>
                     <span></span>
@@ -102,6 +103,7 @@
     </script>
 
     <!-- Scripts principales -->
+    <script src="<?= $this->url('/public/js/offline-queue.js') ?>"></script>
     <script src="<?= $this->url('/public/js/modal-functions.js') ?>"></script>
     <script src="<?= $this->url('/public/js/ajax-navigation.js') ?>"></script>
 

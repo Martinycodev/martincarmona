@@ -167,7 +167,7 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 - [x] Pantalla de "Sin conexión" amigable (`public/offline.html`) con botón reintentar
 - [x] Meta tags PWA: `theme-color`, `apple-mobile-web-app-capable`, manifest link
 - [x] Registro del SW en el footer con scope correcto
-- [ ] Fase 2 (avanzado): almacenar formularios pendientes en IndexedDB y sincronizar al recuperar conexión
+- [x] Fase 2 (avanzado): almacenar formularios pendientes en IndexedDB y sincronizar al recuperar conexión
 
 ---
 
@@ -177,11 +177,13 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 - [ ] Tareas pendientes en dashboard: panel dragable al calendario. Casilla "sin fecha" debajo del calendario para arrastrar tareas
 - [ ] Recordatorios/notificaciones push en perfil: cerrar cuentas del mes, ITV vehículos, otros
 - [ ] Video de fondo en hero de la homepage (autoplay, baja opacidad, fallback si mala conexión)
+- [ ] La cuenta del valor de la tarea en el sidebar tiene que tener en cuenta el número de empleados.
+- [ ] En la vista de trabajador no se actualiza la deuda pendiente
+- [ ] En la vista de riego el select no hace de filtro por años.
 
 ### Infraestructura
-- [ ] Backups automáticos de la base de datos
-- [ ] Crear un dump(esqueleto) de la BBDD en sql y añadir al .gitignore la actual (u873002419_campo.sql) con toda la info.
-- [ ] Seed de la base de datos con datos exportados de Notion
+- [x] Backups automáticos de la base de datos
+- [x] Seed de la base de datos con datos exportados de Notion (Exportar csv de Notion y traducirlo a SQL respetando las conexiones) queremos añadirlo para estadísticas y comparar con datos del año anterior pero que no se refleje en la economía actual. Que aparezca como todas las tareas completadas y pagadas o que no generen ningún gasto ni deuda.
 
 ### Exportación y reportes
 - [ ] Exportar CSV/Excel: tareas, gastos, cuenta mensual por trabajador

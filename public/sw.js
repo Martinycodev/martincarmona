@@ -4,7 +4,7 @@
  * Muestra pantalla offline si no hay conexión.
  */
 
-const CACHE_NAME = 'martincarmona-v1';
+const CACHE_NAME = 'martincarmona-v2';
 const BASE = '/martincarmona';
 
 // Archivos del shell de la aplicación que se cachean al instalar
@@ -12,6 +12,7 @@ const SHELL_FILES = [
     BASE + '/public/css/styles.css',
     BASE + '/public/css/autocomplete.css',
     BASE + '/public/js/modal-functions.js',
+    BASE + '/public/js/offline-queue.js',
     BASE + '/public/js/ajax-navigation.js',
     BASE + '/public/js/task-sidebar.js',
     BASE + '/public/img/favicon.svg',

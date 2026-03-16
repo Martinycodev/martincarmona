@@ -171,10 +171,18 @@ $title = 'Datos - MartinCarmona.com';
                     <button class="add-task-btn" onclick="window.taskSidebar && window.taskSidebar.open(null, '${dateStr}')" title="Nueva tarea">+</button>`;
 
             if (tasksData[dateStr]) {
-                tasksData[dateStr].forEach((tarea, index) => {
-                    const displayText = tarea.trabajo_nombre || tarea.titulo || 'Sin título';
-                    dayHTML += `<div class="task" draggable="true" data-id="${tarea.id}" data-fecha="${dateStr}" onclick="window.taskSidebar && window.taskSidebar.open(${tarea.id})" title="${tarea.descripcion || ''}">${displayText.length > 20 ? displayText.substring(0, 20) + '...' : displayText}</div>`;
-                });
+                const tareas = tasksData[dateStr];
+                const mobile = window.innerWidth <= 768;
+
+                if (mobile && tareas.length > 2) {
+                    // Móvil con +2 tareas: un punto verde + "x3"
+                    dayHTML += `<div class="task-dots"><span class="task"></span><span class="task-count">x${tareas.length}</span></div>`;
+                } else {
+                    tareas.forEach((tarea) => {
+                        const displayText = tarea.trabajo_nombre || tarea.titulo || 'Sin título';
+                        dayHTML += `<div class="task" draggable="true" data-id="${tarea.id}" data-fecha="${dateStr}" onclick="window.taskSidebar && window.taskSidebar.open(${tarea.id})" title="${tarea.descripcion || ''}">${displayText.length > 20 ? displayText.substring(0, 20) + '...' : displayText}</div>`;
+                    });
+                }
             }
 
             dayHTML += `</div>`;
@@ -380,11 +388,8 @@ $title = 'Datos - MartinCarmona.com';
         calendar.addEventListener('click', function(e) {
             if (!isMobile()) return;
 
-            // Si el click fue directamente en un .task, dejar que el onclick nativo actúe
-            if (e.target.closest('.task')) return;
-            // Si fue en el botón "+", dejar que actúe
-            if (e.target.closest('.add-task-btn')) return;
-
+            // En móvil, cualquier toque en un día abre el modal (tareas incluidas)
+            // para evitar problemas de precisión con guantes/dedos gordos
             var dayEl = e.target.closest('.day:not(.other-month)');
             if (!dayEl) return;
 
@@ -451,14 +456,20 @@ $title = 'Datos - MartinCarmona.com';
         }, { passive: true });
     }
 
-    // Inicializar el calendario con datos del mes actual
-    document.addEventListener('DOMContentLoaded', async function () {
+    // Inicializar el calendario (AJAX-safe: funciona tanto en carga normal como AJAX)
+    async function initCalendario() {
         await cargarYRenderizarCalendario();
         initDragDrop();
         initMobileDayModal();
         initMobileDayTap();
         initSwipeCalendar();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCalendario);
+    } else {
+        initCalendario();
+    }
 
     // ── Widget Meteorología ────────────────────────────────────────────────────
     (function initWeatherWidget() {

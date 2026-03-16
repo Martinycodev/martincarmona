@@ -1330,6 +1330,23 @@ body {
         display: inline-block;
         font-size: 0;
         line-height: 0;
+        pointer-events: none;
+        cursor: default;
+    }
+
+    /* Punto verde + contador "x3" cuando hay más de 2 tareas */
+    .task-dots {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        pointer-events: none;
+    }
+
+    .task-count {
+        font-size: 10px;
+        color: #fff;
+        font-weight: 600;
+        line-height: 1;
     }
 
     .calendar-weekdays {
@@ -1358,15 +1375,9 @@ body {
     }
 }
 
-/* Optimización de rendimiento */
-* {
-    transform: translateZ(0);
-    /* Activar aceleración de hardware */
-}
-
+/* Optimización de rendimiento — solo en elementos que realmente animan */
 .calendar-container {
     will-change: transform;
-    /* Optimizar animaciones */
 }
 
 /* Transiciones suaves para el calendario */
@@ -4853,10 +4864,17 @@ textarea {
         font-size: 13px;
     }
 
+    /* En móvil se oculta el botón "+": al pulsar el día se abre el modal con "Nueva tarea" */
     .calendar-nueva-btn {
-        min-width: 44px;
-        min-height: 44px;
-        font-size: 20px;
+        display: none !important;
+    }
+
+    .add-task-btn {
+        display: none !important;
+    }
+
+    .day:hover .add-task-btn {
+        display: none !important;
     }
 
     .calendar-weekdays {
@@ -5393,3 +5411,45 @@ a:focus-visible {
 /* Las deudas/errores ya tienen contexto textual además de color rojo.
    Los estados de tareas ya muestran texto ("● Activa", "✓ Cerrada").
    No se requieren cambios adicionales. */
+
+/* ═══════════════════════════════════════════════════════════════════
+   OFFLINE QUEUE — Banner de estado + badge de formularios pendientes
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Banner que aparece arriba cuando se pierde la conexión */
+#offline-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+    background: #e65100;
+    color: #fff;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+}
+
+#offline-banner.visible {
+    transform: translateY(0);
+}
+
+/* Badge circular junto al nombre del usuario */
+.offline-queue-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #e65100;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    padding: 0 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
