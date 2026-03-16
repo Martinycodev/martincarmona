@@ -604,24 +604,62 @@ class TrabajadoresController extends BaseController
         $historial = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
-        // Deuda actual: suma de pagos mensuales pendientes
+        // Deuda de meses cerrados y no pagados
         $stmt = $db->prepare("
-            SELECT COALESCE(SUM(importe_total), 0) as deuda_pendiente
+            SELECT COALESCE(SUM(importe_total), 0) as deuda_cerrada
             FROM pagos_mensuales_trabajadores
             WHERE trabajador_id = ? AND pagado = 0
         ");
         $stmt->bind_param("i", $id);
         $stmt->execute();
-        $deuda_row = $stmt->get_result()->fetch_assoc();
-        $deuda_pendiente = $deuda_row['deuda_pendiente'] ?? 0;
+        $deuda_cerrada = floatval($stmt->get_result()->fetch_assoc()['deuda_cerrada'] ?? 0);
         $stmt->close();
+
+        // Deuda del mes actual (calculada en tiempo real desde las tareas)
+        // Solo cuenta si el mes actual NO está ya cerrado para este trabajador
+        $mesActual = (int) date('n');
+        $anioActual = (int) date('Y');
+        $stmt = $db->prepare("
+            SELECT id FROM pagos_mensuales_trabajadores
+            WHERE trabajador_id = ? AND month = ? AND year = ? LIMIT 1
+        ");
+        $stmt->bind_param("iii", $id, $mesActual, $anioActual);
+        $stmt->execute();
+        $mesCerrado = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        $deudaMesActual = 0;
+        if (!$mesCerrado) {
+            // El mes no está cerrado → calcular deuda en tiempo real
+            $stmt = $db->prepare("
+                SELECT ROUND(COALESCE(SUM(
+                    tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0)
+                ), 0), 2) AS deuda_mes
+                FROM tarea_trabajadores tt
+                JOIN tareas ta ON tt.tarea_id = ta.id
+                LEFT JOIN tarea_trabajos ttrab ON ta.id = ttrab.tarea_id
+                LEFT JOIN trabajos trab ON ttrab.trabajo_id = trab.id
+                WHERE tt.trabajador_id = ?
+                  AND MONTH(ta.fecha) = ?
+                  AND YEAR(ta.fecha) = ?
+                  AND ta.id_user = ?
+            ");
+            $stmt->bind_param("iiii", $id, $mesActual, $anioActual, $_SESSION['user_id']);
+            $stmt->execute();
+            $deudaMesActual = floatval($stmt->get_result()->fetch_assoc()['deuda_mes'] ?? 0);
+            $stmt->close();
+        }
+
+        $deuda_pendiente = $deuda_cerrada + $deudaMesActual;
         $db->close();
 
         $this->render('trabajadores/detalle', [
-            'trabajador'      => $trabajador,
-            'historial'       => $historial,
-            'deuda_pendiente' => $deuda_pendiente,
-            'user'            => ['name' => $_SESSION['user_name'] ?? 'Usuario']
+            'trabajador'       => $trabajador,
+            'historial'        => $historial,
+            'deuda_pendiente'  => $deuda_pendiente,
+            'deuda_cerrada'    => $deuda_cerrada,
+            'deuda_mes_actual' => $deudaMesActual,
+            'user'             => ['name' => $_SESSION['user_name'] ?? 'Usuario']
         ]);
     }
 

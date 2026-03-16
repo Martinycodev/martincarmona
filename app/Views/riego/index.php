@@ -181,11 +181,13 @@ function autoRellenarParcela() {
     sel.selectedIndex = 0;
 }
 
-/* Filtrar por año — recarga la página con el parámetro */
+/* Filtrar por año — recarga la página con el parámetro de año */
 function filtrarPorAnio(anio) {
     var url = basePath + '/datos/riego';
     if (anio) url += '?anio=' + anio;
-    window.location.href = url;
+    // location.replace evita añadir al historial cada filtro
+    // y garantiza recarga aunque la URL base sea la misma
+    window.location.replace(url);
 }
 
 function abrirModalNuevo() {

@@ -19,6 +19,14 @@ $router->get('/logout', 'AuthController@logout');
 $router->get('/perfil', 'PerfilController@index');
 $router->post('/perfil/actualizarNombre', 'PerfilController@actualizarNombre');
 
+// Notificaciones / Recordatorios
+$router->get('/notificaciones/pendientes', 'NotificacionesController@pendientes');
+$router->post('/notificaciones/crear', 'NotificacionesController@crear');
+$router->post('/notificaciones/leido', 'NotificacionesController@leido');
+$router->post('/notificaciones/eliminar', 'NotificacionesController@eliminar');
+$router->get('/notificaciones/config', 'NotificacionesController@config');
+$router->post('/notificaciones/toggleConfig', 'NotificacionesController@toggleConfig');
+
 // Dashboard
 $router->get('/dashboard', 'DashboardController@index');
 $router->get('/datos', 'DashboardController@datos');
@@ -50,8 +58,10 @@ $router->post('/tareas/eliminar', 'TareasController@eliminar');
 $router->get('/tareas/obtenerPorMes', 'TareasController@obtenerPorMes');
 $router->get('/tareas/opcionesModal', 'TareasController@opcionesModal');
 $router->get('/tareas/pendientes', 'TareasController@pendientes');
+$router->get('/tareas/obtenerPendientes', 'TareasController@obtenerPendientes');
 $router->post('/tareas/crearPendiente', 'TareasController@crearPendiente');
 $router->post('/tareas/fechar', 'TareasController@fechar');
+$router->post('/tareas/desfechar', 'TareasController@desfechar');
 $router->post('/tareas/agregarTrabajador', 'TareasController@agregarTrabajador');
 $router->post('/tareas/quitarTrabajador', 'TareasController@quitarTrabajador');
 $router->post('/tareas/asignarCuadrilla', 'TareasController@asignarCuadrilla');

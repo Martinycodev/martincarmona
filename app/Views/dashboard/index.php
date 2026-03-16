@@ -44,6 +44,22 @@ $title = 'Datos - MartinCarmona.com';
         </div>
 
         <div class="calendar" id="calendar"></div>
+
+        <!-- Zona "sin fecha": arrastrar tareas aquí para quitarles la fecha -->
+        <div id="dropzone-sin-fecha" class="dropzone-sin-fecha">
+            ⏳ Arrastra aquí para quitar la fecha
+        </div>
+    </div>
+
+    <!-- Panel de tareas pendientes (sin fecha) -->
+    <div class="pending-panel" id="pending-panel">
+        <div class="pending-header">
+            <h3>⏳ Tareas pendientes</h3>
+            <span id="pending-count" class="pending-count">0</span>
+        </div>
+        <div class="pending-list" id="pending-list">
+            <!-- Se rellena por JS -->
+        </div>
     </div>
 
     <!-- Widget Meteorología -->
@@ -244,12 +260,18 @@ $title = 'Datos - MartinCarmona.com';
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', _dragTareaId);
             setTimeout(() => task.classList.add('dragging'), 0);
+            // Mostrar zona "sin fecha" al arrastrar tarea del calendario
+            var dz = document.getElementById('dropzone-sin-fecha');
+            if (dz) dz.style.display = 'flex';
         });
 
         calendar.addEventListener('dragend', function (e) {
             const task = e.target.closest('.task');
             if (task) task.classList.remove('dragging');
             calendar.querySelectorAll('.day.drag-over').forEach(d => d.classList.remove('drag-over'));
+            // Ocultar zona "sin fecha"
+            var dz = document.getElementById('dropzone-sin-fecha');
+            if (dz) dz.style.display = 'none';
         });
 
         calendar.addEventListener('dragover', function (e) {
@@ -311,6 +333,7 @@ $title = 'Datos - MartinCarmona.com';
     window.refreshCalendar = async function() {
         tareasCache.clear();
         await cargarYRenderizarCalendario();
+        await cargarPendientes();
     };
 
     // ── Modal de día en móvil ────────────────────────────────────────────
@@ -456,13 +479,171 @@ $title = 'Datos - MartinCarmona.com';
         }, { passive: true });
     }
 
+    // ── Panel de tareas pendientes (sin fecha) ─────────────────────────
+    // Carga las tareas pendientes y las muestra como chips draggables.
+    // Se pueden arrastrar al calendario para asignarles fecha.
+    // Y se pueden arrastrar tareas del calendario a la zona "sin fecha".
+
+    async function cargarPendientes() {
+        try {
+            var res = await fetch('<?= $this->url("/tareas/obtenerPendientes") ?>', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            var data = await res.json();
+            if (!data.success) return;
+
+            var list  = document.getElementById('pending-list');
+            var count = document.getElementById('pending-count');
+            if (!list) return;
+
+            list.innerHTML = '';
+            var tareas = data.tareas || [];
+            count.textContent = tareas.length;
+
+            if (tareas.length === 0) {
+                list.innerHTML = '<div class="pending-empty">No hay tareas pendientes</div>';
+                return;
+            }
+
+            tareas.forEach(function(t) {
+                var chip = document.createElement('div');
+                chip.className = 'pending-chip';
+                chip.draggable = true;
+                chip.dataset.id = t.id;
+                chip.dataset.tipo = 'pendiente';
+
+                var nombre = t.trabajos || t.titulo || 'Sin título';
+                chip.innerHTML = '<span class="pending-chip-name">' + nombre + '</span>';
+
+                // Click → abrir sidebar
+                chip.addEventListener('click', function() {
+                    window.taskSidebar && window.taskSidebar.open(t.id);
+                });
+
+                // Drag start
+                chip.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', t.id);
+                    e.dataTransfer.setData('application/x-pendiente', 'true');
+                    chip.classList.add('dragging');
+                    // Mostrar zonas de drop en el calendario
+                    document.getElementById('calendar').classList.add('receiving-pending');
+                });
+
+                chip.addEventListener('dragend', function() {
+                    chip.classList.remove('dragging');
+                    document.getElementById('calendar').classList.remove('receiving-pending');
+                });
+
+                list.appendChild(chip);
+            });
+        } catch (e) {
+            // Silencioso
+        }
+    }
+
+    // Drop de tarea pendiente → día del calendario
+    function initPendingDrop() {
+        var calendar = document.getElementById('calendar');
+
+        // Las celdas .day ya aceptan drops del drag & drop existente.
+        // Añadimos lógica para detectar si viene de pendientes.
+        calendar.addEventListener('drop', async function(e) {
+            var isPendiente = e.dataTransfer.types.includes('application/x-pendiente');
+            if (!isPendiente) return; // El handler de drag & drop normal se encarga
+
+            e.preventDefault();
+            var day = e.target.closest('.day:not(.other-month)');
+            if (!day) return;
+
+            var tareaId = e.dataTransfer.getData('text/plain');
+            var dateStr = day.dataset.date;
+            if (!tareaId || !dateStr) return;
+
+            calendar.querySelectorAll('.day.drag-over').forEach(function(d) { d.classList.remove('drag-over'); });
+
+            try {
+                var res = await fetch('<?= $this->url("/tareas/fechar") ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ id: parseInt(tareaId), fecha: dateStr })
+                });
+                var data = await res.json();
+
+                if (data.success) {
+                    showToast('Tarea asignada al ' + dateStr, 'success');
+                    tareasCache.clear();
+                    await cargarYRenderizarCalendario();
+                    await cargarPendientes();
+                }
+            } catch (err) {
+                showToast('Error al asignar fecha', 'error');
+            }
+        });
+    }
+
+    // Drop de tarea del calendario → zona "sin fecha"
+    function initDropzoneSinFecha() {
+        var dropzone = document.getElementById('dropzone-sin-fecha');
+        if (!dropzone) return;
+
+        dropzone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            dropzone.classList.add('drag-over');
+        });
+
+        dropzone.addEventListener('dragleave', function() {
+            dropzone.classList.remove('drag-over');
+        });
+
+        dropzone.addEventListener('drop', async function(e) {
+            e.preventDefault();
+            dropzone.classList.remove('drag-over');
+
+            // Solo aceptar tareas del calendario (no pendientes)
+            var isPendiente = e.dataTransfer.types.includes('application/x-pendiente');
+            if (isPendiente) return;
+
+            var tareaId = e.dataTransfer.getData('text/plain') || _dragTareaId;
+            if (!tareaId) return;
+
+            try {
+                var res = await fetch('<?= $this->url("/tareas/desfechar") ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ id: parseInt(tareaId) })
+                });
+                var data = await res.json();
+
+                if (data.success) {
+                    showToast('Tarea movida a pendientes', 'success');
+                    tareasCache.clear();
+                    await cargarYRenderizarCalendario();
+                    await cargarPendientes();
+                }
+            } catch (err) {
+                showToast('Error al quitar fecha', 'error');
+            }
+        });
+    }
+
     // Inicializar el calendario (AJAX-safe: funciona tanto en carga normal como AJAX)
     async function initCalendario() {
         await cargarYRenderizarCalendario();
         initDragDrop();
+        initPendingDrop();
+        initDropzoneSinFecha();
         initMobileDayModal();
         initMobileDayTap();
         initSwipeCalendar();
+        await cargarPendientes();
     }
 
     if (document.readyState === 'loading') {

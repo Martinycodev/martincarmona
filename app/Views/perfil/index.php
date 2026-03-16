@@ -61,6 +61,33 @@ $title = 'Mi Perfil - MartinCarmona.com';
                 <div id="updateMessage" class="message" style="display: none;"></div>
             </form>
         </div>
+
+        <!-- Sección de notificaciones -->
+        <div class="profile-card" id="notificaciones" style="background:#2a2a2a;">
+            <div class="profile-header" style="border-bottom-color:#404040;">
+                <h2 style="color:#fff;">🔔 Notificaciones</h2>
+            </div>
+
+            <div id="notif-config" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+                <!-- Se rellena por JS -->
+            </div>
+
+            <h3 style="color:#ccc; font-size:0.95rem; margin:20px 0 12px;">Crear recordatorio personalizado</h3>
+            <form id="formRecordatorio" style="display:flex; flex-direction:column; gap:10px;">
+                <input type="text" id="rec-titulo" placeholder="Título del recordatorio" required
+                    style="padding:10px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff;">
+                <input type="text" id="rec-desc" placeholder="Descripción (opcional)"
+                    style="padding:10px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff;">
+                <input type="date" id="rec-fecha" required
+                    style="padding:10px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff;">
+                <button type="submit" class="btn btn-primary" style="align-self:flex-start;">+ Crear recordatorio</button>
+            </form>
+
+            <h3 style="color:#ccc; font-size:0.95rem; margin:20px 0 12px;">Recordatorios activos</h3>
+            <div id="rec-list">
+                <div class="notif-empty">Cargando...</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -282,12 +309,128 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.textContent = text;
         messageDiv.className = 'message ' + type;
         messageDiv.style.display = 'block';
-        
+
         // Ocultar el mensaje después de 5 segundos
         setTimeout(() => {
             messageDiv.style.display = 'none';
         }, 5000);
     }
+
+    // ── Notificaciones ───────────────────────────────────────────────────
+    var basePath = window._APP_BASE_PATH || '';
+    var tiposLabels = {
+        'itv':            { icon: '🚗', label: 'ITV de vehículos' },
+        'cuentas':        { icon: '💰', label: 'Cierre de cuentas mensuales' },
+        'fitosanitario':  { icon: '🧪', label: 'Fitosanitarios (stock bajo)' },
+        'personalizado':  { icon: '📌', label: 'Recordatorios personalizados' }
+    };
+
+    // Cargar configuración de tipos
+    async function cargarNotifConfig() {
+        try {
+            var res = await fetch(basePath + '/notificaciones/config', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            var data = await res.json();
+            if (!data.success) return;
+
+            var container = document.getElementById('notif-config');
+            container.innerHTML = '';
+
+            Object.keys(tiposLabels).forEach(function(tipo) {
+                var cfg = data.config[tipo] || { activo: 1 };
+                var info = tiposLabels[tipo];
+                var div = document.createElement('div');
+                div.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#333; border-radius:8px;';
+                div.innerHTML = '<span style="color:#ddd;">' + info.icon + ' ' + info.label + '</span>'
+                    + '<label class="toggle-switch">'
+                    + '<input type="checkbox" ' + (cfg.activo == 1 ? 'checked' : '') + ' onchange="toggleNotifTipo(\'' + tipo + '\', this.checked)">'
+                    + '<span class="toggle-slider"></span>'
+                    + '</label>';
+                container.appendChild(div);
+            });
+        } catch(e) {}
+    }
+
+    window.toggleNotifTipo = async function(tipo, activo) {
+        await fetch(basePath + '/notificaciones/toggleConfig', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            body: JSON.stringify({ tipo: tipo, activo: activo })
+        });
+        if (typeof showToast === 'function') showToast('Configuración guardada', 'success');
+    };
+
+    // Cargar recordatorios activos
+    async function cargarRecordatoriosPerfil() {
+        try {
+            var res = await fetch(basePath + '/notificaciones/pendientes', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            var data = await res.json();
+            if (!data.success) return;
+
+            var list = document.getElementById('rec-list');
+            var items = data.recordatorios || [];
+
+            if (items.length === 0) {
+                list.innerHTML = '<div class="notif-empty" style="color:#888;text-align:center;padding:16px;">Sin recordatorios pendientes</div>';
+                return;
+            }
+
+            var html = '';
+            items.forEach(function(r) {
+                var icono = tiposLabels[r.tipo]?.icon || '📌';
+                var titulo = r.tipo === 'cuentas' ? r.descripcion : r.titulo;
+                html += '<div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:#333; border-radius:8px; margin-bottom:6px;">'
+                    + '<span>' + icono + '</span>'
+                    + '<div style="flex:1; color:#ddd; font-size:0.85rem;">' + titulo
+                    + (r.fecha_referencia ? '<br><span style="color:#888;font-size:0.75rem;">' + r.fecha_referencia + '</span>' : '')
+                    + '</div>'
+                    + '<button onclick="eliminarRecordatorio(' + r.id + ', this)" style="background:none;border:none;color:#666;cursor:pointer;font-size:1rem;" title="Eliminar">🗑</button>'
+                    + '</div>';
+            });
+            list.innerHTML = html;
+        } catch(e) {}
+    }
+
+    window.eliminarRecordatorio = async function(id, btn) {
+        await fetch(basePath + '/notificaciones/eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            body: JSON.stringify({ id: id })
+        });
+        btn.closest('div').remove();
+        if (typeof showToast === 'function') showToast('Recordatorio eliminado', 'success');
+    };
+
+    // Crear recordatorio personalizado
+    document.getElementById('formRecordatorio').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var titulo = document.getElementById('rec-titulo').value.trim();
+        var desc = document.getElementById('rec-desc').value.trim();
+        var fecha = document.getElementById('rec-fecha').value;
+
+        if (!titulo || !fecha) return;
+
+        var res = await fetch(basePath + '/notificaciones/crear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            body: JSON.stringify({ titulo: titulo, descripcion: desc, fecha_aviso: fecha })
+        });
+        var data = await res.json();
+
+        if (data.success) {
+            if (typeof showToast === 'function') showToast('Recordatorio creado', 'success');
+            document.getElementById('rec-titulo').value = '';
+            document.getElementById('rec-desc').value = '';
+            document.getElementById('rec-fecha').value = '';
+            cargarRecordatoriosPerfil();
+        }
+    });
+
+    cargarNotifConfig();
+    cargarRecordatoriosPerfil();
 });
 </script>
 

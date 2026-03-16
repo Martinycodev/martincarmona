@@ -175,6 +175,16 @@ $title = 'Ficha de Trabajador — ' . htmlspecialchars($trabajador['nombre']);
                     <?= number_format($deuda_pendiente, 2) ?> €
                 </span>
             </div>
+            <?php if (($deuda_cerrada ?? 0) > 0 && ($deuda_mes_actual ?? 0) > 0): ?>
+            <div style="font-size:0.85rem; color:#999; margin-top:0.5rem;">
+                Meses anteriores sin pagar: <?= number_format($deuda_cerrada, 2) ?> € &nbsp;|&nbsp;
+                Mes actual (<?= date('F') ?>): <?= number_format($deuda_mes_actual, 2) ?> €
+            </div>
+            <?php elseif (($deuda_mes_actual ?? 0) > 0): ?>
+            <div style="font-size:0.85rem; color:#999; margin-top:0.5rem;">
+                Acumulado del mes actual (<?= date('F') ?>)
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 

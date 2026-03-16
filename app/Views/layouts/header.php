@@ -33,6 +33,19 @@
             <div class="user-info">
                 <span><strong><?= isset($user) && isset($user['name']) ? htmlspecialchars($user['name']) : 'Invitado' ?></strong></span>
                 <span id="offline-queue-badge" class="offline-queue-badge" style="display:none" title="Formularios pendientes de enviar">0</span>
+                <!-- Campanita de notificaciones -->
+                <button id="notif-bell" class="notif-bell" onclick="toggleNotifPanel()" title="Notificaciones">
+                    🔔 <span id="notif-badge" class="notif-badge" style="display:none">0</span>
+                </button>
+                <div id="notif-panel" class="notif-panel">
+                    <div class="notif-panel-header">
+                        <strong>Recordatorios</strong>
+                        <a href="<?= $this->url('/perfil') ?>#notificaciones" style="font-size:0.8rem;color:#4caf50;">Configurar</a>
+                    </div>
+                    <div id="notif-panel-body" class="notif-panel-body">
+                        <div class="notif-empty">Cargando...</div>
+                    </div>
+                </div>
                 <button class="hamburger-menu" onclick="toggleMenu()" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="navMenu">
                     <span></span>
                     <span></span>

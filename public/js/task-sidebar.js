@@ -225,6 +225,7 @@ class TaskSidebar {
                 // Recargar los tags de trabajadores
                 await this._reloadTrabajadores(tagsContainer);
                 this._markSaved('trabajadores');
+                this._actualizarCoste(); // Recalcular con toda la cuadrilla
                 window.needsReload = true;
             } else {
                 showToast(data.message || 'Error al asignar cuadrilla', 'error');
@@ -317,8 +318,19 @@ class TaskSidebar {
         const trabajo  = trabajos.find(t => String(t.id) === String(trabajoId));
         const precio   = parseFloat(trabajo?.precio_hora ?? 0);
 
+        // Contar trabajadores asignados (tags visibles en la sección)
+        const tagsContainer = document.getElementById(`sidebar-tags-trabajadores-${this.taskId}`);
+        const numTrabajadores = tagsContainer ? tagsContainer.querySelectorAll('.sidebar-tag').length : 1;
+        const efectivos = Math.max(numTrabajadores, 1); // mínimo 1
+
         if (precio > 0) {
-            costeEl.textContent = `💶 ${precio.toFixed(2)} €/h × ${horas} h = ${(precio * horas).toFixed(2)} €`;
+            const costePorTrabajador = precio * horas;
+            const costeTotal = costePorTrabajador * efectivos;
+            if (efectivos > 1) {
+                costeEl.textContent = `💶 ${precio.toFixed(2)} €/h × ${horas} h × ${efectivos} trab. = ${costeTotal.toFixed(2)} €`;
+            } else {
+                costeEl.textContent = `💶 ${precio.toFixed(2)} €/h × ${horas} h = ${costeTotal.toFixed(2)} €`;
+            }
         } else {
             costeEl.textContent = '';
         }
@@ -569,6 +581,7 @@ class TaskSidebar {
                 tagsContainer.appendChild(tag);
                 _resetCombobox(`cb-sidebar-trab-${this.taskId}`);
                 this._markSaved('trabajadores');
+                this._actualizarCoste(); // Recalcular con nuevo nº de trabajadores
                 window.needsReload = true;
             } else {
                 showToast(data.message || 'Error al añadir trabajador', 'error');
@@ -600,6 +613,7 @@ class TaskSidebar {
                 });
                 // Fallback: recargar sección
                 await this._reloadTrabajadores(tagsContainer);
+                this._actualizarCoste(); // Recalcular sin ese trabajador
                 window.needsReload = true;
             } else {
                 showToast(data.message || 'Error al quitar trabajador', 'error');

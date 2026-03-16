@@ -906,6 +906,73 @@ class TareasController extends BaseController
     }
 
     /**
+     * Obtener tareas pendientes en formato JSON (para el panel del dashboard)
+     */
+    public function obtenerPendientes()
+    {
+        header('Content-Type: application/json');
+        $db = \Database::connect();
+        $stmt = $db->prepare("
+            SELECT t.id, t.titulo, t.descripcion,
+                   GROUP_CONCAT(DISTINCT tr.nombre ORDER BY tr.nombre SEPARATOR ', ') as trabajadores,
+                   GROUP_CONCAT(DISTINCT trab.nombre ORDER BY trab.nombre SEPARATOR ', ') as trabajos
+            FROM tareas t
+            LEFT JOIN tarea_trabajadores tt ON t.id = tt.tarea_id
+            LEFT JOIN trabajadores tr ON tt.trabajador_id = tr.id
+            LEFT JOIN tarea_trabajos ttj ON t.id = ttj.tarea_id
+            LEFT JOIN trabajos trab ON ttj.trabajo_id = trab.id
+            WHERE t.estado = 'pendiente' AND t.id_user = ?
+            GROUP BY t.id
+            ORDER BY t.created_at DESC
+        ");
+        $stmt->bind_param("i", $_SESSION['user_id']);
+        $stmt->execute();
+        $tareas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        echo json_encode(['success' => true, 'tareas' => $tareas]);
+    }
+
+    /**
+     * Quitar fecha a una tarea (del calendario → pendiente)
+     */
+    public function desfechar()
+    {
+        header('Content-Type: application/json');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        $this->validateCsrf();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $id = intval($input['id'] ?? 0);
+
+        if ($id <= 0) {
+            echo json_encode(['success' => false, 'message' => 'ID no válido']);
+            return;
+        }
+
+        try {
+            $db = \Database::connect();
+            $stmt = $db->prepare("
+                UPDATE tareas
+                SET fecha = NULL, estado = 'pendiente', updated_at = NOW()
+                WHERE id = ? AND id_user = ?
+            ");
+            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+
+            if ($stmt->execute() && $stmt->affected_rows > 0) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'No se encontró la tarea']);
+            }
+            $stmt->close();
+        } catch (\Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Error interno']);
+        }
+    }
+
+    /**
      * Crear una tarea pendiente (sin fecha)
      */
     public function crearPendiente()
