@@ -70,11 +70,11 @@ class ContactoController extends BaseController
             ['nombre' => 'required|min:2|max:100', 'email' => 'required|email|max:150', 'mensaje' => 'required|min:10|max:2000']
         );
 
-        if ($validator->hasErrors()) {
+        if ($validator->fails()) {
             $this->json([
                 'success' => false,
                 'error'   => 'Por favor, revisa los campos del formulario.',
-                'errors'  => $validator->getErrors(),
+                'errors'  => $validator->errors(),
             ]);
             return;
         }
