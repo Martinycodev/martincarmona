@@ -759,7 +759,7 @@
     </section>
 
 
-    <!-- STATS BAR — Datos reales de la BD -->
+    <!-- STATS BAR -->
     <div class="lp-stats">
         <div class="lp-stat">
             <span class="lp-stat-value" data-count="<?= (int) ($stats['parcelas'] ?? 0) ?>">0</span>
@@ -771,11 +771,11 @@
         </div>
         <div class="lp-stat">
             <span class="lp-stat-value" data-count="<?= (int) ($stats['trabajadores'] ?? 0) ?>">0</span>
-            <span class="lp-stat-label">Trabajadores registrados</span>
+            <span class="lp-stat-label">Trabajadores activos</span>
         </div>
         <div class="lp-stat">
-            <span class="lp-stat-value" data-count="<?= (int) ($stats['tareas'] ?? 0) ?>">0</span>
-            <span class="lp-stat-label">Tareas completadas</span>
+            <span class="lp-stat-value" data-count="0">♻️ 0</span>
+            <span class="lp-stat-label">Papel usado</span>
         </div>
     </div>
 
@@ -1055,7 +1055,7 @@
                 animated = true;
                 counters.forEach(function (el) {
                     var target = parseInt(el.getAttribute('data-count'), 10) || 0;
-                    if (target === 0) { el.textContent = '0'; return; }
+                    if (target === 0) return; // No animar stats con valor 0 (preserva contenido original)
                     var duration = 1600;
                     var start = performance.now();
                     function tick(now) {
