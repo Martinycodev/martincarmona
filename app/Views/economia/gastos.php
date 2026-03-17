@@ -90,7 +90,7 @@
         <tbody>
         <?php foreach ($gastos as $g): ?>
         <tr data-id="<?= $g['id'] ?>">
-            <td><?= date('d/m/Y', strtotime($g['fecha'])) ?></td>
+            <td><?= date('d-m-Y', strtotime($g['fecha'])) ?></td>
             <td><?= htmlspecialchars($g['concepto']) ?></td>
             <td><span class="badge-cat"><?= htmlspecialchars($labels[$g['categoria']] ?? $g['categoria']) ?></span></td>
             <td class="importe-gasto">−<?= number_format($g['importe'], 2, ',', '.') ?> €</td>

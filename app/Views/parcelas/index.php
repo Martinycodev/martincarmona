@@ -66,6 +66,20 @@ $title = 'Gestión de Parcelas';
                 </div>
                 <div class="form-row">
                     <div class="form-group">
+                        <label for="num_municipio">Nº Municipio:</label>
+                        <input type="text" id="num_municipio" name="num_municipio" maxlength="10" placeholder="Ej: 050">
+                    </div>
+                    <div class="form-group">
+                        <label for="num_poligono">Nº Polígono:</label>
+                        <input type="text" id="num_poligono" name="num_poligono" maxlength="10" placeholder="Ej: 012">
+                    </div>
+                    <div class="form-group">
+                        <label for="num_parcela">Nº Parcela:</label>
+                        <input type="text" id="num_parcela" name="num_parcela" maxlength="10" placeholder="Ej: 00045">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
                         <label for="año_plantacion">Año de Plantación:</label>
                         <input type="number" id="año_plantacion" name="año_plantacion" min="1900" max="2100">
                     </div>
@@ -203,6 +217,20 @@ $title = 'Gestión de Parcelas';
                     <div class="form-group">
                         <label for="editTipoOlivos">Tipo de Olivos:</label>
                         <input type="text" id="editTipoOlivos" name="tipo_olivos" maxlength="100">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editNumMunicipio">Nº Municipio:</label>
+                        <input type="text" id="editNumMunicipio" name="num_municipio" maxlength="10" placeholder="Ej: 050">
+                    </div>
+                    <div class="form-group">
+                        <label for="editNumPoligono">Nº Polígono:</label>
+                        <input type="text" id="editNumPoligono" name="num_poligono" maxlength="10" placeholder="Ej: 012">
+                    </div>
+                    <div class="form-group">
+                        <label for="editNumParcela">Nº Parcela:</label>
+                        <input type="text" id="editNumParcela" name="num_parcela" maxlength="10" placeholder="Ej: 00045">
                     </div>
                 </div>
                 <div class="form-row">
@@ -364,6 +392,9 @@ $title = 'Gestión de Parcelas';
                 document.getElementById('editHidrante').value = parcela.hidrante || '0';
                 document.getElementById('editDescripcion').value = parcela.descripcion || '';
                 document.getElementById('editReferenciaCatastral').value = parcela.referencia_catastral || '';
+                document.getElementById('editNumMunicipio').value = parcela.num_municipio || '';
+                document.getElementById('editNumPoligono').value = parcela.num_poligono || '';
+                document.getElementById('editNumParcela').value = parcela.num_parcela || '';
                 document.getElementById('editTipoOlivos').value = parcela.tipo_olivos || '';
                 document.getElementById('editAñoPlantacion').value = parcela.año_plantacion || '';
                 document.getElementById('editTipoPlantacion').value = parcela.tipo_plantacion || '';

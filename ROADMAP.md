@@ -181,11 +181,28 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 - [x] En la vista de trabajador no se actualiza la deuda pendiente
 - [x] En la vista de riego el select de filtro por años no funciona.
 
-- [ ] Todos los trabajos valen 0 hasta que se editen. no quiero que se pueda quedar null
-- [ ] Los trabajadores pasan a ser inactivos cada dia 1 de mes y si hacen alguna tarea pasan a activos hasta que se acabe el mes.
-- [ ] En el dashboard la opción de crear tarea pendiente.
-- [ ] Solucionar el poder borrar trabajadores si dejamos de querer tenerlo en la base de datos, por despido o cómo gestionar ese proceso.
-- [ ] Añadir campos de nºMunicipio/nºpoligono/nºparcela a las parcelas
+- [x] Todos los trabajos valen 0 € hasta que se editen. no quiero que se pueda quedar null
+- [x] Los trabajadores pasan a ser "inactivos" cada dia 1 de mes y si hacen alguna tarea pasan a activos hasta que se acabe el mes. Si ese atributo no está en la bbdd hay que crearlo.
+- [x] En el dashboard la opción de crear tarea pendiente junto a la lista de estas tareas. Si una tarea se edita y queda sin fecha se va automaticamente a tareas pendientes. Además quiero esta sección dentro de la caja del calendario, que aparezca debajo pero dentro del mismo bloque. Además junto al título quiero un botón que te lleve a la seccion de tareas pendientes y que ponga algo como "ver todas".
+- [x] Solucionar el poder borrar trabajadores si dejamos de querer tenerlo en la base de datos, por despido o cómo gestionar ese proceso.
+- [x] Añadir campos de nºMunicipio/nºpoligono/nºparcela a las parcelas. tanto en la vista de detalle como en la bbdd.
+- [x] Al estar una campaña activa que aparezca un botón en los quik buttons del dashboard. Solo puede haber una campaña activa.
+- [x] Crear al igual que campaña una temporada de riego. que se registre por años. y añadirle un quickbutton en el dashboard para que sea más rapido acceder a la vista de riego. tambien añadir el botón de terminar temporada de riego.
+- [x] Eliminar el quickbutton de ver tareas. Para eso está busqueda de tareas.
+- [x] Al registrar una tarea con trabajo de "recoger aceituna" que se cree un registro automáticamente en la campaña activa que guarde la fecha y la parcela.
+- [x] El texto que se muestra en la tarea del calendario quiero que se escriba tanto como coja en el espacio disponible, no que se pongan los ... antes de que se ocupe todo el espacio. Si la ventana es pequeña se cortará antes y si la ventana es ancha se leerá todo el título.
+- [x] Arreglar el crud de proveedores.
+- [x] El diseño del sandwich del menú en movil no se ve bien. Mantiene las dimensiones del monitor.
+- [x] Me gustaría que en la vista de trabajos además de la descripción se pudiese subir un archivo tipo documento con el contenido de cómo es el método de trabajo con imagenes y descripciones detalladas.
+- [x] Añadir la opción de cambiar contraseña en la vista de perfil.
+- [ ] La opcion de cambiar de nombre de perfil no funciona
+- [x] Eliminar quick button de tareas pendientes.
+- [ ] Subir imágenes en tarea no funciona, buscar la manera de optimizarlas antes de subirlas o poner un limite de peso.
+- [ ] El diseño de la vista de perfil tiene colores que no se corresponden con el estilo de la web. Prefiero utilizar el modo oscuro y los tonos verdes.
+- [ ] Formato de fechas en tablas tiene que ser dd-mm--aaaa. No aaaa-mm-dd
+- [ ] En la tabla de registros de campaña el bg-color de la fila del total esta en color blanco y debería ser negro o un tono oscuro.
+- [ ] Añadir combobox en el modal de registro de campaña para las parcelas.
+- [ ] Añadir el atributo calidad (Vuelo/Suelo) a el registro de campaña
 
 ### Infraestructura
 - [x] Backups automáticos de la base de datos

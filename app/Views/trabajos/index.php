@@ -52,6 +52,7 @@ $title = 'Gestión de Trabajos';
                         <th>Nombre</th>
                         <th>Precio/Hora</th>
                         <th>Descripción</th>
+                        <th>Documento</th>
                     </tr>
                 </thead>
                 <tbody id="trabajosTableBody">
@@ -60,8 +61,15 @@ $title = 'Gestión de Trabajos';
                         class="clickable-row"
                         onclick="editJob(<?= $trabajo['id'] ?>, this)">
                         <td><?= htmlspecialchars($trabajo['nombre'] ?? '-') ?></td>
-                        <td><?= isset($trabajo['precio_hora']) ? '€' . number_format($trabajo['precio_hora'], 2) : '-' ?></td>
+                        <td>€<?= number_format($trabajo['precio_hora'] ?? 0, 2) ?></td>
                         <td><?= htmlspecialchars($trabajo['descripcion'] ?? '') ?></td>
+                        <td>
+                            <?php if (!empty($trabajo['documento'])): ?>
+                                <a href="<?= $this->url($trabajo['documento']) ?>" target="_blank" class="btn-link" onclick="event.stopPropagation()">📄 Ver</a>
+                            <?php else: ?>
+                                <span style="color: #666;">—</span>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -92,6 +100,27 @@ $title = 'Gestión de Trabajos';
                         <div class="form-group full-width">
                             <label for="editDescripcion">Descripción:</label>
                             <textarea id="editDescripcion" name="descripcion" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Sección de documento con método de trabajo -->
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>📄 Documento de método de trabajo:</label>
+                            <div id="documentoPreview" style="margin-bottom: 10px; display: none; align-items: center; gap: 10px;">
+                                <a id="documentoLink" href="#" target="_blank" class="btn-link" style="margin-right: 10px;">📄 Ver documento actual</a>
+                                <button type="button" class="btn btn-sm btn-danger-outline" onclick="eliminarDocumento()">Eliminar</button>
+                            </div>
+                            <div id="documentoUpload">
+                                <input type="file" id="editDocumento" accept=".jpg,.jpeg,.png,.webp,.pdf" style="display: none;" onchange="subirDocumento()">
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('editDocumento').click()">
+                                    📎 Subir documento
+                                </button>
+                                <span style="color: #888; font-size: 0.85em; margin-left: 8px;">JPG, PNG, WebP o PDF (máx. 10MB)</span>
+                            </div>
+                            <div id="documentoProgress" style="display: none; margin-top: 8px;">
+                                <span style="color: #4caf50;">⏳ Subiendo documento...</span>
+                            </div>
                         </div>
                     </div>
 

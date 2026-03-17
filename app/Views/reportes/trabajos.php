@@ -121,8 +121,8 @@
                             <td><?= $horas > 0 ? number_format($horas, 1) . 'h' : '—' ?></td>
                             <td><?= $prom > 0 ? $prom . 'h' : '—' ?></td>
                             <td><?= intval($f['anios_con_datos']) ?></td>
-                            <td><?= $f['primera_vez'] ? date('d/m/Y', strtotime($f['primera_vez'])) : '—' ?></td>
-                            <td><?= $f['ultima_vez'] ? date('d/m/Y', strtotime($f['ultima_vez'])) : '—' ?></td>
+                            <td><?= $f['primera_vez'] ? date('d-m-Y', strtotime($f['primera_vez'])) : '—' ?></td>
+                            <td><?= $f['ultima_vez'] ? date('d-m-Y', strtotime($f['ultima_vez'])) : '—' ?></td>
                         </tr>
                         <?php endforeach; ?>
                         <?php endif; ?>

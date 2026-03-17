@@ -88,7 +88,7 @@
                             <td><?= number_format(floatval($p['horas_anio']), 1) ?>h</td>
                             <td><?= $p['num_riegos'] ?></td>
                             <td><?= $p['m3_riego'] > 0 ? number_format($p['m3_riego'], 1) : '—' ?></td>
-                            <td><?= $p['ultima_actividad'] ? date('d/m/Y', strtotime($p['ultima_actividad'])) : '—' ?></td>
+                            <td><?= $p['ultima_actividad'] ? date('d-m-Y', strtotime($p['ultima_actividad'])) : '—' ?></td>
                         </tr>
                         <?php endforeach; ?>
                         <?php endif; ?>

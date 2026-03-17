@@ -256,24 +256,41 @@ class CampanaController extends BaseController
         $fecha       = trim($input['fecha'] ?? '');
         $kilos       = floatval($input['kilos'] ?? 0);
         $rendimiento = isset($input['rendimiento_pct']) && $input['rendimiento_pct'] !== '' ? floatval($input['rendimiento_pct']) : null;
+        $calidad     = !empty($input['calidad']) ? trim($input['calidad']) : null;
 
         if (!$campanaId || empty($fecha) || $kilos <= 0) {
             echo json_encode(['success' => false, 'message' => 'Campaña, fecha y kilos son requeridos']); return;
         }
 
-        $db   = \Database::connect();
-        $stmt = $db->prepare("
-            INSERT INTO campana_registros (campana_id, parcela_id, fecha, kilos, rendimiento_pct, id_user, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
-        ");
-        $stmt->bind_param("iisddi", $campanaId, $parcelaId, $fecha, $kilos, $rendimiento, $userId);
+        $db = \Database::connect();
 
-        if ($stmt->execute()) {
+        // Comprobar si la columna calidad existe en la tabla
+        $tieneCalidad = false;
+        $check = $db->query("SHOW COLUMNS FROM campana_registros LIKE 'calidad'");
+        if ($check && $check->num_rows > 0) {
+            $tieneCalidad = true;
+        }
+
+        if ($tieneCalidad) {
+            $stmt = $db->prepare("
+                INSERT INTO campana_registros (campana_id, parcela_id, fecha, kilos, rendimiento_pct, calidad, id_user, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+            ");
+            $stmt->bind_param("iisddsi", $campanaId, $parcelaId, $fecha, $kilos, $rendimiento, $calidad, $userId);
+        } else {
+            $stmt = $db->prepare("
+                INSERT INTO campana_registros (campana_id, parcela_id, fecha, kilos, rendimiento_pct, id_user, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+            ");
+            $stmt->bind_param("iisddi", $campanaId, $parcelaId, $fecha, $kilos, $rendimiento, $userId);
+        }
+
+        if ($stmt && $stmt->execute()) {
             echo json_encode(['success' => true, 'id' => $db->insert_id]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Error: ' . $stmt->error]);
+            echo json_encode(['success' => false, 'message' => 'Error: ' . ($stmt ? $stmt->error : $db->error)]);
         }
-        $stmt->close();
+        if ($stmt) $stmt->close();
         $db->close();
     }
 
@@ -293,18 +310,37 @@ class CampanaController extends BaseController
         $fecha       = trim($input['fecha'] ?? '');
         $kilos       = floatval($input['kilos'] ?? 0);
         $rendimiento = isset($input['rendimiento_pct']) && $input['rendimiento_pct'] !== '' ? floatval($input['rendimiento_pct']) : null;
+        $calidad     = !empty($input['calidad']) ? trim($input['calidad']) : null;
 
         if (!$id || empty($fecha) || $kilos <= 0) {
             echo json_encode(['success' => false, 'message' => 'Datos inválidos']); return;
         }
 
-        $db   = \Database::connect();
-        $stmt = $db->prepare("
-            UPDATE campana_registros
-            SET parcela_id = ?, fecha = ?, kilos = ?, rendimiento_pct = ?, updated_at = NOW()
-            WHERE id = ? AND id_user = ?
-        ");
-        $stmt->bind_param("isddii", $parcelaId, $fecha, $kilos, $rendimiento, $id, $userId);
+        $db = \Database::connect();
+
+        // Comprobar si la columna calidad existe en la tabla
+        $tieneCalidad = false;
+        $check = $db->query("SHOW COLUMNS FROM campana_registros LIKE 'calidad'");
+        if ($check && $check->num_rows > 0) {
+            $tieneCalidad = true;
+        }
+
+        if ($tieneCalidad) {
+            $stmt = $db->prepare("
+                UPDATE campana_registros
+                SET parcela_id = ?, fecha = ?, kilos = ?, rendimiento_pct = ?, calidad = ?, updated_at = NOW()
+                WHERE id = ? AND id_user = ?
+            ");
+            $stmt->bind_param("isddsii", $parcelaId, $fecha, $kilos, $rendimiento, $calidad, $id, $userId);
+        } else {
+            $stmt = $db->prepare("
+                UPDATE campana_registros
+                SET parcela_id = ?, fecha = ?, kilos = ?, rendimiento_pct = ?, updated_at = NOW()
+                WHERE id = ? AND id_user = ?
+            ");
+            $stmt->bind_param("isddii", $parcelaId, $fecha, $kilos, $rendimiento, $id, $userId);
+        }
+
         $ok = $stmt->execute() && $stmt->affected_rows >= 0;
         $stmt->close();
         $db->close();

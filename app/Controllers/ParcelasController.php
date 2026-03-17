@@ -128,6 +128,9 @@ class ParcelasController extends BaseController
                                     ? $input['riego_secano'] : null;
             $corta                = in_array($input['corta'] ?? '', ['par','impar','siempre'])
                                     ? $input['corta'] : null;
+            $num_municipio        = !empty(trim($input['num_municipio'] ?? '')) ? trim($input['num_municipio']) : null;
+            $num_poligono         = !empty(trim($input['num_poligono'] ?? '')) ? trim($input['num_poligono']) : null;
+            $num_parcela          = !empty(trim($input['num_parcela'] ?? '')) ? trim($input['num_parcela']) : null;
 
             $v = \Core\Validator::make($input, [
                 'nombre'      => 'required|max_length:100',
@@ -156,8 +159,8 @@ class ParcelasController extends BaseController
             }
             $stmt->close();
 
-            $stmt = $db->prepare("INSERT INTO parcelas (nombre, olivos, ubicacion, propietario, propietario_id, hidrante, descripcion, referencia_catastral, tipo_olivos, `año_plantacion`, tipo_plantacion, riego_secano, corta, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sisssissssssssi", $nombre, $olivos, $ubicacion, $propietario, $propietario_id, $hidrante, $descripcion, $referencia_catastral, $tipo_olivos, $año_plantacion, $tipo_plantacion, $riego_secano, $corta, $_SESSION['user_id']);
+            $stmt = $db->prepare("INSERT INTO parcelas (nombre, olivos, ubicacion, propietario, propietario_id, hidrante, descripcion, referencia_catastral, tipo_olivos, `año_plantacion`, tipo_plantacion, riego_secano, corta, num_municipio, num_poligono, num_parcela, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sisssisssssssssssi", $nombre, $olivos, $ubicacion, $propietario, $propietario_id, $hidrante, $descripcion, $referencia_catastral, $tipo_olivos, $año_plantacion, $tipo_plantacion, $riego_secano, $corta, $num_municipio, $num_poligono, $num_parcela, $_SESSION['user_id']);
 
             if ($stmt->execute()) {
                 echo json_encode(['success' => true, 'message' => 'Parcela creada correctamente', 'id' => $db->insert_id]);
@@ -251,6 +254,9 @@ class ParcelasController extends BaseController
                                     ? $input['riego_secano'] : null;
             $corta                = in_array($input['corta'] ?? '', ['par','impar','siempre'])
                                     ? $input['corta'] : null;
+            $num_municipio        = !empty(trim($input['num_municipio'] ?? '')) ? trim($input['num_municipio']) : null;
+            $num_poligono         = !empty(trim($input['num_poligono'] ?? '')) ? trim($input['num_poligono']) : null;
+            $num_parcela          = !empty(trim($input['num_parcela'] ?? '')) ? trim($input['num_parcela']) : null;
 
             $v = \Core\Validator::make($input, [
                 'id'          => 'required|integer',
@@ -280,8 +286,8 @@ class ParcelasController extends BaseController
             }
             $stmt->close();
 
-            $stmt = $db->prepare("UPDATE parcelas SET nombre = ?, olivos = ?, ubicacion = ?, propietario = ?, propietario_id = ?, hidrante = ?, descripcion = ?, referencia_catastral = ?, tipo_olivos = ?, `año_plantacion` = ?, tipo_plantacion = ?, riego_secano = ?, corta = ? WHERE id = ?");
-            $stmt->bind_param("sisssisssssssi", $nombre, $olivos, $ubicacion, $propietario, $propietario_id, $hidrante, $descripcion, $referencia_catastral, $tipo_olivos, $año_plantacion, $tipo_plantacion, $riego_secano, $corta, $id);
+            $stmt = $db->prepare("UPDATE parcelas SET nombre = ?, olivos = ?, ubicacion = ?, propietario = ?, propietario_id = ?, hidrante = ?, descripcion = ?, referencia_catastral = ?, tipo_olivos = ?, `año_plantacion` = ?, tipo_plantacion = ?, riego_secano = ?, corta = ?, num_municipio = ?, num_poligono = ?, num_parcela = ? WHERE id = ?");
+            $stmt->bind_param("sisssissssssssssi", $nombre, $olivos, $ubicacion, $propietario, $propietario_id, $hidrante, $descripcion, $referencia_catastral, $tipo_olivos, $año_plantacion, $tipo_plantacion, $riego_secano, $corta, $num_municipio, $num_poligono, $num_parcela, $id);
 
             if ($stmt->execute()) {
                 if ($stmt->affected_rows > 0) {

@@ -62,10 +62,57 @@ $title = 'Mi Perfil - MartinCarmona.com';
             </form>
         </div>
 
+        <!-- Sección de cambiar contraseña -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <h2>🔒 Cambiar Contraseña</h2>
+            </div>
+
+            <form id="changePasswordForm" class="profile-form">
+                <div class="form-group">
+                    <label for="passwordActual">Contraseña actual:</label>
+                    <input
+                        type="password"
+                        id="passwordActual"
+                        required
+                        placeholder="Introduce tu contraseña actual"
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="passwordNueva">Nueva contraseña:</label>
+                    <input
+                        type="password"
+                        id="passwordNueva"
+                        required
+                        minlength="6"
+                        placeholder="Mínimo 6 caracteres"
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="passwordConfirmar">Confirmar nueva contraseña:</label>
+                    <input
+                        type="password"
+                        id="passwordConfirmar"
+                        required
+                        minlength="6"
+                        placeholder="Repite la nueva contraseña"
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="changePasswordBtn">
+                        🔒 Cambiar Contraseña
+                    </button>
+                </div>
+
+                <div id="passwordMessage" class="message" style="display: none;"></div>
+            </form>
+        </div>
+
         <!-- Sección de notificaciones -->
-        <div class="profile-card" id="notificaciones" style="background:#2a2a2a;">
-            <div class="profile-header" style="border-bottom-color:#404040;">
-                <h2 style="color:#fff;">🔔 Notificaciones</h2>
+        <div class="profile-card" id="notificaciones">
+            <div class="profile-header">
+                <h2>🔔 Notificaciones</h2>
             </div>
 
             <div id="notif-config" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
@@ -99,11 +146,11 @@ $title = 'Mi Perfil - MartinCarmona.com';
 }
 
 .profile-card {
-    background: white;
-    border-radius: 8px;
+    background: #2a2a2a;
+    border-radius: 10px;
     padding: 30px;
-    margin-bottom: 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    border: 1px solid #3a3a3a;
 }
 
 .profile-header {
@@ -111,14 +158,14 @@ $title = 'Mi Perfil - MartinCarmona.com';
     align-items: center;
     margin-bottom: 25px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 2px solid #3a3a3a;
 }
 
 .profile-avatar {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -131,117 +178,118 @@ $title = 'Mi Perfil - MartinCarmona.com';
 
 .profile-header h2 {
     margin: 0;
-    color: #333;
-    font-size: 24px;
+    color: #fff;
+    font-size: 22px;
 }
 
 .profile-info {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
 }
 
 .info-item {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .info-item label {
     font-weight: 600;
-    color: #666;
-    font-size: 14px;
+    color: #a8d5ab;
+    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .info-item span {
-    color: #333;
+    color: #ddd;
     font-size: 16px;
     padding: 10px;
-    background: #f8f9fa;
-    border-radius: 4px;
+    background: #333;
+    border-radius: 8px;
+    border: 1px solid #404040;
 }
 
 .profile-form {
     margin-top: 20px;
 }
 
-.form-group {
-    margin-bottom: 20px;
+.profile-form .form-group {
+    margin-bottom: 18px;
 }
 
-.form-group label {
+.profile-form .form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #333;
+    color: #ccc;
 }
 
-.form-group input {
+.profile-form .form-group input {
     width: 100%;
     padding: 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 6px;
+    border: 1px solid #404040;
+    border-radius: 8px;
     font-size: 16px;
     transition: border-color 0.3s;
     box-sizing: border-box;
+    background: #333;
+    color: #fff;
 }
 
-.form-group input:focus {
+.profile-form .form-group input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #4caf50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
-.form-actions {
+.profile-form .form-actions {
     margin-top: 25px;
 }
 
-.btn {
+.profile-form .btn-primary {
+    background: #4caf50;
+    color: white;
     padding: 12px 24px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s;
-    text-decoration: none;
-    display: inline-block;
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+.profile-form .btn-primary:hover {
+    background: #43a047;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.btn-primary:active {
+.profile-form .btn-primary:active {
     transform: translateY(0);
 }
 
 .message {
     margin-top: 15px;
     padding: 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
 }
 
 .message.success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: rgba(76, 175, 80, 0.15);
+    color: #a8d5ab;
+    border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .message.error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background: rgba(244, 67, 54, 0.15);
+    color: #ef9a9a;
+    border: 1px solid rgba(244, 67, 54, 0.3);
 }
 
-#updateNameBtn:disabled {
+#updateNameBtn:disabled,
+#changePasswordBtn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
@@ -314,6 +362,67 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             messageDiv.style.display = 'none';
         }, 5000);
+    }
+
+    // ── Cambiar contraseña ─────────────────────────────────────────────
+    const pwForm = document.getElementById('changePasswordForm');
+    const pwMessage = document.getElementById('passwordMessage');
+    const pwBtn = document.getElementById('changePasswordBtn');
+
+    pwForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const actual = document.getElementById('passwordActual').value;
+        const nueva = document.getElementById('passwordNueva').value;
+        const confirmar = document.getElementById('passwordConfirmar').value;
+
+        if (nueva !== confirmar) {
+            showPwMessage('Las contraseñas no coinciden', 'error');
+            return;
+        }
+
+        if (nueva.length < 6) {
+            showPwMessage('La contraseña debe tener al menos 6 caracteres', 'error');
+            return;
+        }
+
+        pwBtn.disabled = true;
+        pwBtn.textContent = '⏳ Cambiando...';
+
+        try {
+            const res = await fetch('<?= $this->url('/perfil/cambiarPassword') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    password_actual: actual,
+                    password_nueva: nueva,
+                    password_confirmacion: confirmar
+                })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showPwMessage(data.message, 'success');
+                pwForm.reset();
+            } else {
+                showPwMessage(data.message || 'Error al cambiar la contraseña', 'error');
+            }
+        } catch (err) {
+            showPwMessage('Error de conexión', 'error');
+        } finally {
+            pwBtn.disabled = false;
+            pwBtn.textContent = '🔒 Cambiar Contraseña';
+        }
+    });
+
+    function showPwMessage(text, type) {
+        pwMessage.textContent = text;
+        pwMessage.className = 'message ' + type;
+        pwMessage.style.display = 'block';
+        setTimeout(() => { pwMessage.style.display = 'none'; }, 5000);
     }
 
     // ── Notificaciones ───────────────────────────────────────────────────

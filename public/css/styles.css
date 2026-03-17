@@ -59,12 +59,14 @@ body {
     top: 0;
     right: -350px;
     width: 300px;
+    max-width: 85vw;
     height: 100vh;
     background-color: #2a2a2a;
     padding: 80px 20px 20px;
     transition: 0.3s;
     z-index: 99;
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
 }
 
 .nav-menu.active {
@@ -76,9 +78,9 @@ body {
     padding: 15px 20px;
     color: white;
     text-decoration: none;
-    font-size: x-large;
+    font-size: 1.1rem;
     border-radius: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     transition: all 0.3s ease;
 }
 
@@ -585,7 +587,7 @@ body {
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: bold;
-    word-wrap: break-word;
+    overflow: hidden;
     line-height: 1.2;
     cursor: grab;
 }
@@ -1050,7 +1052,7 @@ body {
     border-radius: 6px;
     max-height: 180px;
     overflow-y: auto;
-    z-index: 9999;
+    z-index: 1000001; /* Por encima de .modal (z-index: 1000000) */
     list-style: none;
     margin: 2px 0 0;
     padding: 2px 0;
@@ -5410,10 +5412,11 @@ a:focus-visible {
 
 /* Panel de tareas pendientes */
 .pending-panel {
-    margin-top: 1.5rem;
+    margin-top: 10px;
     background: #2a2a2a;
-    border-radius: 10px;
+    border-radius: 0 0 10px 10px;
     overflow: hidden;
+    border-top: 1px solid #404040;
 }
 
 .pending-header {
@@ -5442,6 +5445,35 @@ a:focus-visible {
     align-items: center;
     justify-content: center;
     padding: 0 6px;
+}
+
+/* Formulario inline para crear tarea pendiente */
+.pending-create-form {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #404040;
+}
+
+.pending-create-input {
+    flex: 1;
+    padding: 6px 10px;
+    background: #333;
+    border: 1px solid #555;
+    border-radius: 6px;
+    color: #ddd;
+    font-size: 0.85rem;
+}
+
+.pending-create-input:focus {
+    border-color: #4caf50;
+    outline: none;
+}
+
+.pending-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .pending-list {

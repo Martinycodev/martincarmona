@@ -58,7 +58,7 @@
                         <td><?= htmlspecialchars($t['descripcion'] ?: '—') ?></td>
                         <td><?= htmlspecialchars($t['trabajadores_nombres'] ?: '—') ?></td>
                         <td><?= htmlspecialchars($t['parcelas_nombres'] ?: '—') ?></td>
-                        <td><?= htmlspecialchars(substr($t['created_at'] ?? '', 0, 10)) ?></td>
+                        <td><?= !empty($t['created_at']) ? date('d-m-Y', strtotime($t['created_at'])) : '—' ?></td>
                         <td>
                             <button class="btn btn-primary btn-sm" onclick="abrirModalFechar(<?= intval($t['id']) ?>, <?= htmlspecialchars(json_encode($t['titulo'] ?: ''), ENT_QUOTES) ?>)">
                                 📅 Fechar

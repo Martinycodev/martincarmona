@@ -146,7 +146,7 @@
                     <tbody>
                         <?php foreach ($top_movimientos as $mov): ?>
                         <tr>
-                            <td><?= date('d/m/Y', strtotime($mov['fecha'])) ?></td>
+                            <td><?= date('d-m-Y', strtotime($mov['fecha'])) ?></td>
                             <td><?= htmlspecialchars($mov['concepto']) ?></td>
                             <td>
                                 <span style="color:<?= $mov['tipo'] === 'ingreso' ? '#4caf50' : '#f44336' ?>; font-weight:600;">

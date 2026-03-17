@@ -65,10 +65,10 @@
                             <td><?= htmlspecialchars($v['matricula'] ?? '—') ?></td>
                             <td><?= htmlspecialchars($v['seguro'] ?? '—') ?></td>
                             <td><?= !empty($v['precio_seguro']) ? '&euro;' . number_format($v['precio_seguro'], 2) : '—' ?></td>
-                            <td><?= !empty($v['fecha_matriculacion']) ? date('d/m/Y', strtotime($v['fecha_matriculacion'])) : '—' ?></td>
+                            <td><?= !empty($v['fecha_matriculacion']) ? date('d-m-Y', strtotime($v['fecha_matriculacion'])) : '—' ?></td>
                             <td>
                                 <?php if (!empty($v['pasa_itv'])): ?>
-                                    <?= date('d/m/Y', strtotime($v['pasa_itv'])) ?>
+                                    <?= date('d-m-Y', strtotime($v['pasa_itv'])) ?>
                                 <?php else: ?>
                                     —
                                 <?php endif; ?>
@@ -117,7 +117,7 @@
                             <td><strong><?= htmlspecialchars($h['nombre']) ?></strong></td>
                             <td><?= intval($h['cantidad'] ?? 1) ?></td>
                             <td><?= !empty($h['precio']) ? '&euro;' . number_format($h['precio'], 2) : '—' ?></td>
-                            <td><?= !empty($h['fecha_compra']) ? date('d/m/Y', strtotime($h['fecha_compra'])) : '—' ?></td>
+                            <td><?= !empty($h['fecha_compra']) ? date('d-m-Y', strtotime($h['fecha_compra'])) : '—' ?></td>
                             <td style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><?= htmlspecialchars($h['descripcion'] ?? '') ?></td>
                         </tr>
                         <?php endforeach; ?>

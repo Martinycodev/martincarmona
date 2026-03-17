@@ -21,6 +21,9 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
             <?php if (!empty($parcela['referencia_catastral'])): ?>
             <div><strong>Referencia catastral:</strong> <?= htmlspecialchars($parcela['referencia_catastral']) ?></div>
             <?php endif; ?>
+            <?php if (!empty($parcela['num_municipio']) || !empty($parcela['num_poligono']) || !empty($parcela['num_parcela'])): ?>
+            <div><strong>SIGPAC:</strong> Mun. <?= htmlspecialchars($parcela['num_municipio'] ?? '—') ?> / Pol. <?= htmlspecialchars($parcela['num_poligono'] ?? '—') ?> / Par. <?= htmlspecialchars($parcela['num_parcela'] ?? '—') ?></div>
+            <?php endif; ?>
             <?php if (!empty($parcela['tipo_olivos'])): ?>
             <div><strong>Tipo de olivos:</strong> <?= htmlspecialchars($parcela['tipo_olivos']) ?></div>
             <?php endif; ?>
@@ -162,6 +165,20 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
                 </div>
                 <div class="form-row">
                     <div class="form-group">
+                        <label>Nº Municipio:</label>
+                        <input type="text" name="num_municipio" maxlength="10" value="<?= htmlspecialchars($parcela['num_municipio'] ?? '') ?>" placeholder="Ej: 050">
+                    </div>
+                    <div class="form-group">
+                        <label>Nº Polígono:</label>
+                        <input type="text" name="num_poligono" maxlength="10" value="<?= htmlspecialchars($parcela['num_poligono'] ?? '') ?>" placeholder="Ej: 012">
+                    </div>
+                    <div class="form-group">
+                        <label>Nº Parcela:</label>
+                        <input type="text" name="num_parcela" maxlength="10" value="<?= htmlspecialchars($parcela['num_parcela'] ?? '') ?>" placeholder="Ej: 00045">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
                         <label>Año de Plantación:</label>
                         <input type="number" name="año_plantacion" min="1900" max="2100" value="<?= intval($parcela['año_plantacion'] ?? 0) ?: '' ?>">
                     </div>
@@ -259,7 +276,7 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
                 <tr id="doc-row-<?= intval($doc['id']) ?>">
                     <td><?= htmlspecialchars($doc['nombre']) ?></td>
                     <td><?= htmlspecialchars($doc['tipo']) ?></td>
-                    <td><?= htmlspecialchars($doc['created_at']) ?></td>
+                    <td><?= !empty($doc['created_at']) ? date('d-m-Y', strtotime($doc['created_at'])) : '—' ?></td>
                     <td>
                         <a href="<?= $this->url($doc['archivo']) ?>" class="btn btn-secondary btn-sm" target="_blank">Descargar</a>
                         <button class="btn btn-danger btn-sm" onclick="eliminarDocumento(<?= intval($doc['id']) ?>)">Eliminar</button>

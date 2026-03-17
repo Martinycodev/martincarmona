@@ -39,6 +39,16 @@
             </option>
             <?php endforeach; ?>
         </select>
+
+        <!-- Temporada de riego -->
+        <?php if (!empty($temporadaActiva)): ?>
+            <span style="color:#4caf50; font-weight:600; font-size:0.9rem;">
+                ● Temporada <?= intval($temporadaActiva['anio']) ?> activa
+            </span>
+            <button class="btn btn-danger btn-sm" onclick="terminarTemporada()">Terminar temporada</button>
+        <?php else: ?>
+            <button class="btn btn-success btn-sm" onclick="iniciarTemporada()">Iniciar temporada <?= date('Y') ?></button>
+        <?php endif; ?>
     </div>
 
     <!-- Tabla de riegos -->
@@ -154,6 +164,35 @@
 var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
 var basePath  = window._APP_BASE_PATH || '';
 var modoEdicion = false;
+
+/* ── Temporada de riego ──────────────────────────────────────────────── */
+async function iniciarTemporada() {
+    if (!confirm('¿Iniciar temporada de riego ' + new Date().getFullYear() + '?')) return;
+    try {
+        var res = await fetch(basePath + '/riego/iniciarTemporada', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({ anio: new Date().getFullYear() })
+        });
+        var data = await res.json();
+        if (data.success) { showToast(data.message, 'success'); location.reload(); }
+        else { showToast(data.message, 'error'); }
+    } catch (e) { showToast('Error de conexión', 'error'); }
+}
+
+async function terminarTemporada() {
+    if (!confirm('¿Terminar la temporada de riego actual? No se borrarán los registros.')) return;
+    try {
+        var res = await fetch(basePath + '/riego/terminarTemporada', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({})
+        });
+        var data = await res.json();
+        if (data.success) { showToast(data.message, 'success'); location.reload(); }
+        else { showToast(data.message, 'error'); }
+    } catch (e) { showToast('Error de conexión', 'error'); }
+}
 
 /* ── Auto-relleno parcela ↔ hidrante ──────────────────────────────────
    Al seleccionar una parcela → se rellena el campo hidrante.

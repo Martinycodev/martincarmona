@@ -82,7 +82,7 @@
         <tbody>
         <?php foreach ($ingresos as $i): ?>
         <tr data-id="<?= $i['id'] ?>">
-            <td><?= date('d/m/Y', strtotime($i['fecha'])) ?></td>
+            <td><?= date('d-m-Y', strtotime($i['fecha'])) ?></td>
             <td><?= htmlspecialchars($i['concepto']) ?></td>
             <td><span class="badge-cat"><?= htmlspecialchars($labels[$i['categoria']] ?? $i['categoria']) ?></span></td>
             <td class="importe-ingreso">+<?= number_format($i['importe'], 2, ',', '.') ?> €</td>

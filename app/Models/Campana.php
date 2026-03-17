@@ -54,6 +54,19 @@ class Campana
     }
 
     /**
+     * Obtener la campaña activa del usuario (solo puede haber una)
+     */
+    public function getActiva($userId)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM campanas WHERE activa = 1 AND id_user = ? LIMIT 1");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result;
+    }
+
+    /**
      * Crear nueva campaña
      */
     public function create($nombre, $fechaInicio, $userId)

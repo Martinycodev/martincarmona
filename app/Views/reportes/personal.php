@@ -94,7 +94,7 @@
                             <td><?= number_format(floatval($t['horas_anio']), 1) ?>h</td>
                             <td><?= intval($t['meses_activo']) ?>/12</td>
                             <td><?= intval($t['parcelas_distintas']) ?></td>
-                            <td><?= $t['ultima_actividad'] ? date('d/m/Y', strtotime($t['ultima_actividad'])) : '—' ?></td>
+                            <td><?= $t['ultima_actividad'] ? date('d-m-Y', strtotime($t['ultima_actividad'])) : '—' ?></td>
                         </tr>
                         <?php endforeach; ?>
                         <?php endif; ?>

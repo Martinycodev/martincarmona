@@ -109,7 +109,7 @@
                 <tbody>
                 <?php foreach ($ultimosGastos as $g): ?>
                 <tr>
-                    <td><?= date('d/m/Y', strtotime($g['fecha'])) ?></td>
+                    <td><?= date('d-m-Y', strtotime($g['fecha'])) ?></td>
                     <td><?= htmlspecialchars($g['concepto']) ?></td>
                     <td class="importe-gasto">−<?= number_format($g['importe'], 2, ',', '.') ?> €</td>
                     <td><span class="badge-cuenta badge-<?= $g['cuenta'] ?? 'banco' ?>"><?= ucfirst($g['cuenta'] ?? 'banco') ?></span></td>
@@ -133,7 +133,7 @@
                 <tbody>
                 <?php foreach ($ultimosIngresos as $i): ?>
                 <tr>
-                    <td><?= date('d/m/Y', strtotime($i['fecha'])) ?></td>
+                    <td><?= date('d-m-Y', strtotime($i['fecha'])) ?></td>
                     <td><?= htmlspecialchars($i['concepto']) ?></td>
                     <td class="importe-ingreso">+<?= number_format($i['importe'], 2, ',', '.') ?> €</td>
                     <td><span class="badge-cuenta badge-<?= $i['cuenta'] ?? 'banco' ?>"><?= ucfirst($i['cuenta'] ?? 'banco') ?></span></td>

@@ -393,7 +393,10 @@ class TrabajadoresController extends BaseController
     }
 
     /**
-     * Eliminar un trabajador
+     * Dar de baja o eliminar un trabajador
+     * Si tiene tareas asignadas → se da de baja (fecha_baja + estado inactivo)
+     * Si no tiene tareas → se elimina definitivamente
+     * Si se envía forzar=true → se elimina definitivamente aunque tenga tareas
      */
     public function eliminar()
     {
@@ -415,6 +418,7 @@ class TrabajadoresController extends BaseController
             }
 
             $id = intval($input['id'] ?? 0);
+            $forzar = !empty($input['forzar']);
 
             if ($id <= 0) {
                 echo json_encode(['success' => false, 'message' => 'ID no válido']);
@@ -423,19 +427,43 @@ class TrabajadoresController extends BaseController
 
             $db = \Database::connect();
 
+            // Verificar si tiene tareas asignadas
             $stmt = $db->prepare("SELECT COUNT(*) as count FROM tarea_trabajadores WHERE trabajador_id = ?");
             $stmt->bind_param("i", $id);
             $stmt->execute();
-            $result = $stmt->get_result();
-            $row = $result->fetch_assoc();
-
-            if ($row['count'] > 0) {
-                echo json_encode(['success' => false, 'message' => 'No se puede eliminar el trabajador porque está asignado a tareas']);
-                return;
-            }
+            $tieneTareas = intval($stmt->get_result()->fetch_assoc()['count']) > 0;
             $stmt->close();
 
-            // Eliminar foto de perfil si existe
+            if ($tieneTareas && !$forzar) {
+                // Dar de baja: marcar fecha_baja y estado inactivo
+                $fechaBaja = date('Y-m-d');
+                $stmt = $db->prepare("UPDATE trabajadores SET fecha_baja = ?, activo = 0 WHERE id = ? AND id_user = ?");
+                $stmt->bind_param("sii", $fechaBaja, $id, $_SESSION['user_id']);
+
+                if ($stmt->execute() && $stmt->affected_rows > 0) {
+                    echo json_encode([
+                        'success' => true,
+                        'tipo' => 'baja',
+                        'message' => 'Trabajador dado de baja. Su historial se conserva.'
+                    ]);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'No se encontró el trabajador']);
+                }
+                $stmt->close();
+                $db->close();
+                return;
+            }
+
+            // Eliminar definitivamente (sin tareas o con forzar=true)
+            if ($forzar && $tieneTareas) {
+                // Primero eliminar las asignaciones a tareas
+                $stmt = $db->prepare("DELETE FROM tarea_trabajadores WHERE trabajador_id = ?");
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $stmt->close();
+            }
+
+            // Eliminar foto de perfil y documentos si existen
             $uploadDir = BASE_PATH . '/public/uploads/trabajadores/' . $id . '/';
             if (is_dir($uploadDir)) {
                 foreach (glob($uploadDir . '*') as $file) {
@@ -444,17 +472,17 @@ class TrabajadoresController extends BaseController
                 rmdir($uploadDir);
             }
 
-            $stmt = $db->prepare("DELETE FROM trabajadores WHERE id = ?");
-            $stmt->bind_param("i", $id);
+            $stmt = $db->prepare("DELETE FROM trabajadores WHERE id = ? AND id_user = ?");
+            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
 
             if ($stmt->execute()) {
                 if ($stmt->affected_rows > 0) {
-                    echo json_encode(['success' => true, 'message' => 'Trabajador eliminado correctamente']);
+                    echo json_encode(['success' => true, 'tipo' => 'eliminado', 'message' => 'Trabajador eliminado definitivamente']);
                 } else {
                     echo json_encode(['success' => false, 'message' => 'No se encontró el trabajador']);
                 }
             } else {
-                echo json_encode(['success' => false, 'message' => 'Error al eliminar el trabajador: ' . $stmt->error]);
+                echo json_encode(['success' => false, 'message' => 'Error al eliminar: ' . $stmt->error]);
             }
 
             $stmt->close();
@@ -462,6 +490,47 @@ class TrabajadoresController extends BaseController
 
         } catch (\Exception $e) {
             \Core\Logger::app()->error("Error eliminando trabajador: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
+        }
+    }
+
+    /**
+     * Reactivar un trabajador dado de baja (quitar fecha_baja)
+     */
+    public function reactivar()
+    {
+        header('Content-Type: application/json');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+
+        $this->validateCsrf();
+
+        try {
+            $input = json_decode(file_get_contents('php://input'), true);
+            $id = intval($input['id'] ?? 0);
+
+            if ($id <= 0) {
+                echo json_encode(['success' => false, 'message' => 'ID no válido']);
+                return;
+            }
+
+            $db = \Database::connect();
+            $stmt = $db->prepare("UPDATE trabajadores SET fecha_baja = NULL WHERE id = ? AND id_user = ?");
+            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+
+            if ($stmt->execute() && $stmt->affected_rows > 0) {
+                echo json_encode(['success' => true, 'message' => 'Trabajador reactivado correctamente']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'No se encontró el trabajador']);
+            }
+
+            $stmt->close();
+            $db->close();
+        } catch (\Exception $e) {
+            \Core\Logger::app()->error("Error reactivando trabajador: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
     }

@@ -39,6 +39,7 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
                 <tr>
                     <th>Fecha</th>
                     <th>Parcela</th>
+                    <th>Calidad</th>
                     <th>Kilos</th>
                     <th>Rendimiento %</th>
                     <th>Beneficio</th>
@@ -48,8 +49,9 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
             <tbody id="tablaRegistros">
                 <?php foreach ($registros as $r): ?>
                 <tr id="registro-row-<?= intval($r['id']) ?>">
-                    <td><?= htmlspecialchars($r['fecha']) ?></td>
+                    <td><?= !empty($r['fecha']) ? date('d-m-Y', strtotime($r['fecha'])) : '—' ?></td>
                     <td><?= htmlspecialchars($r['parcela_nombre'] ?? '—') ?></td>
+                    <td><?= htmlspecialchars($r['calidad'] ?? '—') ?></td>
                     <td><?= number_format($r['kilos'], 2, ',', '.') ?> kg</td>
                     <td><?= $r['rendimiento_pct'] !== null ? number_format($r['rendimiento_pct'], 1, ',', '.') . ' %' : '—' ?></td>
                     <td><?= $r['beneficio'] !== null ? number_format($r['beneficio'], 2, ',', '.') . ' €' : '—' ?></td>
@@ -62,13 +64,13 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($registros)): ?>
-                <tr><td colspan="<?= $cerrada ? 5 : 6 ?>" style="text-align:center; color:#6b7280; padding:1.5rem;">Sin registros aún.</td></tr>
+                <tr><td colspan="<?= $cerrada ? 6 : 7 ?>" style="text-align:center; color:#6b7280; padding:1.5rem;">Sin registros aún.</td></tr>
                 <?php endif; ?>
             </tbody>
             <?php if (!empty($registros)): ?>
             <tfoot>
-                <tr style="font-weight:700; background:var(--bg-secondary, #f3f4f6);">
-                    <td colspan="2">TOTAL</td>
+                <tr style="font-weight:700; background:#1a1a1a; color:#fff;">
+                    <td colspan="3">TOTAL</td>
                     <td><?= number_format($totalKilos, 2, ',', '.') ?> kg</td>
                     <td>—</td>
                     <td><?= $totalBeneficio > 0 ? number_format($totalBeneficio, 2, ',', '.') . ' €' : '—' ?></td>
@@ -131,11 +133,18 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
             </div>
             <div class="form-group">
                 <label>Parcela</label>
-                <select id="reg_parcela_id">
-                    <option value="">— Sin parcela —</option>
-                    <?php foreach ($parcelas as $p): ?>
-                    <option value="<?= intval($p['id']) ?>"><?= htmlspecialchars($p['nombre']) ?></option>
-                    <?php endforeach; ?>
+                <div class="combobox-wrap" id="cb-reg-parcela">
+                    <input type="text" class="combobox-input" placeholder="Buscar parcela..." autocomplete="off">
+                    <input type="hidden" class="combobox-val" value="">
+                    <ul class="combobox-list"></ul>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Calidad</label>
+                <select id="reg_calidad">
+                    <option value="">— Sin especificar —</option>
+                    <option value="Vuelo">Vuelo</option>
+                    <option value="Suelo">Suelo</option>
                 </select>
             </div>
             <div class="form-group">
@@ -180,115 +189,160 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
 </div>
 
 <script>
-var csrfToken  = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-var basePath   = window._APP_BASE_PATH || '';
+// Datos inyectados desde PHP (disponibles inmediatamente)
 var campanaId  = <?= intval($campana['id']) ?>;
+var parcelasOpciones = <?= json_encode(array_map(function($p) {
+    return ['id' => $p['id'], 'nombre' => $p['nombre']];
+}, $parcelas)) ?>;
 
-// ── Modal registro ────────────────────────────────────────────────────────
-function abrirModalRegistro(registro) {
-    document.getElementById('modalRegistroTitle').textContent = registro ? 'Editar registro' : 'Añadir registro';
-    document.getElementById('reg_id').value          = registro ? registro.id : 0;
-    document.getElementById('reg_fecha').value       = registro ? registro.fecha : new Date().toISOString().split('T')[0];
-    document.getElementById('reg_parcela_id').value  = registro ? (registro.parcela_id || '') : '';
-    document.getElementById('reg_kilos').value       = registro ? registro.kilos : '';
-    document.getElementById('reg_rendimiento').value = registro ? (registro.rendimiento_pct || '') : '';
-    document.getElementById('modalRegistro').style.display = 'flex';
-    document.getElementById('reg_fecha').focus();
-}
-function cerrarModalRegistro() {
-    document.getElementById('modalRegistro').style.display = 'none';
-    document.getElementById('formRegistro').reset();
-    document.getElementById('reg_id').value = 0;
-}
-function editarRegistro(registro) { abrirModalRegistro(registro); }
+// Patrón AJAX-safe: esperar a que task-sidebar.js esté cargado
+function _initCampanaDetalle() {
+    var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+    var basePath  = window._APP_BASE_PATH || '';
 
-document.getElementById('formRegistro').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var btn = this.querySelector('[type=submit]');
-    btn.disabled = true;
-    var id = parseInt(document.getElementById('reg_id').value);
-    var url = id > 0 ? '/campana/actualizarRegistro' : '/campana/crearRegistro';
+    // Inicializar combobox de parcelas (función global de task-sidebar.js)
+    if (typeof initCombobox === 'function') {
+        initCombobox('cb-reg-parcela', parcelasOpciones);
+    }
 
-    var payload = {
-        campana_id:      campanaId,
-        parcela_id:      document.getElementById('reg_parcela_id').value || null,
-        fecha:           document.getElementById('reg_fecha').value,
-        kilos:           parseFloat(document.getElementById('reg_kilos').value),
-        rendimiento_pct: document.getElementById('reg_rendimiento').value !== '' ? parseFloat(document.getElementById('reg_rendimiento').value) : null
+    // ── Modal registro ────────────────────────────────────────────────────
+    window.abrirModalRegistro = function(registro) {
+        document.getElementById('modalRegistroTitle').textContent = registro ? 'Editar registro' : 'Añadir registro';
+        document.getElementById('reg_id').value          = registro ? registro.id : 0;
+        document.getElementById('reg_fecha').value       = registro ? registro.fecha : new Date().toISOString().split('T')[0];
+        document.getElementById('reg_kilos').value       = registro ? registro.kilos : '';
+        document.getElementById('reg_rendimiento').value = registro ? (registro.rendimiento_pct || '') : '';
+        document.getElementById('reg_calidad').value     = registro ? (registro.calidad || '') : '';
+
+        // Combobox parcela: asignar valor si estamos editando
+        var cbWrap  = document.getElementById('cb-reg-parcela');
+        var cbInput = cbWrap.querySelector('.combobox-input');
+        var cbVal   = cbWrap.querySelector('.combobox-val');
+        if (registro && registro.parcela_id) {
+            cbVal.value = registro.parcela_id;
+            var parcela = parcelasOpciones.find(function(p) { return p.id == registro.parcela_id; });
+            cbInput.value = parcela ? parcela.nombre : (registro.parcela_nombre || '');
+        } else {
+            cbInput.value = '';
+            cbVal.value   = '';
+        }
+
+        document.getElementById('modalRegistro').style.display = 'flex';
+        document.getElementById('reg_fecha').focus();
     };
-    if (id > 0) payload.id = id;
 
-    fetch(basePath + url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-        body: JSON.stringify(payload)
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(res) {
-        btn.disabled = false;
-        if (res.success) {
-            cerrarModalRegistro();
-            location.reload();
-        } else {
-            showToast(res.message || 'Error desconocido', 'error');
+    window.cerrarModalRegistro = function() {
+        document.getElementById('modalRegistro').style.display = 'none';
+        document.getElementById('formRegistro').reset();
+        document.getElementById('reg_id').value = 0;
+        if (typeof _resetCombobox === 'function') _resetCombobox('cb-reg-parcela');
+    };
+
+    window.editarRegistro = function(registro) { window.abrirModalRegistro(registro); };
+
+    document.getElementById('formRegistro').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var btn = this.querySelector('[type=submit]');
+        btn.disabled = true;
+        var id  = parseInt(document.getElementById('reg_id').value);
+        var url = id > 0 ? '/campana/actualizarRegistro' : '/campana/crearRegistro';
+
+        // Leer parcela_id del combobox (hidden input)
+        var parcelaId = null;
+        if (typeof _getComboboxSel === 'function') {
+            parcelaId = _getComboboxSel('cb-reg-parcela').id || null;
         }
-    })
-    .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
-});
 
-function eliminarRegistro(id) {
-    if (!confirm('¿Eliminar este registro?')) return;
-    fetch(basePath + '/campana/eliminarRegistro', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-        body: JSON.stringify({ id: id })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(res) {
-        if (res.success) {
-            var row = document.getElementById('registro-row-' + id);
-            if (row) row.remove();
-        } else {
-            showToast(res.message, 'error');
-        }
-    })
-    .catch(function() { showToast('Error de conexión', 'error'); });
-}
+        var payload = {
+            campana_id:      campanaId,
+            parcela_id:      parcelaId,
+            fecha:           document.getElementById('reg_fecha').value,
+            kilos:           parseFloat(document.getElementById('reg_kilos').value),
+            rendimiento_pct: document.getElementById('reg_rendimiento').value !== '' ? parseFloat(document.getElementById('reg_rendimiento').value) : null,
+            calidad:         document.getElementById('reg_calidad').value || null
+        };
+        if (id > 0) payload.id = id;
 
-// ── Modal cerrar campaña ──────────────────────────────────────────────────
-function abrirModalCerrar() {
-    document.getElementById('cerrar_fecha_fin').value = new Date().toISOString().split('T')[0];
-    document.getElementById('modalCerrar').style.display = 'flex';
-    document.getElementById('cerrar_precio').focus();
-}
-function cerrarModalCerrar() {
-    document.getElementById('modalCerrar').style.display = 'none';
-    document.getElementById('formCerrar').reset();
-}
-
-document.getElementById('formCerrar').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var btn = this.querySelector('[type=submit]');
-    btn.disabled = true;
-
-    fetch(basePath + '/campana/cerrar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-        body: JSON.stringify({
-            id:           campanaId,
-            precio_venta: parseFloat(document.getElementById('cerrar_precio').value),
-            fecha_fin:    document.getElementById('cerrar_fecha_fin').value
+        fetch(basePath + url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify(payload)
         })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(res) {
-        btn.disabled = false;
-        if (res.success) location.reload();
-        else showToast(res.message, 'error');
-    })
-    .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
-});
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            btn.disabled = false;
+            if (res.success) {
+                window.cerrarModalRegistro();
+                location.reload();
+            } else {
+                showToast(res.message || 'Error desconocido', 'error');
+            }
+        })
+        .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
+    });
 
-document.getElementById('modalRegistro').addEventListener('click', function(e) { if (e.target === this) cerrarModalRegistro(); });
-document.getElementById('modalCerrar').addEventListener('click', function(e)   { if (e.target === this) cerrarModalCerrar(); });
+    window.eliminarRegistro = function(id) {
+        if (!confirm('¿Eliminar este registro?')) return;
+        fetch(basePath + '/campana/eliminarRegistro', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({ id: id })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            if (res.success) {
+                var row = document.getElementById('registro-row-' + id);
+                if (row) row.remove();
+            } else {
+                showToast(res.message, 'error');
+            }
+        })
+        .catch(function() { showToast('Error de conexión', 'error'); });
+    };
+
+    // ── Modal cerrar campaña ──────────────────────────────────────────────
+    window.abrirModalCerrar = function() {
+        document.getElementById('cerrar_fecha_fin').value = new Date().toISOString().split('T')[0];
+        document.getElementById('modalCerrar').style.display = 'flex';
+        document.getElementById('cerrar_precio').focus();
+    };
+
+    window.cerrarModalCerrar = function() {
+        document.getElementById('modalCerrar').style.display = 'none';
+        document.getElementById('formCerrar').reset();
+    };
+
+    document.getElementById('formCerrar').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var btn = this.querySelector('[type=submit]');
+        btn.disabled = true;
+
+        fetch(basePath + '/campana/cerrar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({
+                id:           campanaId,
+                precio_venta: parseFloat(document.getElementById('cerrar_precio').value),
+                fecha_fin:    document.getElementById('cerrar_fecha_fin').value
+            })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            btn.disabled = false;
+            if (res.success) location.reload();
+            else showToast(res.message, 'error');
+        })
+        .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
+    });
+
+    document.getElementById('modalRegistro').addEventListener('click', function(e) { if (e.target === this) window.cerrarModalRegistro(); });
+    document.getElementById('modalCerrar').addEventListener('click', function(e)   { if (e.target === this) window.cerrarModalCerrar(); });
+}
+
+// AJAX-safe: esperar a DOMContentLoaded si el DOM aún no está listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _initCampanaDetalle);
+} else {
+    _initCampanaDetalle();
+}
 </script>

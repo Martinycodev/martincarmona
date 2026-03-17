@@ -93,7 +93,7 @@
                             </td>
                             <td><?= $p['gasto_total'] > 0 ? '&euro;' . number_format($p['gasto_total'], 2) : '—' ?></td>
                             <td><?= intval($p['movimientos_total']) ?></td>
-                            <td><?= $p['ultima_compra'] ? date('d/m/Y', strtotime($p['ultima_compra'])) : '—' ?></td>
+                            <td><?= $p['ultima_compra'] ? date('d-m-Y', strtotime($p['ultima_compra'])) : '—' ?></td>
                         </tr>
                         <?php endforeach; ?>
                         <?php endif; ?>

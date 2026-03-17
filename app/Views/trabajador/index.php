@@ -69,7 +69,7 @@
             <tbody>
                 <?php foreach ($historial as $h): ?>
                 <tr>
-                    <td style="white-space:nowrap;"><?= htmlspecialchars($h['fecha'] ?? '—') ?></td>
+                    <td style="white-space:nowrap;"><?= !empty($h['fecha']) ? date('d-m-Y', strtotime($h['fecha'])) : '—' ?></td>
                     <td><strong><?= htmlspecialchars($h['titulo']) ?></strong></td>
                     <td style="font-size:.85rem;"><?= htmlspecialchars($h['parcelas'] ?? '—') ?></td>
                     <td><?= $h['horas_asignadas'] !== null ? number_format($h['horas_asignadas'], 1, ',', '.') . ' h' : '—' ?></td>

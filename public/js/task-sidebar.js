@@ -340,6 +340,14 @@ class TaskSidebar {
         const wrap   = this._makeSectionEl('🖼 Imágenes', 'imagenes');
         const gallery = document.createElement('div');
         gallery.id    = 'sidebar-images';
+        gallery.style.cssText = 'display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;';
+
+        // Renderizar imágenes existentes
+        if (tarea.imagenes && tarea.imagenes.length > 0) {
+            tarea.imagenes.forEach(img => {
+                gallery.appendChild(this._crearImagenThumb(img));
+            });
+        }
 
         const uploadBtn = document.createElement('label');
         uploadBtn.className = 'btn btn-secondary btn-sm';
@@ -357,12 +365,68 @@ class TaskSidebar {
         wrap.appendChild(gallery);
         wrap.appendChild(uploadBtn);
 
-        // Cargar imágenes existentes via función global si está disponible
-        if (typeof loadTaskImages === 'function') {
-            setTimeout(() => loadTaskImages(this.taskId, 'sidebar-images', true), 50);
-        }
-
         return wrap;
+    }
+
+    /**
+     * Crear thumbnail de imagen con enlace y botón eliminar
+     */
+    _crearImagenThumb(img) {
+        const div = document.createElement('div');
+        div.style.cssText = 'position:relative; width:80px; height:80px; border-radius:6px; overflow:hidden; border:1px solid #404040;';
+        div.id = 'img-thumb-' + img.id;
+
+        const a = document.createElement('a');
+        a.href = buildUrl(img.file_path.replace(/^\//, ''));
+        a.target = '_blank';
+
+        const imgEl = document.createElement('img');
+        imgEl.src = buildUrl(img.file_path.replace(/^\//, ''));
+        imgEl.style.cssText = 'width:100%; height:100%; object-fit:cover;';
+        imgEl.alt = img.original_filename || 'Imagen';
+        a.appendChild(imgEl);
+
+        const delBtn = document.createElement('button');
+        delBtn.innerHTML = '×';
+        delBtn.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.7); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:14px; cursor:pointer; line-height:1; padding:0;';
+        delBtn.title = 'Eliminar imagen';
+        delBtn.onclick = (e) => {
+            e.preventDefault();
+            this._eliminarImagen(img.id);
+        };
+
+        div.appendChild(a);
+        div.appendChild(delBtn);
+        return div;
+    }
+
+    /**
+     * Eliminar imagen de tarea
+     */
+    async _eliminarImagen(imageId) {
+        if (!confirm('¿Eliminar esta imagen?')) return;
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+            const res = await fetch(buildUrl('/tareas/eliminarImagen'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ id: imageId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const thumb = document.getElementById('img-thumb-' + imageId);
+                if (thumb) thumb.remove();
+                showToast('Imagen eliminada', 'success');
+            } else {
+                showToast(data.message || 'Error al eliminar', 'error');
+            }
+        } catch (e) {
+            showToast('Error de conexión', 'error');
+        }
     }
 
     // ─── Helpers DOM ──────────────────────────────────────────────────────────
@@ -757,7 +821,7 @@ class TaskSidebar {
                 return;
             }
 
-            const nuevoTrabajo = { id: data.id, nombre, precio_hora: null };
+            const nuevoTrabajo = { id: data.id, nombre, precio_hora: 0 };
 
             // Actualizar cache para que el combobox tenga la nueva opción
             if (this._opcionesCache) {
@@ -823,24 +887,62 @@ class TaskSidebar {
         const files = fileInput.files;
         if (!files.length) return;
 
+        // Validar tamaño en cliente: máx 5MB por imagen, máx 10 imágenes
+        const maxSize = 5 * 1024 * 1024;
+        const maxFiles = 10;
+        const validFiles = [];
+
+        for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
+            if (files[i].size > maxSize) {
+                showToast(`${files[i].name} supera 5MB y se omitirá`, 'error');
+            } else {
+                validFiles.push(files[i]);
+            }
+        }
+
+        if (!validFiles.length) {
+            fileInput.value = '';
+            return;
+        }
+
         const formData = new FormData();
         formData.append('tarea_id', this.taskId);
-        Array.from(files).forEach(f => formData.append('imagenes[]', f));
+        validFiles.forEach(f => formData.append('imagenes[]', f));
+
+        showToast('Subiendo ' + validFiles.length + ' imagen(es)...', 'info');
 
         try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
             const res  = await fetch(buildUrl('/tareas/subirImagen'), {
                 method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken
+                },
                 body: formData
             });
-            const data = await res.json();
+
+            // Leer texto primero para diagnosticar errores PHP
+            const text = await res.text();
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (parseErr) {
+                console.error('Respuesta no JSON:', text);
+                showToast('Error del servidor (respuesta no válida)', 'error');
+                return;
+            }
 
             if (data.success) {
                 fileInput.value = '';
                 window.needsReload = true;
-                // Recargar galería
-                if (typeof loadTaskImages === 'function') {
-                    loadTaskImages(this.taskId, 'sidebar-images', true);
+                showToast(data.message || 'Imágenes subidas', 'success');
+                // Añadir thumbnails al gallery
+                const gallery = document.getElementById('sidebar-images');
+                if (gallery && data.images) {
+                    data.images.forEach(img => {
+                        gallery.appendChild(this._crearImagenThumb(img));
+                    });
                 }
             } else {
                 showToast(data.message || 'Error al subir imágenes', 'error');

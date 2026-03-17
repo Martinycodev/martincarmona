@@ -174,13 +174,22 @@ class TareasController extends BaseController
         $userId = $_SESSION['user_id'];
 
         $input = json_decode(file_get_contents('php://input'), true);
-        $fecha = (!empty($input['fecha']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $input['fecha']))
-            ? $input['fecha']
-            : date('Y-m-d');
+
+        // Si viene titulo sin fecha → tarea pendiente (fecha null)
+        // Si viene fecha → tarea con fecha
+        // Si no viene nada → fecha de hoy por defecto
+        $fecha = null;
+        if (!empty($input['fecha']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $input['fecha'])) {
+            $fecha = $input['fecha'];
+        } elseif (empty($input['titulo'])) {
+            $fecha = date('Y-m-d');
+        }
+
+        $titulo = trim($input['titulo'] ?? '');
 
         $tareaData = [
             'fecha'       => $fecha,
-            'titulo'      => '',
+            'titulo'      => $titulo,
             'descripcion' => '',
             'trabajo'     => 0,
             'horas'       => 0,
@@ -499,6 +508,10 @@ class TareasController extends BaseController
      */
     public function subirImagen()
     {
+        // Limpiar cualquier output previo y forzar JSON
+        if (ob_get_level()) ob_clean();
+        header('Content-Type: application/json');
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
@@ -527,70 +540,154 @@ class TareasController extends BaseController
             mkdir($uploadDir, 0755, true);
         }
 
-        $uploadedImages = [];
-        $errors = [];
+        try {
+            $uploadedImages = [];
+            $errors = [];
 
-        // Procesar cada archivo
-        $files = $_FILES['imagenes'];
-        $count = count($files['name']);
+            // Límite: 5MB por imagen, máximo 10 imágenes a la vez
+            $maxFileSize = 5 * 1024 * 1024;
+            $maxFiles = 10;
 
-        for ($i = 0; $i < $count; $i++) {
-            if ($files['error'][$i] === UPLOAD_ERR_OK) {
-                $tmpName = $files['tmp_name'][$i];
-                $originalName = basename($files['name'][$i]);
-                $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+            $files = $_FILES['imagenes'];
+            $count = min(count($files['name']), $maxFiles);
 
-                // Validar extensión
-                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-                if (!in_array($extension, $allowedExtensions)) {
-                    $errors[] = "Archivo $originalName tiene una extensión no permitida";
-                    continue;
-                }
+            for ($i = 0; $i < $count; $i++) {
+                if ($files['error'][$i] === UPLOAD_ERR_OK) {
+                    $tmpName = $files['tmp_name'][$i];
+                    $originalName = basename($files['name'][$i]);
+                    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
 
-                // Generar nombre único
-                $filename = uniqid() . '.' . $extension;
-                $targetFile = $uploadDir . $filename;
-
-                if (move_uploaded_file($tmpName, $targetFile)) {
-                    $imageData = [
-                        'filename' => $filename,
-                        'original_filename' => $originalName,
-                        'file_path' => '/public/uploads/tareas/' . $tareaId . '/' . $filename,
-                        'file_size' => $files['size'][$i],
-                        'mime_type' => $files['type'][$i]
-                    ];
-
-                    $imageId = $this->tareaModel->addImage($tareaId, $imageData);
-
-                    if ($imageId) {
-                        $imageData['id'] = $imageId;
-                        $uploadedImages[] = $imageData;
-                    } else {
-                        $errors[] = "Error al guardar información de $originalName en base de datos";
-                        unlink($targetFile); // Borrar archivo si falla BD
+                    // Validar extensión
+                    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                    if (!in_array($extension, $allowedExtensions)) {
+                        $errors[] = "$originalName: extensión no permitida";
+                        continue;
                     }
+
+                    // Validar tamaño
+                    if ($files['size'][$i] > $maxFileSize) {
+                        $errors[] = "$originalName: supera 5MB";
+                        continue;
+                    }
+
+                    // Validar tipo MIME real
+                    $mimeType = mime_content_type($tmpName);
+                    $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    if (!in_array($mimeType, $allowedMimes)) {
+                        $errors[] = "$originalName: tipo de archivo no válido";
+                        continue;
+                    }
+
+                    // Generar nombre único
+                    $filename = uniqid() . '_' . time();
+                    $targetFile = $uploadDir . $filename;
+
+                    // Intentar redimensionar y comprimir la imagen
+                    $saved = $this->optimizarImagen($tmpName, $mimeType, $targetFile, $extension);
+
+                    if ($saved) {
+                        $finalFile = $saved['path'];
+                        $finalFilename = basename($finalFile);
+
+                        $imageData = [
+                            'filename' => $finalFilename,
+                            'original_filename' => $originalName,
+                            'file_path' => '/public/uploads/tareas/' . $tareaId . '/' . $finalFilename,
+                            'file_size' => filesize($finalFile),
+                            'mime_type' => $saved['mime']
+                        ];
+
+                        $imageId = $this->tareaModel->addImage($tareaId, $imageData);
+
+                        if ($imageId) {
+                            $imageData['id'] = $imageId;
+                            $uploadedImages[] = $imageData;
+                        } else {
+                            $errors[] = "$originalName: error al guardar en BD";
+                            @unlink($finalFile);
+                        }
+                    } else {
+                        $errors[] = "$originalName: error al procesar imagen";
+                    }
+                } else if ($files['error'][$i] === UPLOAD_ERR_INI_SIZE || $files['error'][$i] === UPLOAD_ERR_FORM_SIZE) {
+                    $errors[] = $files['name'][$i] . ": archivo demasiado grande";
                 } else {
-                    $errors[] = "Error al mover el archivo $originalName";
+                    $errors[] = "Error en la subida de " . $files['name'][$i];
                 }
+            }
+
+            if (!empty($uploadedImages)) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => count($uploadedImages) . ' imagen(es) subida(s)',
+                    'images' => $uploadedImages,
+                    'errors' => $errors
+                ]);
             } else {
-                $errors[] = "Error en la subida del archivo " . $files['name'][$i];
+                echo json_encode([
+                    'success' => false,
+                    'message' => !empty($errors) ? implode('. ', $errors) : 'No se pudo subir ninguna imagen',
+                    'errors' => $errors
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Core\Logger::app()->error("Error en subirImagen: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error del servidor: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Optimizar imagen: redimensionar si supera 1920px de ancho y comprimir
+     * Devuelve ['path' => ..., 'extension' => ..., 'mime' => ...] o false
+     */
+    private function optimizarImagen($tmpPath, $mimeType, $basePath, $originalExt)
+    {
+        // Si GD está disponible, redimensionar y comprimir
+        if (\function_exists('imagecreatefromjpeg')) {
+            $maxWidth = 1920;
+            $image = null;
+
+            switch ($mimeType) {
+                case 'image/jpeg': $image = @\imagecreatefromjpeg($tmpPath); break;
+                case 'image/png':  $image = @\imagecreatefrompng($tmpPath);  break;
+                case 'image/webp': $image = @\imagecreatefromwebp($tmpPath); break;
+            }
+
+            if ($image) {
+                $origWidth  = \imagesx($image);
+                $origHeight = \imagesy($image);
+
+                if ($origWidth > $maxWidth) {
+                    $ratio     = $maxWidth / $origWidth;
+                    $newWidth  = $maxWidth;
+                    $newHeight = intval($origHeight * $ratio);
+                    $resized   = \imagecreatetruecolor($newWidth, $newHeight);
+                    \imagealphablending($resized, false);
+                    \imagesavealpha($resized, true);
+                    \imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+                    \imagedestroy($image);
+                    $image = $resized;
+                }
+
+                $dest = $basePath . '.jpg';
+                $ok = \imagejpeg($image, $dest, 80);
+                \imagedestroy($image);
+
+                if ($ok) {
+                    return ['path' => $dest, 'extension' => 'jpg', 'mime' => 'image/jpeg'];
+                }
             }
         }
 
-        if (!empty($uploadedImages)) {
-            echo json_encode([
-                'success' => true,
-                'message' => 'Imágenes subidas correctamente',
-                'images' => $uploadedImages,
-                'errors' => $errors
-            ]);
-        } else {
-            echo json_encode([
-                'success' => false,
-                'message' => 'No se pudo subir ninguna imagen',
-                'errors' => $errors
-            ]);
+        // Fallback sin GD: copiar el archivo original tal cual
+        $dest = $basePath . '.' . $originalExt;
+        if (\move_uploaded_file($tmpPath, $dest)) {
+            return ['path' => $dest, 'extension' => $originalExt, 'mime' => $mimeType];
         }
+        return false;
     }
 
     /**
@@ -598,6 +695,7 @@ class TareasController extends BaseController
      */
     public function eliminarImagen()
     {
+        header('Content-Type: application/json');
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             return;
@@ -667,6 +765,13 @@ class TareasController extends BaseController
         }
 
         $result = $this->tareaModel->agregarTrabajador($tareaId, $trabajadorId, $tarea['horas']);
+
+        // Marcar trabajador como activo este mes
+        if ($result) {
+            $trabajadorModel = new \App\Models\Trabajador();
+            $trabajadorModel->marcarActivo($trabajadorId);
+        }
+
         echo json_encode(['success' => $result, 'message' => $result ? 'Trabajador añadido' : 'Error al añadir trabajador']);
     }
 
@@ -740,9 +845,16 @@ class TareasController extends BaseController
 
         $added   = 0;
         $skipped = 0;
+        $trabajadorModel = new \App\Models\Trabajador();
         foreach ($cuadrilla as $trabajador) {
             $ok = $this->tareaModel->agregarTrabajador($tareaId, $trabajador['id'], $tarea['horas']);
-            $ok ? $added++ : $skipped++;
+            if ($ok) {
+                $added++;
+                // Marcar trabajador como activo este mes
+                $trabajadorModel->marcarActivo($trabajador['id']);
+            } else {
+                $skipped++;
+            }
         }
 
         $nombres = array_column($cuadrilla, 'nombre');
@@ -832,6 +944,51 @@ class TareasController extends BaseController
         }
 
         $result = $this->tareaModel->cambiarTrabajo($tareaId, $trabajoId, $tarea['horas']);
+
+        // Auto-registro en campaña activa si el trabajo es "recoger aceituna"
+        if ($result) {
+            $stmtTr = $this->db->prepare("SELECT nombre FROM trabajos WHERE id = ? AND id_user = ?");
+            $stmtTr->bind_param("ii", $trabajoId, $userId);
+            $stmtTr->execute();
+            $trabajoRow = $stmtTr->get_result()->fetch_assoc();
+            $stmtTr->close();
+
+            if ($trabajoRow && stripos($trabajoRow['nombre'], 'recoger aceituna') !== false) {
+                $campanaModel = new \App\Models\Campana();
+                $campanaActiva = $campanaModel->getActiva($userId);
+
+                if ($campanaActiva) {
+                    // Obtener fecha y parcelas de la tarea
+                    $stmtT = $this->db->prepare("SELECT fecha FROM tareas WHERE id = ?");
+                    $stmtT->bind_param("i", $tareaId);
+                    $stmtT->execute();
+                    $tareaData = $stmtT->get_result()->fetch_assoc();
+                    $stmtT->close();
+
+                    $fecha = $tareaData['fecha'] ?? date('Y-m-d');
+
+                    // Obtener parcelas asignadas a esta tarea
+                    $stmtP = $this->db->prepare("SELECT parcela_id FROM tarea_parcelas WHERE tarea_id = ?");
+                    $stmtP->bind_param("i", $tareaId);
+                    $stmtP->execute();
+                    $parcelasRes = $stmtP->get_result()->fetch_all(MYSQLI_ASSOC);
+                    $stmtP->close();
+
+                    foreach ($parcelasRes as $p) {
+                        // Crear registro con kilos=0 (se rellenará después manualmente)
+                        $campanaModel->crearRegistro(
+                            $campanaActiva['id'],
+                            $p['parcela_id'],
+                            $fecha,
+                            0,    // kilos (se rellena manualmente)
+                            0,    // rendimiento
+                            $userId
+                        );
+                    }
+                }
+            }
+        }
+
         echo json_encode(['success' => $result, 'message' => $result ? 'Trabajo actualizado' : 'Error al cambiar trabajo']);
     }
 

@@ -23,10 +23,13 @@ class Trabajo
                 VALUES (?, ?, ?, ?)
             ");
             
-            $stmt->bind_param("ssdi", 
+            // Forzar precio_hora a 0 si viene null o vacío
+            $precioHora = floatval($data['precio_hora'] ?? 0);
+
+            $stmt->bind_param("ssdi",
                 $data['nombre'],
                 $data['descripcion'],
-                $data['precio_hora'],
+                $precioHora,
                 $userId
             );
             

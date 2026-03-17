@@ -21,6 +21,7 @@ $router->get('/logout', 'AuthController@logout');
 // Perfil
 $router->get('/perfil', 'PerfilController@index');
 $router->post('/perfil/actualizarNombre', 'PerfilController@actualizarNombre');
+$router->post('/perfil/cambiarPassword', 'PerfilController@cambiarPassword');
 
 // Notificaciones / Recordatorios
 $router->get('/notificaciones/pendientes', 'NotificacionesController@pendientes');
@@ -79,6 +80,7 @@ $router->post('/trabajadores/crear', 'TrabajadoresController@crear');
 $router->get('/trabajadores/obtener', 'TrabajadoresController@obtener');
 $router->post('/trabajadores/actualizar', 'TrabajadoresController@actualizar');
 $router->post('/trabajadores/eliminar', 'TrabajadoresController@eliminar');
+$router->post('/trabajadores/reactivar', 'TrabajadoresController@reactivar');
 $router->post('/trabajadores/subirFoto', 'TrabajadoresController@subirFoto');
 $router->get('/trabajadores/cuadrilla', 'TrabajadoresController@obtenerCuadrilla');
 $router->get('/trabajadores/detalle', 'TrabajadoresController@detalle');
@@ -91,6 +93,8 @@ $router->post('/trabajos/crear', 'TrabajosController@crear');
 $router->get('/trabajos/obtener', 'TrabajosController@obtener');
 $router->post('/trabajos/actualizar', 'TrabajosController@actualizar');
 $router->post('/trabajos/eliminar', 'TrabajosController@eliminar');
+$router->post('/trabajos/subirDocumento', 'TrabajosController@subirDocumento');
+$router->post('/trabajos/eliminarDocumento', 'TrabajosController@eliminarDocumento');
 
 // Parcelas
 $router->get('/datos/parcelas', 'ParcelasController@index');
@@ -129,11 +133,14 @@ $router->post('/proveedores/actualizar', 'ProveedoresController@actualizar');
 $router->post('/proveedores/eliminar', 'ProveedoresController@eliminar');
 
 // Riego
+$router->get('/riego', 'RiegoController@index');
 $router->get('/datos/riego', 'RiegoController@index');
 $router->post('/riego/crear', 'RiegoController@crear');
 $router->get('/riego/obtener', 'RiegoController@obtener');
 $router->post('/riego/actualizar', 'RiegoController@actualizar');
 $router->post('/riego/eliminar', 'RiegoController@eliminar');
+$router->post('/riego/iniciarTemporada', 'RiegoController@iniciarTemporada');
+$router->post('/riego/terminarTemporada', 'RiegoController@terminarTemporada');
 
 // Economía
 $router->get('/economia', 'EconomiaController@index');

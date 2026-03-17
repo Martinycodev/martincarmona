@@ -69,7 +69,7 @@
                 <tbody>
                     <?php foreach ($aplicaciones as $ap): ?>
                     <tr id="apl-row-<?= intval($ap['id']) ?>">
-                        <td><?= htmlspecialchars($ap['fecha']) ?></td>
+                        <td><?= !empty($ap['fecha']) ? date('d-m-Y', strtotime($ap['fecha'])) : '—' ?></td>
                         <td><strong><?= htmlspecialchars($ap['producto']) ?></strong></td>
                         <td><?= htmlspecialchars($ap['parcela_nombre'] ?? '—') ?></td>
                         <td><?= $ap['cantidad'] !== null ? number_format($ap['cantidad'], 2, ',', '.') : '—' ?></td>

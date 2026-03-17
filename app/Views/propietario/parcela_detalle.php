@@ -47,7 +47,7 @@
             <tbody>
                 <?php foreach ($tareas as $t): ?>
                 <tr>
-                    <td style="white-space:nowrap;"><?= htmlspecialchars($t['fecha'] ?? '—') ?></td>
+                    <td style="white-space:nowrap;"><?= !empty($t['fecha']) ? date('d-m-Y', strtotime($t['fecha'])) : '—' ?></td>
                     <td><strong><?= htmlspecialchars($t['titulo'] ?? '—') ?></strong></td>
                     <td style="font-size:.85rem;color:#6b7280;">
                         <?= htmlspecialchars(mb_substr($t['descripcion'] ?? '', 0, 100)) ?>

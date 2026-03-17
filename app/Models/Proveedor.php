@@ -23,7 +23,7 @@ class Proveedor
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), CURDATE())
             ");
             
-            $stmt->bind_param("sssssssssssi", 
+            $stmt->bind_param("ssssssssssssi",
                 $data['nombre'],
                 $data['razon_social'],
                 $data['cif'],
@@ -132,7 +132,7 @@ class Proveedor
                 WHERE id = ? AND id_user = ?
             ");
             
-            $stmt->bind_param("sssssssssssii", 
+            $stmt->bind_param("ssssssssssssii",
                 $data['nombre'],
                 $data['razon_social'],
                 $data['cif'],

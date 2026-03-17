@@ -159,7 +159,7 @@
                         <span class="badge-pendiente">Pendiente</span>
                     <?php endif; ?>
                 </td>
-                <td><?= $p['fecha_pago'] ? date('d/m/Y', strtotime($p['fecha_pago'])) : '—' ?></td>
+                <td><?= $p['fecha_pago'] ? date('d-m-Y', strtotime($p['fecha_pago'])) : '—' ?></td>
             </tr>
             <?php endforeach; ?>
             </tbody>

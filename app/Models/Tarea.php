@@ -942,11 +942,18 @@ class Tarea
     public function getImages($tareaId)
     {
         try {
+            // Comprobar si la tabla existe antes de consultar
+            $check = $this->db->query("SHOW TABLES LIKE 'tarea_imagenes'");
+            if (!$check || $check->num_rows === 0) {
+                return [];
+            }
+
             $stmt = $this->db->prepare("
-                SELECT * FROM tarea_imagenes 
-                WHERE tarea_id = ? 
-                ORDER BY uploaded_at DESC
+                SELECT * FROM tarea_imagenes
+                WHERE tarea_id = ?
+                ORDER BY created_at DESC
             ");
+            if (!$stmt) return [];
             $stmt->bind_param("i", $tareaId);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -959,7 +966,6 @@ class Tarea
 
             return $images;
         } catch (\Exception $e) {
-            \Core\Logger::app()->error("Error obteniendo imágenes: " . $e->getMessage());
             return [];
         }
     }

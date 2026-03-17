@@ -265,6 +265,40 @@ class Trabajador
     }
     
     /**
+     * Resetear todos los trabajadores a inactivo (se ejecuta el día 1 de cada mes)
+     */
+    public function resetearActivoMensual($userId)
+    {
+        try {
+            $stmt = $this->db->prepare("UPDATE trabajadores SET activo = 0 WHERE id_user = ?");
+            $stmt->bind_param("i", $userId);
+            $result = $stmt->execute();
+            $stmt->close();
+            return $result;
+        } catch (\Exception $e) {
+            \Core\Logger::app()->error("Error reseteando activo mensual: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Marcar un trabajador como activo (cuando se le asigna una tarea)
+     */
+    public function marcarActivo($id)
+    {
+        try {
+            $stmt = $this->db->prepare("UPDATE trabajadores SET activo = 1 WHERE id = ?");
+            $stmt->bind_param("i", $id);
+            $result = $stmt->execute();
+            $stmt->close();
+            return $result;
+        } catch (\Exception $e) {
+            \Core\Logger::app()->error("Error marcando trabajador activo: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Obtener historial de trabajos del trabajador
      */
     public function getHistorialTrabajos($trabajadorId, $limit = 10)

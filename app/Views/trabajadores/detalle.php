@@ -13,10 +13,28 @@ $title = 'Ficha de Trabajador — ' . htmlspecialchars($trabajador['nombre']);
         </div>
         <div class="header-actions">
             <button class="btn btn-primary" onclick="openEditModal()">✏️ Editar</button>
-            <button class="btn btn-danger" onclick="deleteTrabajador()">🗑️ Eliminar</button>
+            <?php if (!empty($trabajador['fecha_baja'])): ?>
+                <button class="btn btn-success" onclick="reactivarTrabajador()">✅ Reactivar</button>
+                <button class="btn btn-danger" onclick="eliminarDefinitivo()">🗑️ Eliminar definitivo</button>
+            <?php else: ?>
+                <button class="btn btn-danger" onclick="darDeBaja()">🚫 Dar de baja</button>
+            <?php endif; ?>
             <a href="<?= $this->url('/datos/trabajadores') ?>" class="btn btn-secondary">← Volver</a>
         </div>
     </div>
+
+    <?php if (!empty($trabajador['fecha_baja'])): ?>
+    <div class="card" style="background:#3a2020;border:1px solid #f44336;margin-bottom:1rem;">
+        <div style="padding:12px 16px;display:flex;align-items:center;gap:10px;">
+            <span style="font-size:1.3em;">🚫</span>
+            <div>
+                <strong style="color:#f44336;">Trabajador dado de baja</strong>
+                <span style="color:#ccc;"> el <?= date('d-m-Y', strtotime($trabajador['fecha_baja'])) ?></span>
+                <div style="font-size:0.85em;color:#999;margin-top:2px;">Su historial se conserva. Puedes reactivarlo o eliminarlo definitivamente.</div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Modal de Edición -->
     <div id="editModal" class="modal">
@@ -80,10 +98,10 @@ $title = 'Ficha de Trabajador — ' . htmlspecialchars($trabajador['nombre']);
             <div><strong>DNI:</strong> <?= htmlspecialchars($trabajador['dni'] ?? '—') ?></div>
             <div><strong>Nº Seguridad Social:</strong> <?= htmlspecialchars($trabajador['ss'] ?? '—') ?></div>
             <div><strong>Alta SS:</strong>
-                <?= !empty($trabajador['alta_ss']) ? date('d/m/Y', strtotime($trabajador['alta_ss'])) : '—' ?>
+                <?= !empty($trabajador['alta_ss']) ? date('d-m-Y', strtotime($trabajador['alta_ss'])) : '—' ?>
             </div>
             <div><strong>Baja SS:</strong>
-                <?= !empty($trabajador['baja_ss']) ? date('d/m/Y', strtotime($trabajador['baja_ss'])) : '—' ?>
+                <?= !empty($trabajador['baja_ss']) ? date('d-m-Y', strtotime($trabajador['baja_ss'])) : '—' ?>
             </div>
             <div><strong>Cuadrilla:</strong>
                 <?= !empty($trabajador['cuadrilla']) ? '<span style="color:#28a745;font-weight:bold;">Sí</span>' : 'No' ?>
@@ -208,7 +226,7 @@ $title = 'Ficha de Trabajador — ' . htmlspecialchars($trabajador['nombre']);
                 <tbody>
                     <?php foreach ($historial as $fila): ?>
                     <tr>
-                        <td><?= !empty($fila['fecha']) ? date('d/m/Y', strtotime($fila['fecha'])) : '—' ?></td>
+                        <td><?= !empty($fila['fecha']) ? date('d-m-Y', strtotime($fila['fecha'])) : '—' ?></td>
                         <td><?= htmlspecialchars($fila['titulo'] ?? '—') ?></td>
                         <td style="text-align:right"><?= number_format($fila['horas_asignadas'] ?? 0, 2) ?></td>
                         <td style="text-align:right"><?= number_format($fila['precio_hora'] ?? 0, 2) ?> €</td>
@@ -298,8 +316,9 @@ document.getElementById('editWorkerForm').addEventListener('submit', async funct
     } catch { showToastDet('Error de conexión', 'error'); }
 });
 
-async function deleteTrabajador() {
-    if (!confirm('¿Eliminar este trabajador? Esta acción no se puede deshacer.')) return;
+// Dar de baja (trabajador con tareas → se conserva historial)
+async function darDeBaja() {
+    if (!confirm('¿Dar de baja a este trabajador? Se conservará su historial y podrás reactivarlo después.')) return;
     try {
         const res = await fetch(basePathDet + '/trabajadores/eliminar', {
             method: 'POST',
@@ -307,7 +326,37 @@ async function deleteTrabajador() {
             body: JSON.stringify({ id: <?= intval($trabajador['id']) ?> })
         });
         const json = await res.json();
+        if (json.success) { location.reload(); }
+        else { showToastDet(json.message || 'Error desconocido', 'error'); }
+    } catch { showToastDet('Error de conexión', 'error'); }
+}
+
+// Eliminar definitivamente (forzar borrado)
+async function eliminarDefinitivo() {
+    if (!confirm('¿ELIMINAR DEFINITIVAMENTE? Se borrarán TODAS las asignaciones a tareas y datos del trabajador. Esta acción NO se puede deshacer.')) return;
+    try {
+        const res = await fetch(basePathDet + '/trabajadores/eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfTokenDet },
+            body: JSON.stringify({ id: <?= intval($trabajador['id']) ?>, forzar: true })
+        });
+        const json = await res.json();
         if (json.success) { window.location.href = basePathDet + '/datos/trabajadores'; }
+        else { showToastDet(json.message || 'Error desconocido', 'error'); }
+    } catch { showToastDet('Error de conexión', 'error'); }
+}
+
+// Reactivar trabajador dado de baja
+async function reactivarTrabajador() {
+    if (!confirm('¿Reactivar a este trabajador?')) return;
+    try {
+        const res = await fetch(basePathDet + '/trabajadores/reactivar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfTokenDet },
+            body: JSON.stringify({ id: <?= intval($trabajador['id']) ?> })
+        });
+        const json = await res.json();
+        if (json.success) { location.reload(); }
         else { showToastDet(json.message || 'Error desconocido', 'error'); }
     } catch { showToastDet('Error de conexión', 'error'); }
 }

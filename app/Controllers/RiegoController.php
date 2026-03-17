@@ -31,13 +31,17 @@ class RiegoController extends BaseController
         $parcelas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
+        // Temporada activa
+        $temporadaActiva = $this->modelo->getTemporadaActiva($userId);
+
         $this->render('riego/index', [
-            'riegos'      => $riegos,
-            'parcelas'    => $parcelas,
-            'anios'       => $anios,
-            'anioActual'  => $anio,
-            'resumen'     => $resumen,
-            'user'        => ['name' => $_SESSION['user_name'] ?? 'Usuario']
+            'riegos'           => $riegos,
+            'parcelas'         => $parcelas,
+            'anios'            => $anios,
+            'anioActual'       => $anio,
+            'resumen'          => $resumen,
+            'temporadaActiva'  => $temporadaActiva,
+            'user'             => ['name' => $_SESSION['user_name'] ?? 'Usuario']
         ]);
     }
 
@@ -179,5 +183,38 @@ class RiegoController extends BaseController
             \Core\Logger::app()->error("Error eliminando riego: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
         }
+    }
+
+    /**
+     * Iniciar temporada de riego
+     */
+    public function iniciarTemporada()
+    {
+        header('Content-Type: application/json');
+        $this->validateCsrf();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $anio = intval($input['anio'] ?? date('Y'));
+
+        $ok = $this->modelo->iniciarTemporada($anio, $_SESSION['user_id']);
+        echo json_encode([
+            'success' => $ok,
+            'message' => $ok ? "Temporada $anio iniciada" : 'Error al iniciar temporada'
+        ]);
+    }
+
+    /**
+     * Terminar temporada de riego activa
+     */
+    public function terminarTemporada()
+    {
+        header('Content-Type: application/json');
+        $this->validateCsrf();
+
+        $ok = $this->modelo->terminarTemporada($_SESSION['user_id']);
+        echo json_encode([
+            'success' => $ok,
+            'message' => $ok ? 'Temporada de riego finalizada' : 'No hay temporada activa'
+        ]);
     }
 }

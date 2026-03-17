@@ -28,7 +28,7 @@ $title = 'Gestión de Tareas';
                         <tr data-id="<?= $tarea['id'] ?>"
                             style="cursor:pointer;"
                             onclick="if(event.target.closest('.btn-delete')) return; window.taskSidebar && window.taskSidebar.open(<?= $tarea['id'] ?>)">
-                            <td><?= htmlspecialchars(date('d/m/Y', strtotime($tarea['fecha']))) ?></td>
+                            <td><?= htmlspecialchars(date('d-m-Y', strtotime($tarea['fecha']))) ?></td>
                             <td class="description-cell">
                                 <?= htmlspecialchars($tarea['titulo'] ?: ($tarea['descripcion'] ?? 'Sin título')) ?>
                             </td>

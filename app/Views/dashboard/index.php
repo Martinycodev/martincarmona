@@ -6,10 +6,12 @@ $title = 'Datos - MartinCarmona.com';
     <div class="quick-actions">
 
         <div class="quick-buttons">
-            <a href="<?= $this->url('/tareas') ?>" class="btn">📋 Ver Tareas</a>
-            <a href="<?= $this->url('/tareas/pendientes') ?>" class="btn btn-secondary">⏳ Tareas Pendientes</a>
             <a href="<?= $this->url('/busqueda') ?>" class="btn btn-info">🔍 Búsqueda Avanzada</a>
             <a href="<?= $this->url('/economia?openModal=true') ?>" class="btn btn-primary">💰 Añadir Movimiento</a>
+            <?php if (!empty($campanaActiva)): ?>
+                <a href="<?= $this->url('/campana') ?>" class="btn btn-success">🫒 Campaña activa</a>
+            <?php endif; ?>
+            <a href="<?= $this->url('/riego') ?>" class="btn btn-secondary">💧 Riego</a>
         </div>
     </div>
     <br>
@@ -49,16 +51,26 @@ $title = 'Datos - MartinCarmona.com';
         <div id="dropzone-sin-fecha" class="dropzone-sin-fecha">
             ⏳ Arrastra aquí para quitar la fecha
         </div>
-    </div>
 
-    <!-- Panel de tareas pendientes (sin fecha) -->
-    <div class="pending-panel" id="pending-panel">
-        <div class="pending-header">
-            <h3>⏳ Tareas pendientes</h3>
-            <span id="pending-count" class="pending-count">0</span>
-        </div>
-        <div class="pending-list" id="pending-list">
-            <!-- Se rellena por JS -->
+        <!-- Panel de tareas pendientes (dentro del bloque calendario) -->
+        <div class="pending-panel" id="pending-panel">
+            <div class="pending-header">
+                <div class="pending-header-left">
+                    <h3>⏳ Tareas pendientes</h3>
+                    <span id="pending-count" class="pending-count">0</span>
+                </div>
+                <a href="<?= $this->url('/tareas/pendientes') ?>" class="btn btn-sm btn-secondary">Ver todas →</a>
+            </div>
+
+            <!-- Formulario inline para crear tarea pendiente -->
+            <div class="pending-create-form" id="pendingCreateForm">
+                <input type="text" id="pendingTaskTitle" placeholder="Nueva tarea pendiente..." class="pending-create-input" maxlength="200">
+                <button type="button" id="pendingCreateBtn" class="btn btn-primary btn-sm" onclick="crearTareaPendiente()">+</button>
+            </div>
+
+            <div class="pending-list" id="pending-list">
+                <!-- Se rellena por JS -->
+            </div>
         </div>
     </div>
 
@@ -191,7 +203,7 @@ $title = 'Datos - MartinCarmona.com';
                 } else {
                     tareas.forEach((tarea) => {
                         const displayText = tarea.trabajo_nombre || tarea.titulo || 'Sin título';
-                        dayHTML += `<div class="task" draggable="true" data-id="${tarea.id}" data-fecha="${dateStr}" onclick="window.taskSidebar && window.taskSidebar.open(${tarea.id})" title="${tarea.descripcion || ''}">${displayText.length > 20 ? displayText.substring(0, 20) + '...' : displayText}</div>`;
+                        dayHTML += `<div class="task" draggable="true" data-id="${tarea.id}" data-fecha="${dateStr}" onclick="window.taskSidebar && window.taskSidebar.open(${tarea.id})" title="${tarea.descripcion || ''}">${displayText}</div>`;
                     });
                 }
             }
@@ -628,6 +640,48 @@ $title = 'Datos - MartinCarmona.com';
             }
         });
     }
+
+    // ── Crear tarea pendiente inline ────────────────────────────────────
+    async function crearTareaPendiente() {
+        var input = document.getElementById('pendingTaskTitle');
+        var titulo = (input.value || '').trim();
+        if (!titulo) { input.focus(); return; }
+
+        var btn = document.getElementById('pendingCreateBtn');
+        if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
+
+        try {
+            var res = await fetch('<?= $this->url("/tareas/crearVacio") ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ titulo: titulo })
+            });
+            var data = await res.json();
+
+            if (data.success) {
+                input.value = '';
+                showToast('Tarea pendiente creada', 'success');
+                await cargarPendientes();
+            } else {
+                showToast(data.message || 'Error al crear tarea', 'error');
+            }
+        } catch (err) {
+            showToast('Error de conexión', 'error');
+        } finally {
+            if (typeof setButtonLoading === 'function') setButtonLoading(btn, false);
+        }
+    }
+
+    // Permitir crear con Enter
+    document.addEventListener('keydown', function(e) {
+        if (e.target && e.target.id === 'pendingTaskTitle' && e.key === 'Enter') {
+            e.preventDefault();
+            crearTareaPendiente();
+        }
+    });
 
     // Inicializar el calendario (AJAX-safe: funciona tanto en carga normal como AJAX)
     async function initCalendario() {

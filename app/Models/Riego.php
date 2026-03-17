@@ -153,6 +153,74 @@ class Riego
         return $result;
     }
 
+    // ── Temporadas de riego ────────────────────────────────────────────────
+
+    /**
+     * Obtener la temporada activa del usuario
+     */
+    public function getTemporadaActiva($userId)
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT * FROM temporadas_riego WHERE activa = 1 AND id_user = ? LIMIT 1");
+            if (!$stmt) return null; // Tabla puede no existir aún
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+            return $result;
+        } catch (\Exception $e) {
+            \Core\Logger::app()->error("Error getTemporadaActiva (¿falta ejecutar migración?): " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Iniciar temporada de riego para un año
+     */
+    public function iniciarTemporada($anio, $userId)
+    {
+        try {
+            // Cerrar cualquier temporada activa anterior
+            $stmt = $this->db->prepare("UPDATE temporadas_riego SET activa = 0, fecha_fin = CURDATE() WHERE activa = 1 AND id_user = ?");
+            if (!$stmt) return false;
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $stmt->close();
+
+            $fecha = date('Y-m-d');
+            $stmt = $this->db->prepare("
+                INSERT INTO temporadas_riego (anio, activa, fecha_inicio, id_user)
+                VALUES (?, 1, ?, ?)
+                ON DUPLICATE KEY UPDATE activa = 1, fecha_inicio = VALUES(fecha_inicio), fecha_fin = NULL
+            ");
+            $stmt->bind_param("isi", $anio, $fecha, $userId);
+            $ok = $stmt->execute();
+            $stmt->close();
+            return $ok;
+        } catch (\Exception $e) {
+            \Core\Logger::app()->error("Error iniciarTemporada (¿falta ejecutar migración?): " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Terminar la temporada activa
+     */
+    public function terminarTemporada($userId)
+    {
+        try {
+            $stmt = $this->db->prepare("UPDATE temporadas_riego SET activa = 0, fecha_fin = CURDATE() WHERE activa = 1 AND id_user = ?");
+            if (!$stmt) return false;
+            $stmt->bind_param("i", $userId);
+            $ok = $stmt->execute() && $stmt->affected_rows > 0;
+            $stmt->close();
+            return $ok;
+        } catch (\Exception $e) {
+            \Core\Logger::app()->error("Error terminarTemporada (¿falta ejecutar migración?): " . $e->getMessage());
+            return false;
+        }
+    }
+
     /**
      * Resumen: total m³ consumidos y número de riegos, opcionalmente por año
      */
