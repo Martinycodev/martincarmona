@@ -11,6 +11,9 @@
 $router->get('/', 'HomeController@index');
 $router->get('/enlaces', 'EnlacesController@index');
 
+// Contacto (landing page)
+$router->post('/contacto', 'ContactoController@enviar');
+
 // Autenticación
 $router->post('/login', 'AuthController@login');
 $router->get('/logout', 'AuthController@logout');

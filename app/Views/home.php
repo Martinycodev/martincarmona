@@ -361,10 +361,12 @@
             display: block;
             margin-bottom: 18px;
         }
+        .lp-feature-card { cursor: pointer; }
         .lp-feature-title {
-            font-size: 1.05rem;
-            font-weight: 600;
+            font-size: 1.35rem;
+            font-weight: 700;
             margin-bottom: 10px;
+            letter-spacing: -0.01em;
         }
         .lp-feature-desc {
             font-size: 0.88rem;
@@ -372,11 +374,119 @@
             line-height: 1.65;
         }
 
-        /* ===== HOW IT WORKS ===== */
+        /* ===== FEATURE MODAL ===== */
+        .lp-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .lp-modal-overlay.active { display: flex; }
+        .lp-modal {
+            background: var(--surface);
+            border: 1px solid var(--border-hover);
+            border-radius: 18px;
+            padding: 44px 38px;
+            max-width: 520px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+            animation: lp-modal-in 0.25s ease-out;
+        }
+        @keyframes lp-modal-in {
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .lp-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+        .lp-modal-close:hover { color: var(--text); }
+        .lp-modal-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 18px;
+        }
+        .lp-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+        .lp-modal-body {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.75;
+        }
+        .lp-modal-body ul {
+            margin-top: 12px;
+            padding-left: 20px;
+        }
+        .lp-modal-body li {
+            margin-bottom: 6px;
+        }
+
+        /* ===== HOW IT WORKS — CAROUSEL ===== */
         .lp-how-bg {
             background: var(--surface);
             border-top: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
+        }
+
+        /* Tabs de roles */
+        .lp-role-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 48px;
+        }
+        .lp-role-tab {
+            padding: 10px 24px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .lp-role-tab:hover {
+            border-color: var(--border-hover);
+            color: var(--text);
+        }
+        .lp-role-tab.active {
+            background: var(--green);
+            color: #0c160c;
+            border-color: var(--green);
+            font-weight: 600;
+        }
+
+        /* Contenedor del carrusel */
+        .lp-carousel {
+            position: relative;
+            overflow: hidden;
+        }
+        .lp-carousel-slide {
+            display: none;
+            animation: lp-slide-in 0.4s ease-out;
+        }
+        .lp-carousel-slide.active { display: block; }
+        @keyframes lp-slide-in {
+            from { opacity: 0; transform: translateX(30px); }
+            to   { opacity: 1; transform: translateX(0); }
         }
 
         .lp-steps-grid {
@@ -423,14 +533,88 @@
             color: var(--text-muted);
         }
 
-        /* ===== LOGIN ===== */
-        .lp-login-wrap {
+        /* Indicadores de progreso del carousel */
+        .lp-carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 36px;
+        }
+        .lp-carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s;
+            padding: 0;
+        }
+        .lp-carousel-dot.active {
+            background: var(--green);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* ===== CONTACT + LOGIN — 2 COLUMNS ===== */
+        .lp-access-section {
             padding: 100px 24px 80px;
-            max-width: 460px;
+            max-width: 1080px;
             margin: 0 auto;
         }
-        .lp-login-wrap .lp-section-header {
-            margin-bottom: 40px;
+        .lp-access-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: start;
+        }
+        .lp-contact-col, .lp-login-col {
+            width: 100%;
+        }
+        .lp-contact-col .lp-section-header,
+        .lp-login-col .lp-section-header {
+            margin-bottom: 32px;
+        }
+        .lp-contact-form {
+            background: var(--surface);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 50px rgba(0, 0, 0, 0.45);
+        }
+        .lp-contact-form textarea {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: var(--bg);
+            color: var(--text);
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            transition: all 0.2s;
+        }
+        .lp-contact-form textarea:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.12);
+            background: var(--surface-2);
+        }
+        .lp-contact-success {
+            display: none;
+            text-align: center;
+            padding: 24px;
+            color: var(--green-light);
+            font-size: 0.95rem;
+        }
+        .lp-contact-success.active { display: block; }
+
+        @media (max-width: 768px) {
+            .lp-access-grid {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
         }
 
         .login-form {
@@ -538,6 +722,10 @@
             .lp-steps-grid { grid-template-columns: 1fr; }
             .lp-steps-grid::before { display: none; }
             .login-form { padding: 28px 20px; }
+            .lp-contact-form { padding: 28px 20px; }
+            .lp-role-tabs { flex-wrap: wrap; gap: 8px; }
+            .lp-role-tab { padding: 8px 18px; font-size: 0.84rem; }
+            .lp-modal { padding: 32px 24px; }
         }
     </style>
 </head>
@@ -571,23 +759,23 @@
     </section>
 
 
-    <!-- STATS BAR -->
+    <!-- STATS BAR — Datos reales de la BD -->
     <div class="lp-stats">
         <div class="lp-stat">
-            <span class="lp-stat-value">17</span>
-            <span class="lp-stat-label">Módulos integrados</span>
+            <span class="lp-stat-value" data-count="<?= (int) ($stats['parcelas'] ?? 0) ?>">0</span>
+            <span class="lp-stat-label">Parcelas registradas</span>
         </div>
         <div class="lp-stat">
-            <span class="lp-stat-value">4</span>
-            <span class="lp-stat-label">Roles de acceso</span>
+            <span class="lp-stat-value" data-count="<?= (int) ($stats['empresas'] ?? 0) ?>">0</span>
+            <span class="lp-stat-label">Empresas activas</span>
         </div>
         <div class="lp-stat">
-            <span class="lp-stat-value">100%</span>
-            <span class="lp-stat-label">Datos en tiempo real</span>
+            <span class="lp-stat-value" data-count="<?= (int) ($stats['trabajadores'] ?? 0) ?>">0</span>
+            <span class="lp-stat-label">Trabajadores registrados</span>
         </div>
         <div class="lp-stat">
-            <span class="lp-stat-value">∞</span>
-            <span class="lp-stat-label">Temporadas sin límite</span>
+            <span class="lp-stat-value" data-count="<?= (int) ($stats['tareas'] ?? 0) ?>">0</span>
+            <span class="lp-stat-label">Tareas completadas</span>
         </div>
     </div>
 
@@ -601,42 +789,42 @@
         </div>
 
         <div class="lp-features-grid">
-            <div class="lp-feature-card">
+            <div class="lp-feature-card" data-feature="parcelas">
                 <span class="lp-feature-icon">🗺️</span>
                 <div class="lp-feature-title">Gestión de Parcelas</div>
                 <p class="lp-feature-desc">Organiza tus fincas con ficha detallada por parcela, propietario y datos de superficie.</p>
             </div>
-            <div class="lp-feature-card">
+            <div class="lp-feature-card" data-feature="personal">
                 <span class="lp-feature-icon">👷</span>
                 <div class="lp-feature-title">Control de Personal</div>
                 <p class="lp-feature-desc">Registra trabajadores, asigna roles y lleva el seguimiento de jornadas y contratos.</p>
             </div>
-            <div class="lp-feature-card">
+            <div class="lp-feature-card" data-feature="tareas">
                 <span class="lp-feature-icon">📋</span>
                 <div class="lp-feature-title">Planificación de Tareas</div>
                 <p class="lp-feature-desc">Crea, asigna y monitoriza cada faena: poda, riego, recolección y tratamientos.</p>
             </div>
-            <div class="lp-feature-card">
+            <div class="lp-feature-card" data-feature="economia">
                 <span class="lp-feature-icon">💶</span>
                 <div class="lp-feature-title">Control Económico</div>
                 <p class="lp-feature-desc">Registra gastos e ingresos por temporada y genera reportes para tomar mejores decisiones.</p>
             </div>
-            <div class="lp-feature-card">
+            <div class="lp-feature-card" data-feature="riego">
                 <span class="lp-feature-icon">💧</span>
                 <div class="lp-feature-title">Control de Riego</div>
                 <p class="lp-feature-desc">Programa y registra los riegos por parcela, controlando consumos y fechas de cada intervención.</p>
             </div>
-            <div class="lp-feature-card">
+            <div class="lp-feature-card" data-feature="fitosanitario">
                 <span class="lp-feature-icon">🧪</span>
                 <div class="lp-feature-title">Control Fitosanitario</div>
                 <p class="lp-feature-desc">Registra tratamientos, productos y dosis aplicados. Mantén el historial fitosanitario de cada parcela.</p>
             </div>
-            <div class="lp-feature-card">
+            <div class="lp-feature-card" data-feature="portales">
                 <span class="lp-feature-icon">👥</span>
                 <div class="lp-feature-title">Portal Propietarios y Trabajadores</div>
                 <p class="lp-feature-desc">Acceso diferenciado por rol: los propietarios consultan sus parcelas y los trabajadores sus tareas asignadas.</p>
             </div>
-            <div class="lp-feature-card">
+            <div class="lp-feature-card" data-feature="campanas">
                 <span class="lp-feature-icon">🗓️</span>
                 <div class="lp-feature-title">Gestión de Campañas</div>
                 <p class="lp-feature-desc">Organiza cada temporada como una campaña independiente, con su propio equipo, tareas y balance económico.</p>
@@ -644,77 +832,199 @@
         </div>
     </section>
 
+    <!-- MODAL de funcionalidades (se rellena dinámicamente con JS) -->
+    <div class="lp-modal-overlay" id="featureModal">
+        <div class="lp-modal">
+            <button class="lp-modal-close" id="featureModalClose">&times;</button>
+            <span class="lp-modal-icon" id="featureModalIcon"></span>
+            <div class="lp-modal-title" id="featureModalTitle"></div>
+            <div class="lp-modal-body" id="featureModalBody"></div>
+        </div>
+    </div>
 
-    <!-- HOW IT WORKS -->
+
+    <!-- HOW IT WORKS — CAROUSEL POR ROL -->
     <div class="lp-how-bg">
         <section class="lp-section">
             <div class="lp-section-header">
                 <span class="lp-label">Cómo funciona</span>
                 <h2 class="lp-title">Simple desde el primer día</h2>
+                <p class="lp-sub">Cada rol tiene su propia experiencia adaptada.</p>
             </div>
 
-            <div class="lp-steps-grid">
-                <div class="lp-step">
-                    <div class="lp-step-num">1</div>
-                    <div class="lp-step-title">Accede</div>
-                    <p class="lp-step-desc">Inicia sesión con tus credenciales y accede al panel adaptado a tu rol en la empresa.</p>
+            <!-- Tabs de roles -->
+            <div class="lp-role-tabs">
+                <button class="lp-role-tab active" data-role="empresa">Empresa</button>
+                <button class="lp-role-tab" data-role="trabajador">Trabajador</button>
+                <button class="lp-role-tab" data-role="propietario">Propietario</button>
+            </div>
+
+            <!-- Slides del carrusel -->
+            <div class="lp-carousel" id="roleCarousel">
+                <!-- Slide: Empresa -->
+                <div class="lp-carousel-slide active" data-role="empresa">
+                    <div class="lp-steps-grid">
+                        <div class="lp-step">
+                            <div class="lp-step-num">1</div>
+                            <div class="lp-step-title">Accede al panel</div>
+                            <p class="lp-step-desc">Inicia sesión y accede al dashboard completo con calendario, meteorología y KPIs de tu explotación.</p>
+                        </div>
+                        <div class="lp-step">
+                            <div class="lp-step-num">2</div>
+                            <div class="lp-step-title">Organiza tu finca</div>
+                            <p class="lp-step-desc">Registra parcelas, trabajadores y proveedores. Planifica tareas, riegos y tratamientos fitosanitarios.</p>
+                        </div>
+                        <div class="lp-step">
+                            <div class="lp-step-num">3</div>
+                            <div class="lp-step-title">Controla todo</div>
+                            <p class="lp-step-desc">Consulta reportes económicos, campañas de aceituna y exporta datos en tiempo real.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="lp-step">
-                    <div class="lp-step-num">2</div>
-                    <div class="lp-step-title">Organiza</div>
-                    <p class="lp-step-desc">Registra parcelas, equipo de trabajo y planifica las tareas de cada temporada.</p>
+
+                <!-- Slide: Trabajador -->
+                <div class="lp-carousel-slide" data-role="trabajador">
+                    <div class="lp-steps-grid">
+                        <div class="lp-step">
+                            <div class="lp-step-num">1</div>
+                            <div class="lp-step-title">Consulta tus tareas</div>
+                            <p class="lp-step-desc">Accede a tu panel personal y consulta las tareas que te han sido asignadas para hoy y la semana.</p>
+                        </div>
+                        <div class="lp-step">
+                            <div class="lp-step-num">2</div>
+                            <div class="lp-step-title">Revisa tu calendario</div>
+                            <p class="lp-step-desc">Visualiza tu calendario de trabajo con todas las faenas programadas y las horas asignadas.</p>
+                        </div>
+                        <div class="lp-step">
+                            <div class="lp-step-num">3</div>
+                            <div class="lp-step-title">Controla tu deuda</div>
+                            <p class="lp-step-desc">Consulta tu balance mensual, horas trabajadas y pagos pendientes en cualquier momento.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="lp-step">
-                    <div class="lp-step-num">3</div>
-                    <div class="lp-step-title">Controla</div>
-                    <p class="lp-step-desc">Consulta el estado de la finca en tiempo real y exporta reportes económicos al instante.</p>
+
+                <!-- Slide: Propietario -->
+                <div class="lp-carousel-slide" data-role="propietario">
+                    <div class="lp-steps-grid">
+                        <div class="lp-step">
+                            <div class="lp-step-num">1</div>
+                            <div class="lp-step-title">Accede a tus parcelas</div>
+                            <p class="lp-step-desc">Inicia sesión y consulta directamente las parcelas que tienes registradas a tu nombre.</p>
+                        </div>
+                        <div class="lp-step">
+                            <div class="lp-step-num">2</div>
+                            <div class="lp-step-title">Revisa las tareas</div>
+                            <p class="lp-step-desc">Consulta qué trabajos se han realizado en tus fincas sin ver precios ni datos económicos.</p>
+                        </div>
+                        <div class="lp-step">
+                            <div class="lp-step-num">3</div>
+                            <div class="lp-step-title">Sigue las campañas</div>
+                            <p class="lp-step-desc">Revisa los kilos, rendimiento y resultados de cada campaña de aceituna en tus parcelas.</p>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Dots indicadores -->
+            <div class="lp-carousel-dots">
+                <button class="lp-carousel-dot active" data-role="empresa"></button>
+                <button class="lp-carousel-dot" data-role="trabajador"></button>
+                <button class="lp-carousel-dot" data-role="propietario"></button>
             </div>
         </section>
     </div>
 
 
-    <!-- LOGIN -->
-    <section class="lp-login-wrap" id="acceso">
-        <div class="lp-section-header">
-            <span class="lp-label">Acceso privado</span>
-            <h2 class="lp-title">Bienvenido</h2>
-            <p class="lp-sub" style="font-size:0.95rem; margin-top:14px;">Introduce tus credenciales para acceder a tu panel de gestión.</p>
+    <!-- CONTACTO + LOGIN -->
+    <section class="lp-access-section" id="acceso">
+        <div class="lp-section-header" style="margin-bottom: 56px;">
+            <span class="lp-label">Contacto y acceso</span>
+            <h2 class="lp-title">Hablemos o entra directamente</h2>
         </div>
 
-        <div class="login-form">
+        <div class="lp-access-grid">
+            <!-- Columna izquierda: Contacto -->
+            <div class="lp-contact-col" id="contacto">
+                <div class="lp-section-header" style="text-align: left;">
+                    <h3 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;">Contacto</h3>
+                    <p style="font-size: 0.92rem; color: var(--text-muted);">Tienes preguntas o quieres una demo? Escríbenos y te respondemos en menos de 24h.</p>
+                </div>
 
-            <?php if (isset($error)): ?>
-                <div class="error-message">
-                    <?php if ($error === 'missing_fields'): ?>
-                        ❌ Por favor, completa todos los campos
-                    <?php elseif ($error === 'invalid_credentials'): ?>
-                        ❌ Email o contraseña incorrectos
+                <form class="lp-contact-form" id="contactForm" method="POST" action="<?= $this->url('/contacto') ?>">
+                    <?= \Core\CsrfMiddleware::getTokenField() ?>
+
+                    <!-- Honeypot: campo invisible para humanos, los bots lo rellenan -->
+                    <div style="position:absolute; left:-9999px; opacity:0; height:0; overflow:hidden;" aria-hidden="true">
+                        <label for="website">No rellenar este campo</label>
+                        <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+                    </div>
+
+                    <!-- Timestamp de carga del formulario -->
+                    <input type="hidden" name="_t" id="contact_timestamp" value="">
+
+                    <div class="form-group">
+                        <label for="contact_name">Nombre</label>
+                        <input type="text" id="contact_name" name="nombre" placeholder="Tu nombre" required
+                               style="width:100%; padding:13px 16px; border:1px solid var(--border); border-radius:8px; font-size:0.95rem; background:var(--bg); color:var(--text); transition:all 0.2s;">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_email">Email</label>
+                        <input type="email" id="contact_email" name="email" placeholder="tu@email.com" required
+                               style="width:100%; padding:13px 16px; border:1px solid var(--border); border-radius:8px; font-size:0.95rem; background:var(--bg); color:var(--text); transition:all 0.2s;">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_message">Mensaje</label>
+                        <textarea id="contact_message" name="mensaje" placeholder="Cuéntanos qué necesitas..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn" id="contactSubmitBtn">Enviar mensaje →</button>
+                </form>
+                <div class="lp-contact-success" id="contactSuccess">
+                    Mensaje enviado correctamente. Te responderemos pronto.
+                </div>
+            </div>
+
+            <!-- Columna derecha: Login -->
+            <div class="lp-login-col" id="login">
+                <div class="lp-section-header" style="text-align: left;">
+                    <h3 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;">Acceso privado</h3>
+                    <p style="font-size: 0.92rem; color: var(--text-muted);">Introduce tus credenciales para acceder a tu panel de gestión.</p>
+                </div>
+
+                <div class="login-form">
+
+                    <?php if (isset($error)): ?>
+                        <div class="error-message">
+                            <?php if ($error === 'missing_fields'): ?>
+                                Por favor, completa todos los campos
+                            <?php elseif ($error === 'invalid_credentials'): ?>
+                                Email o contraseña incorrectos
+                            <?php endif; ?>
+                        </div>
                     <?php endif; ?>
+
+                    <form method="POST" action="<?= $this->url('/login') ?>">
+                        <?= \Core\CsrfMiddleware::getTokenField() ?>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Contraseña</label>
+                            <input type="password" id="password" name="password" placeholder="••••••••" required>
+                        </div>
+
+                        <div class="form-group-check">
+                            <input type="checkbox" id="remember" name="remember">
+                            <label for="remember">Mantener sesión iniciada</label>
+                        </div>
+
+                        <button type="submit" class="btn">Iniciar sesión →</button>
+                    </form>
+
                 </div>
-            <?php endif; ?>
-
-            <form method="POST" action="<?= $this->url('/login') ?>">
-                <?= \Core\CsrfMiddleware::getTokenField() ?>
-
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="tu@email.com" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" placeholder="••••••••" required>
-                </div>
-
-                <div class="form-group-check">
-                    <input type="checkbox" id="remember" name="remember">
-                    <label for="remember">Mantener sesión iniciada</label>
-                </div>
-
-                <button type="submit" class="btn">Iniciar sesión →</button>
-            </form>
-
+            </div>
         </div>
     </section>
 
@@ -725,12 +1035,237 @@
     </footer>
 
     <script>
-        // Elimina el video de fondo si la conexión es lenta o el usuario tiene ahorro de datos activo
+        // === Elimina el video en conexiones lentas ===
         (function () {
             var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             if (conn && (conn.saveData || conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g')) {
                 var v = document.querySelector('.lp-hero-video');
                 if (v) v.remove();
+            }
+        })();
+
+        // === ANIMACIÓN CONTADORES (stats bar) ===
+        // Los números suben de 0 al valor real con efecto de conteo
+        (function () {
+            var counters = document.querySelectorAll('.lp-stat-value[data-count]');
+            var animated = false;
+
+            function animateCounters() {
+                if (animated) return;
+                animated = true;
+                counters.forEach(function (el) {
+                    var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+                    if (target === 0) { el.textContent = '0'; return; }
+                    var duration = 1600;
+                    var start = performance.now();
+                    function tick(now) {
+                        var progress = Math.min((now - start) / duration, 1);
+                        // easeOutExpo para un efecto más natural
+                        var ease = 1 - Math.pow(2, -10 * progress);
+                        el.textContent = Math.round(target * ease);
+                        if (progress < 1) requestAnimationFrame(tick);
+                        else el.textContent = target;
+                    }
+                    requestAnimationFrame(tick);
+                });
+            }
+
+            // Iniciar animación cuando la barra de stats entra en viewport
+            var statsBar = document.querySelector('.lp-stats');
+            if (statsBar && 'IntersectionObserver' in window) {
+                var observer = new IntersectionObserver(function (entries) {
+                    if (entries[0].isIntersecting) {
+                        animateCounters();
+                        observer.disconnect();
+                    }
+                }, { threshold: 0.3 });
+                observer.observe(statsBar);
+            } else {
+                animateCounters();
+            }
+        })();
+
+        // === MODALES DE FUNCIONALIDADES ===
+        (function () {
+            // Datos extendidos para cada feature
+            var featureData = {
+                parcelas: {
+                    icon: '🗺️',
+                    title: 'Gestión de Parcelas',
+                    body: '<p>Controla cada parcela con una ficha completa: referencia catastral, superficie, número de olivos, tipo de plantación y propietario asignado.</p><ul><li>Vincula parcelas a propietarios con DNI y datos de contacto</li><li>Consulta qué tareas se han realizado en cada finca</li><li>Filtra parcelas inactivas o con alerta de mantenimiento</li><li>Integración con SIGPAC para verificar datos catastrales</li></ul>'
+                },
+                personal: {
+                    icon: '👷',
+                    title: 'Control de Personal',
+                    body: '<p>Gestiona tu equipo de trabajo completo: altas, bajas, documentación y control de jornadas.</p><ul><li>Registro de trabajadores con datos de Seguridad Social</li><li>Control de horas trabajadas por tarea y mes</li><li>Generación de deuda mensual automática por trabajador</li><li>Historial completo de pagos y saldos pendientes</li></ul>'
+                },
+                tareas: {
+                    icon: '📋',
+                    title: 'Planificación de Tareas',
+                    body: '<p>Crea, asigna y monitoriza cada faena del campo con calendario visual y asignación múltiple.</p><ul><li>Calendario interactivo con vista diaria, semanal y mensual</li><li>Asignación de trabajadores, parcelas y tipos de trabajo por tarea</li><li>Estados: pendiente, en curso y completada</li><li>Sidebar lateral para edición rápida sin cambiar de pantalla</li></ul>'
+                },
+                economia: {
+                    icon: '💶',
+                    title: 'Control Económico',
+                    body: '<p>Registra cada euro que entra y sale de tu explotación agrícola con categorización automática.</p><ul><li>Movimientos de tipo gasto e ingreso por categoría</li><li>Diferenciación entre cuenta bancaria y efectivo</li><li>Dashboard con gráficos de evolución mensual</li><li>Reportes exportables en CSV y PDF</li></ul>'
+                },
+                riego: {
+                    icon: '💧',
+                    title: 'Control de Riego',
+                    body: '<p>Programa y registra los riegos por parcela, manteniendo un historial detallado de consumos.</p><ul><li>Registro de fecha, duración y caudal por intervención</li><li>Historial de riego por parcela con filtros por fecha</li><li>Alertas de parcelas que llevan mucho tiempo sin riego</li><li>Resumen mensual de consumo total</li></ul>'
+                },
+                fitosanitario: {
+                    icon: '🧪',
+                    title: 'Control Fitosanitario',
+                    body: '<p>Cumple con la normativa manteniendo un registro completo de productos y aplicaciones.</p><ul><li>Inventario de productos fitosanitarios con control de stock</li><li>Registro de aplicaciones: parcela, producto, dosis y fecha</li><li>Historial por parcela para inspecciones y auditorías</li><li>Alertas de productos sin stock o próximos a caducar</li></ul>'
+                },
+                portales: {
+                    icon: '👥',
+                    title: 'Portal Propietarios y Trabajadores',
+                    body: '<p>Cada usuario accede solo a lo que necesita, con una experiencia adaptada a su rol.</p><ul><li><strong>Propietario:</strong> consulta sus parcelas, tareas realizadas y campañas (sin precios)</li><li><strong>Trabajador:</strong> ve sus tareas asignadas, calendario personal y deuda mensual</li><li>Acceso seguro con credenciales individuales</li><li>Interfaz simplificada para cada perfil</li></ul>'
+                },
+                campanas: {
+                    icon: '🗓️',
+                    title: 'Gestión de Campañas',
+                    body: '<p>Organiza cada temporada de aceituna como una unidad independiente con sus propios resultados.</p><ul><li>Campañas de noviembre a febrero con datos por parcela</li><li>Registro de kilos recogidos, rendimiento graso y precio</li><li>Comparativa entre campañas y evolución histórica</li><li>Balance económico por campaña</li></ul>'
+                }
+            };
+
+            var overlay = document.getElementById('featureModal');
+            var modalIcon = document.getElementById('featureModalIcon');
+            var modalTitle = document.getElementById('featureModalTitle');
+            var modalBody = document.getElementById('featureModalBody');
+            var closeBtn = document.getElementById('featureModalClose');
+
+            // Click en las cards para abrir modal
+            document.querySelectorAll('.lp-feature-card[data-feature]').forEach(function (card) {
+                card.addEventListener('click', function () {
+                    var key = this.getAttribute('data-feature');
+                    var data = featureData[key];
+                    if (!data) return;
+                    modalIcon.textContent = data.icon;
+                    modalTitle.textContent = data.title;
+                    modalBody.innerHTML = data.body;
+                    overlay.classList.add('active');
+                });
+            });
+
+            // Cerrar modal
+            closeBtn.addEventListener('click', function () { overlay.classList.remove('active'); });
+            overlay.addEventListener('click', function (e) {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') overlay.classList.remove('active');
+            });
+        })();
+
+        // === CARRUSEL DE ROLES ===
+        (function () {
+            var tabs = document.querySelectorAll('.lp-role-tab');
+            var slides = document.querySelectorAll('.lp-carousel-slide');
+            var dots = document.querySelectorAll('.lp-carousel-dot');
+            var roles = ['empresa', 'trabajador', 'propietario'];
+            var currentIndex = 0;
+            var autoInterval = null;
+
+            function switchTo(role) {
+                currentIndex = roles.indexOf(role);
+                tabs.forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-role') === role); });
+                slides.forEach(function (s) { s.classList.toggle('active', s.getAttribute('data-role') === role); });
+                dots.forEach(function (d) { d.classList.toggle('active', d.getAttribute('data-role') === role); });
+            }
+
+            function next() {
+                currentIndex = (currentIndex + 1) % roles.length;
+                switchTo(roles[currentIndex]);
+            }
+
+            // Click en tabs
+            tabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    switchTo(this.getAttribute('data-role'));
+                    resetAuto();
+                });
+            });
+
+            // Click en dots
+            dots.forEach(function (dot) {
+                dot.addEventListener('click', function () {
+                    switchTo(this.getAttribute('data-role'));
+                    resetAuto();
+                });
+            });
+
+            // Auto-rotación cada 5 segundos
+            function startAuto() { autoInterval = setInterval(next, 5000); }
+            function resetAuto() { clearInterval(autoInterval); startAuto(); }
+            startAuto();
+        })();
+
+        // === FORMULARIO DE CONTACTO (envío real con protección anti-spam) ===
+        (function () {
+            var form = document.getElementById('contactForm');
+            var success = document.getElementById('contactSuccess');
+            var tsField = document.getElementById('contact_timestamp');
+            if (!form) return;
+
+            // Guardar timestamp de carga para detección de bots
+            tsField.value = Math.floor(Date.now() / 1000);
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                var btn = document.getElementById('contactSubmitBtn');
+                var nombre = document.getElementById('contact_name').value.trim();
+                var email = document.getElementById('contact_email').value.trim();
+                var mensaje = document.getElementById('contact_message').value.trim();
+
+                if (!nombre || !email || !mensaje) {
+                    alert('Por favor, completa todos los campos.');
+                    return;
+                }
+
+                // Deshabilitar botón mientras se envía
+                btn.disabled = true;
+                btn.textContent = 'Enviando...';
+
+                var formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        form.style.display = 'none';
+                        success.classList.add('active');
+                    } else {
+                        alert(data.error || 'Error al enviar el mensaje. Inténtalo de nuevo.');
+                        btn.disabled = false;
+                        btn.textContent = 'Enviar mensaje →';
+                    }
+                })
+                .catch(function () {
+                    alert('Error de conexión. Inténtalo de nuevo.');
+                    btn.disabled = false;
+                    btn.textContent = 'Enviar mensaje →';
+                });
+            });
+        })();
+
+        // === AUTO-SCROLL A LOGIN CUANDO HAY ERROR ===
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            if (params.has('error')) {
+                // Esperamos a que la página se renderice completamente
+                setTimeout(function () {
+                    var loginSection = document.getElementById('acceso');
+                    if (loginSection) {
+                        loginSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }, 100);
             }
         })();
     </script>

@@ -184,6 +184,8 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 - [ ] Todos los trabajos valen 0 hasta que se editen. no quiero que se pueda quedar null
 - [ ] Los trabajadores pasan a ser inactivos cada dia 1 de mes y si hacen alguna tarea pasan a activos hasta que se acabe el mes.
 - [ ] En el dashboard la opción de crear tarea pendiente.
+- [ ] Solucionar el poder borrar trabajadores si dejamos de querer tenerlo en la base de datos, por despido o cómo gestionar ese proceso.
+- [ ] Añadir campos de nºMunicipio/nºpoligono/nºparcela a las parcelas
 
 ### Infraestructura
 - [x] Backups automáticos de la base de datos
