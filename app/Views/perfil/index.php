@@ -2,9 +2,7 @@
 $title = 'Mi Perfil - MartinCarmona.com';
 ?>
 <div class="container">
-    <div class="welcome-section">
-        <h1>👤 Mi Perfil</h1>
-    </div>
+    <h2 style="text-align:center; margin:1.5rem 0;">👤 Mi Perfil</h2>
 
     <div class="profile-section">
         <div class="profile-card">

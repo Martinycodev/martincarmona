@@ -23,10 +23,6 @@ $title = 'Gestión de Parcelas';
                         <label for="nombre">Nombre:</label>
                         <input type="text" id="nombre" name="nombre" required>
                     </div>
-                    <div class="form-group">
-                        <label for="ubicacion">Ubicación:</label>
-                        <input type="text" id="ubicacion" name="ubicacion">
-                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -126,16 +122,14 @@ $title = 'Gestión de Parcelas';
             <thead>
                 <tr>
                     <th>Nombre</th>
-                    <th>Ubicación</th>
                     <th>Propietario</th>
                     <th>Olivos</th>
-                    <th>Hidrante</th>
                 </tr>
             </thead>
             <tbody id="parcelasTableBody">
                 <?php if (empty($parcelas)): ?>
                     <tr>
-                        <td colspan="5" class="no-data">
+                        <td colspan="3" class="no-data">
                             <div class="no-tareas">
                                 <h3>🌾 No hay parcelas registradas</h3>
                                 <p>Empieza añadiendo tu primera parcela para organizar el campo.</p>
@@ -149,14 +143,12 @@ $title = 'Gestión de Parcelas';
                             onclick="window.location.href='<?= $this->url('/parcelas/detalle?id=' . $parcela['id']) ?>'"
                             class="clickable-row">
                             <td><?= htmlspecialchars($parcela['nombre'] ?? '-') ?></td>
-                            <td><?= htmlspecialchars($parcela['ubicacion'] ?? '—') ?></td>
                             <td><?= htmlspecialchars(
                                 !empty($parcela['propietario_nombre'])
                                 ? $parcela['propietario_nombre'] . ' ' . $parcela['propietario_apellidos']
                                 : ($parcela['propietario'] ?? '—')
                             ) ?></td>
                             <td><?= htmlspecialchars($parcela['olivos'] ?? '0') ?></td>
-                            <td><?= htmlspecialchars($parcela['hidrante'] ?? '0') ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -177,10 +169,6 @@ $title = 'Gestión de Parcelas';
                     <div class="form-group">
                         <label for="editNombre">Nombre:</label>
                         <input type="text" id="editNombre" name="nombre" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editUbicacion">Ubicación:</label>
-                        <input type="text" id="editUbicacion" name="ubicacion">
                     </div>
                 </div>
                 <div class="form-row">

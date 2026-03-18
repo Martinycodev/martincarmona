@@ -112,7 +112,7 @@ if (document.readyState === 'loading') {
 | `campanas` | Campañas de aceituna (nov→feb) |
 | `campana_registros` | Kilos, rendimiento, precio por parcela y campaña |
 | `riegos` | Registros de riego por parcela |
-| `vehiculos`, `herramientas`, `empresas`, `proveedores` | CRUDs básicos |
+| `vehiculos`, `herramientas`, `proveedores` | CRUDs básicos |
 
 ---
 

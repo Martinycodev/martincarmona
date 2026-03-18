@@ -113,6 +113,7 @@ $router->post('/parcelas/subirDocumento', 'ParcelasController@subirDocumento');
 $router->post('/parcelas/eliminarDocumento', 'ParcelasController@eliminarDocumento');
 
 // Propietarios
+$router->get('/propietarios/buscar', 'PropietariosController@buscar');
 $router->get('/datos/propietarios', 'PropietariosController@index');
 $router->get('/propietarios/detalle', 'PropietariosController@detalle');
 $router->post('/propietarios/crear', 'PropietariosController@crear');

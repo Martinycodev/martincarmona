@@ -132,6 +132,11 @@ class ParcelasController extends BaseController
             $num_poligono         = !empty(trim($input['num_poligono'] ?? '')) ? trim($input['num_poligono']) : null;
             $num_parcela          = !empty(trim($input['num_parcela'] ?? '')) ? trim($input['num_parcela']) : null;
 
+            // Si es secano, el hidrante se pone a 0 automáticamente
+            if ($riego_secano === 'secano') {
+                $hidrante = 0;
+            }
+
             $v = \Core\Validator::make($input, [
                 'nombre'      => 'required|max_length:100',
                 'olivos'      => 'integer|min:0',
@@ -257,6 +262,11 @@ class ParcelasController extends BaseController
             $num_municipio        = !empty(trim($input['num_municipio'] ?? '')) ? trim($input['num_municipio']) : null;
             $num_poligono         = !empty(trim($input['num_poligono'] ?? '')) ? trim($input['num_poligono']) : null;
             $num_parcela          = !empty(trim($input['num_parcela'] ?? '')) ? trim($input['num_parcela']) : null;
+
+            // Si es secano, el hidrante se pone a 0 automáticamente
+            if ($riego_secano === 'secano') {
+                $hidrante = 0;
+            }
 
             $v = \Core\Validator::make($input, [
                 'id'          => 'required|integer',

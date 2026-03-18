@@ -55,6 +55,7 @@ class BusquedaController extends BaseController
                 'trabajador_id' => $_GET['trabajador_id'] ?? '',
                 'parcela_id' => $_GET['parcela_id'] ?? '',
                 'trabajo_id' => $_GET['trabajo_id'] ?? '',
+                'propietario_id' => $_GET['propietario_id'] ?? '',
                 'horas_min' => $_GET['horas_min'] ?? '',
                 'horas_max' => $_GET['horas_max'] ?? '',
                 'orden' => $_GET['orden'] ?? 'fecha_desc',
@@ -120,7 +121,14 @@ class BusquedaController extends BaseController
                 $params[] = intval($filtros['trabajo_id']);
                 $paramTypes .= 'i';
             }
-            
+
+            // Filtro por propietario: tareas en parcelas de ese propietario
+            if (!empty($filtros['propietario_id'])) {
+                $sql .= " AND tp.parcela_id IN (SELECT id FROM parcelas WHERE propietario_id = ?)";
+                $params[] = intval($filtros['propietario_id']);
+                $paramTypes .= 'i';
+            }
+
             if (!empty($filtros['horas_min'])) {
                 $sql .= " AND t.horas >= ?";
                 $params[] = floatval($filtros['horas_min']);

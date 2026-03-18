@@ -16,8 +16,9 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
         <div class="card-header"><h3>Datos de la Parcela</h3></div>
         <div class="detail-grid">
             <div><strong>Olivos:</strong> <?= intval($parcela['olivos']) ?></div>
-            <div><strong>Ubicación:</strong> <?= htmlspecialchars($parcela['ubicacion'] ?? '—') ?></div>
+            <?php if (($parcela['riego_secano'] ?? '') !== 'secano'): ?>
             <div><strong>Hidrante:</strong> <?= intval($parcela['hidrante'] ?? 0) ?></div>
+            <?php endif; ?>
             <?php if (!empty($parcela['referencia_catastral'])): ?>
             <div><strong>Referencia catastral:</strong> <?= htmlspecialchars($parcela['referencia_catastral']) ?></div>
             <?php endif; ?>
@@ -137,10 +138,6 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
                     <div class="form-group">
                         <label>Nombre:</label>
                         <input type="text" name="nombre" value="<?= htmlspecialchars($parcela['nombre'] ?? '') ?>" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Ubicación:</label>
-                        <input type="text" name="ubicacion" value="<?= htmlspecialchars($parcela['ubicacion'] ?? '') ?>">
                     </div>
                 </div>
                 <div class="form-row">

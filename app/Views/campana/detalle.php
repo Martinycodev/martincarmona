@@ -116,6 +116,20 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
     </div>
     <?php endif; ?>
 
+    <!-- Zona peligrosa: eliminar esta campaña -->
+    <div class="card" style="margin-top:2rem; border:1px solid #dc2626;">
+        <div class="card-header" style="background:#1a0000;">
+            <h3 style="color:#f44336; margin:0;">⚠️ Zona peligrosa</h3>
+        </div>
+        <div style="padding:1rem 1.5rem;">
+            <p style="color:#999; font-size:.875rem; margin-bottom:1rem;">Eliminar esta campaña borra todos sus registros de forma permanente.</p>
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="color:#ccc;">Campaña <?= htmlspecialchars($campana['nombre']) ?></span>
+                <button class="btn btn-danger btn-sm" onclick="eliminarCampana()">Eliminar campaña</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- Modal añadir/editar registro -->
@@ -143,7 +157,11 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
                 <label>Calidad</label>
                 <select id="reg_calidad">
                     <option value="">— Sin especificar —</option>
-                    <option value="Vuelo">Vuelo</option>
+                    <option value="Vuelo noviembre">Vuelo noviembre</option>
+                    <option value="Vuelo diciembre">Vuelo diciembre</option>
+                    <option value="Vuelo enero">Vuelo enero</option>
+                    <option value="Vuelo febrero">Vuelo febrero</option>
+                    <option value="Vuelo marzo">Vuelo marzo</option>
                     <option value="Suelo">Suelo</option>
                 </select>
             </div>
@@ -293,6 +311,26 @@ function _initCampanaDetalle() {
             if (res.success) {
                 var row = document.getElementById('registro-row-' + id);
                 if (row) row.remove();
+            } else {
+                showToast(res.message, 'error');
+            }
+        })
+        .catch(function() { showToast('Error de conexión', 'error'); });
+    };
+
+    // ── Eliminar campaña (zona peligrosa) ────────────────────────────────
+    window.eliminarCampana = function() {
+        if (!confirm('¿Eliminar la campaña "<?= htmlspecialchars($campana['nombre'], ENT_QUOTES) ?>" y todos sus registros? Esta acción no se puede deshacer.')) return;
+
+        fetch(basePath + '/campana/eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({ id: campanaId })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            if (res.success) {
+                window.location.href = basePath + '/campana';
             } else {
                 showToast(res.message, 'error');
             }

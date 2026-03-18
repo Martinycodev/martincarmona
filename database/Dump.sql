@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-03-2026 a las 22:59:20
+-- Tiempo de generación: 18-03-2026 a las 22:08:53
 -- Versión del servidor: 11.8.3-MariaDB-log
 -- Versión de PHP: 7.2.34
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `u873002419_campo`
 --
-CREATE DATABASE IF NOT EXISTS `u873002419_campo` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `u873002419_campo`;
 
 -- --------------------------------------------------------
 
@@ -81,7 +79,8 @@ CREATE TABLE `campana_registros` (
   `beneficio` decimal(12,2) DEFAULT NULL,
   `id_user` bigint(20) NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `calidad` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -193,6 +192,20 @@ CREATE TABLE `movimientos` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `notificaciones_config`
+--
+
+CREATE TABLE `notificaciones_config` (
+  `id` int(11) NOT NULL,
+  `id_user` bigint(20) NOT NULL,
+  `tipo` varchar(50) NOT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
+  `dias_antelacion` int(11) NOT NULL DEFAULT 7
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `pagos_mensuales_trabajadores`
 --
 
@@ -230,7 +243,10 @@ CREATE TABLE `parcelas` (
   `corta` enum('par','impar','siempre') DEFAULT NULL,
   `id_user` bigint(20) NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `num_municipio` varchar(10) DEFAULT NULL,
+  `num_poligono` varchar(10) DEFAULT NULL,
+  `num_parcela` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -277,7 +293,37 @@ CREATE TABLE `proveedores` (
   `descripcion` text DEFAULT NULL,
   `id_user` bigint(20) NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `razon_social` varchar(255) DEFAULT NULL,
+  `cif` varchar(20) DEFAULT NULL,
+  `direccion` varchar(255) DEFAULT NULL,
+  `email` varchar(150) DEFAULT NULL,
+  `contacto_principal` varchar(150) DEFAULT NULL,
+  `sector` varchar(100) DEFAULT NULL,
+  `productos_servicios` text DEFAULT NULL,
+  `condiciones_pago` varchar(255) DEFAULT NULL,
+  `estado` varchar(50) NOT NULL DEFAULT 'activo',
+  `notas` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `recordatorios`
+--
+
+CREATE TABLE `recordatorios` (
+  `id` int(11) NOT NULL,
+  `id_user` bigint(20) NOT NULL,
+  `tipo` enum('itv','cuentas','fitosanitario','personalizado') NOT NULL DEFAULT 'personalizado',
+  `titulo` varchar(255) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `fecha_aviso` date NOT NULL,
+  `fecha_referencia` date DEFAULT NULL,
+  `entidad_id` int(11) DEFAULT NULL,
+  `leido` tinyint(1) NOT NULL DEFAULT 0,
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -409,6 +455,22 @@ CREATE TABLE `tarea_trabajos` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `temporadas_riego`
+--
+
+CREATE TABLE `temporadas_riego` (
+  `id` int(11) NOT NULL,
+  `anio` int(4) NOT NULL,
+  `activa` tinyint(1) NOT NULL DEFAULT 1,
+  `fecha_inicio` date DEFAULT NULL,
+  `fecha_fin` date DEFAULT NULL,
+  `id_user` bigint(20) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `trabajadores`
 --
 
@@ -433,7 +495,9 @@ CREATE TABLE `trabajadores` (
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `imagen_dni_anverso` varchar(255) DEFAULT NULL,
   `imagen_dni_reverso` varchar(255) DEFAULT NULL,
-  `imagen_ss` varchar(255) DEFAULT NULL
+  `imagen_ss` varchar(255) DEFAULT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT 0,
+  `fecha_baja` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -446,10 +510,11 @@ CREATE TABLE `trabajos` (
   `id` int(11) NOT NULL,
   `nombre` varchar(255) NOT NULL,
   `descripcion` varchar(500) NOT NULL,
-  `precio_hora` float DEFAULT NULL,
+  `precio_hora` float NOT NULL DEFAULT 0,
   `id_user` bigint(20) NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `documento` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -585,6 +650,13 @@ ALTER TABLE `movimientos`
   ADD KEY `idx_movimientos_fecha` (`fecha`);
 
 --
+-- Indices de la tabla `notificaciones_config`
+--
+ALTER TABLE `notificaciones_config`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uk_user_tipo` (`id_user`,`tipo`);
+
+--
 -- Indices de la tabla `pagos_mensuales_trabajadores`
 --
 ALTER TABLE `pagos_mensuales_trabajadores`
@@ -621,6 +693,14 @@ ALTER TABLE `propietarios`
 ALTER TABLE `proveedores`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_proveedores_user` (`id_user`);
+
+--
+-- Indices de la tabla `recordatorios`
+--
+ALTER TABLE `recordatorios`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_user_fecha` (`id_user`,`fecha_aviso`),
+  ADD KEY `idx_user_leido` (`id_user`,`leido`);
 
 --
 -- Indices de la tabla `riegos`
@@ -685,6 +765,13 @@ ALTER TABLE `tarea_trabajos`
   ADD UNIQUE KEY `unique_tarea_trabajo` (`tarea_id`,`trabajo_id`),
   ADD KEY `fk_tarea_trabajos_tarea` (`tarea_id`),
   ADD KEY `fk_tarea_trabajos_trabajo` (`trabajo_id`);
+
+--
+-- Indices de la tabla `temporadas_riego`
+--
+ALTER TABLE `temporadas_riego`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uk_anio_user` (`anio`,`id_user`);
 
 --
 -- Indices de la tabla `trabajadores`
@@ -779,6 +866,12 @@ ALTER TABLE `movimientos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `notificaciones_config`
+--
+ALTER TABLE `notificaciones_config`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `pagos_mensuales_trabajadores`
 --
 ALTER TABLE `pagos_mensuales_trabajadores`
@@ -800,6 +893,12 @@ ALTER TABLE `propietarios`
 -- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `recordatorios`
+--
+ALTER TABLE `recordatorios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -836,6 +935,12 @@ ALTER TABLE `tarea_trabajadores`
 -- AUTO_INCREMENT de la tabla `tarea_trabajos`
 --
 ALTER TABLE `tarea_trabajos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `temporadas_riego`
+--
+ALTER TABLE `temporadas_riego`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

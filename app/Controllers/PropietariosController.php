@@ -8,6 +8,47 @@ class PropietariosController extends BaseController
         $this->requireEmpresa();
     }
 
+    /**
+     * Búsqueda de propietarios por nombre (autocompletado)
+     */
+    public function buscar()
+    {
+        header('Content-Type: application/json');
+
+        if (!isset($_GET['q']) || strlen($_GET['q']) < 2) {
+            echo json_encode([]);
+            return;
+        }
+
+        try {
+            $db = \Database::connect();
+            $query = "%" . $_GET['q'] . "%";
+            $stmt = $db->prepare("
+                SELECT id, nombre, apellidos,
+                       CONCAT(nombre, ' ', COALESCE(apellidos, '')) as nombre_completo
+                FROM propietarios
+                WHERE id_user = ? AND (nombre LIKE ? OR apellidos LIKE ?)
+                ORDER BY nombre
+                LIMIT 10
+            ");
+            $stmt->bind_param("iss", $_SESSION['user_id'], $query, $query);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $propietarios = [];
+            while ($row = $result->fetch_assoc()) {
+                $propietarios[] = [
+                    'id' => $row['id'],
+                    'nombre' => trim($row['nombre'] . ' ' . ($row['apellidos'] ?? ''))
+                ];
+            }
+            $stmt->close();
+            $db->close();
+            echo json_encode($propietarios);
+        } catch (\Exception $e) {
+            echo json_encode([]);
+        }
+    }
+
     public function index()
     {
         $db = \Database::connect();

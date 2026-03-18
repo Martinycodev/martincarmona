@@ -371,19 +371,43 @@ class TaskSidebar {
     /**
      * Crear thumbnail de imagen con enlace y botón eliminar
      */
-    _crearImagenThumb(img) {
+    _crearImagenThumb(img, bustCache = false) {
         const div = document.createElement('div');
         div.style.cssText = 'position:relative; width:80px; height:80px; border-radius:6px; overflow:hidden; border:1px solid #404040;';
         div.id = 'img-thumb-' + img.id;
 
+        // Construir URL de la imagen con cache-bust opcional
+        let imgUrl = buildUrl(img.file_path.replace(/^\//, ''));
+        if (bustCache) {
+            imgUrl += '?t=' + Date.now();
+        }
+
         const a = document.createElement('a');
-        a.href = buildUrl(img.file_path.replace(/^\//, ''));
+        a.href = imgUrl;
         a.target = '_blank';
+        a.onclick = (e) => {
+            e.preventDefault();
+            // Abrir lightbox si existe
+            const lb = document.getElementById('img-lightbox');
+            const lbImg = document.getElementById('img-lightbox-img');
+            if (lb && lbImg) {
+                lbImg.src = imgUrl;
+                lb.classList.add('open');
+            } else {
+                window.open(imgUrl, '_blank');
+            }
+        };
 
         const imgEl = document.createElement('img');
-        imgEl.src = buildUrl(img.file_path.replace(/^\//, ''));
+        imgEl.src = imgUrl;
         imgEl.style.cssText = 'width:100%; height:100%; object-fit:cover;';
         imgEl.alt = img.original_filename || 'Imagen';
+        // Placeholder si falla la carga
+        imgEl.onerror = () => {
+            imgEl.style.display = 'none';
+            div.style.cssText += 'display:flex; align-items:center; justify-content:center; background:#2a2a2a; color:#666; font-size:1.5rem;';
+            div.insertAdjacentHTML('afterbegin', '<span title="Imagen no disponible">🖼</span>');
+        };
         a.appendChild(imgEl);
 
         const delBtn = document.createElement('button');
@@ -392,6 +416,7 @@ class TaskSidebar {
         delBtn.title = 'Eliminar imagen';
         delBtn.onclick = (e) => {
             e.preventDefault();
+            e.stopPropagation();
             this._eliminarImagen(img.id);
         };
 
@@ -937,11 +962,11 @@ class TaskSidebar {
                 fileInput.value = '';
                 window.needsReload = true;
                 showToast(data.message || 'Imágenes subidas', 'success');
-                // Añadir thumbnails al gallery
+                // Añadir thumbnails al gallery con cache-bust para nuevas imágenes
                 const gallery = document.getElementById('sidebar-images');
                 if (gallery && data.images) {
                     data.images.forEach(img => {
-                        gallery.appendChild(this._crearImagenThumb(img));
+                        gallery.appendChild(this._crearImagenThumb(img, true));
                     });
                 }
             } else {
@@ -965,6 +990,16 @@ class TaskSidebar {
 
 // Instancia global disponible en todas las páginas
 window.taskSidebar = new TaskSidebar();
+
+// Función global para cerrar el lightbox de imágenes
+window.closeLightbox = function() {
+    const lb = document.getElementById('img-lightbox');
+    if (lb) {
+        lb.classList.remove('open');
+        const lbImg = document.getElementById('img-lightbox-img');
+        if (lbImg) lbImg.src = '';
+    }
+};
 
 // =====================================================================
 // COMBOBOX — typeahead reutilizable

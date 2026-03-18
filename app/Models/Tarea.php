@@ -951,7 +951,7 @@ class Tarea
             $stmt = $this->db->prepare("
                 SELECT * FROM tarea_imagenes
                 WHERE tarea_id = ?
-                ORDER BY created_at DESC
+                ORDER BY uploaded_at DESC
             ");
             if (!$stmt) return [];
             $stmt->bind_param("i", $tareaId);
@@ -1065,9 +1065,35 @@ class Tarea
         }
 
         try {
+            // Caso especial: borrar la fecha → la tarea pasa a pendiente
+            if ($column === 'fecha' && (empty($value) || $value === '0000-00-00')) {
+                $stmt = $this->db->prepare("
+                    UPDATE tareas
+                    SET fecha = NULL, estado = 'pendiente', updated_at = NOW()
+                    WHERE id = ? AND id_user = ?
+                ");
+                $stmt->bind_param("ii", $taskId, $userId);
+                $result = $stmt->execute();
+                $stmt->close();
+                return $result;
+            }
+
+            // Caso especial: asignar fecha a tarea pendiente → dejar de ser pendiente
+            if ($column === 'fecha' && !empty($value)) {
+                $stmt = $this->db->prepare("
+                    UPDATE tareas
+                    SET fecha = ?, estado = 'completada', updated_at = NOW()
+                    WHERE id = ? AND id_user = ?
+                ");
+                $stmt->bind_param("sii", $value, $taskId, $userId);
+                $result = $stmt->execute();
+                $stmt->close();
+                return $result;
+            }
+
             $stmt = $this->db->prepare("
-                UPDATE tareas 
-                SET {$column} = ?, updated_at = NOW() 
+                UPDATE tareas
+                SET {$column} = ?, updated_at = NOW()
                 WHERE id = ? AND id_user = ?
             ");
 
@@ -1081,9 +1107,6 @@ class Tarea
             $result = $stmt->execute();
             $stmt->close();
 
-            // Si se actualizan las horas o la fecha, podría ser necesario recalcular movimientos mensuales
-            // Pero para el MVP "edit-in-place" nos centraremos en la persistencia básica primero
-            
             return $result;
         } catch (\Exception $e) {
             \Core\Logger::app()->error("Error actualizando campo individual: " . $e->getMessage());

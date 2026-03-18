@@ -755,7 +755,7 @@
     <!-- NAV -->
     <nav class="lp-nav">
         <a href="#" class="lp-nav-logo">🌳 Martin<span>Carmona</span>.com</a>
-        <a href="#acceso" class="lp-nav-cta">Acceder →</a>
+        <a href="#acceso" class="lp-nav-cta">Contacto →</a>
     </nav>
 
 

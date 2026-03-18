@@ -195,14 +195,26 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 - [x] El diseño del sandwich del menú en movil no se ve bien. Mantiene las dimensiones del monitor.
 - [x] Me gustaría que en la vista de trabajos además de la descripción se pudiese subir un archivo tipo documento con el contenido de cómo es el método de trabajo con imagenes y descripciones detalladas.
 - [x] Añadir la opción de cambiar contraseña en la vista de perfil.
-- [ ] La opcion de cambiar de nombre de perfil no funciona
+- [x] La opcion de cambiar de nombre de perfil no funciona
 - [x] Eliminar quick button de tareas pendientes.
-- [ ] Subir imágenes en tarea no funciona, buscar la manera de optimizarlas antes de subirlas o poner un limite de peso.
-- [ ] El diseño de la vista de perfil tiene colores que no se corresponden con el estilo de la web. Prefiero utilizar el modo oscuro y los tonos verdes.
-- [ ] Formato de fechas en tablas tiene que ser dd-mm--aaaa. No aaaa-mm-dd
-- [ ] En la tabla de registros de campaña el bg-color de la fila del total esta en color blanco y debería ser negro o un tono oscuro.
-- [ ] Añadir combobox en el modal de registro de campaña para las parcelas.
-- [ ] Añadir el atributo calidad (Vuelo/Suelo) a el registro de campaña
+- [x] Subir imágenes en tarea no funciona, buscar la manera de optimizarlas antes de subirlas o poner un limite de peso.
+- [x] El diseño de la vista de perfil tiene colores que no se corresponden con el estilo de la web. Prefiero utilizar el modo oscuro y los tonos verdes.
+- [x] Formato de fechas en tablas tiene que ser dd-mm--aaaa. No aaaa-mm-dd
+- [x] En la tabla de registros de campaña el bg-color de la fila del total esta en color blanco y debería ser negro o un tono oscuro.
+- [x] Añadir combobox en el modal de registro de campaña para las parcelas.
+- [x] Añadir el atributo calidad (Vuelo/Suelo) a el registro de campaña
+- [x] Eliminar cabecera o welcome-section de busqueda avanzada. Añadir un botón que sea "Ver todas" para ir a /tareas en la caja de los filtros junto a limpiar y ocultar.
+- [x] Añadir al atributo calidad de registro de campaña las siguientes opciones (Vuelo noviembre, vuelo diciembre, vuelo enero, vuelo febrero, vuelo marzo) y eliminar la opcion vuelo.
+- [x] Al abrir la vista riego quiero que el filtro por año comience en el año actual. y que esté el año actual seleccionado.
+- [x] en la vista /campana quiero que no aparezcan los botones de ver y eliminar. Al pulsar sobre toda la fila te manda a la vista /campana/detalle?id= y que abajo del todo aparezca la opción de eliminar pero como algo peligroso, o que no se suele hacer.
+- [x] si el trabajador tiene alguna tarea asignada en el mes actual cambia su estado a activo.
+- [x] en la vista e datos/trabajadores quiero que haya 2 tablas, la primera que tenga los trabajadores activos. y a continuación la otra con todos los trabajadores. Además quiero que aparezca solo las columnas foto, nombre, teléfono y Dni
+- [x] en la vista parcelas quiero que no estén las columnas hidrante ni ubicación, solo Nombre, Propietario y Olivos. Además quitaría el atributo de ubicación porque no le veo el sentido ya que tenemos la referencia catastral.
+- [x] Si la parcela se le pone el atributo de Riego_Secano como "secano" automáticamente el hidrante es "0" y no tiene que aparecer en la vista de detalle.
+- [x] Sigue sin verse las imágenes subidas a tareas. Parece que se suben y se guardan pero en la previsualización desaparecen o no aparecen.
+- [x] En busqueda avanzada quiero añadir filtrar por propietarios
+- [x] Eliminar las welcome-section y sustituilas por texto centrado sobre el fondo, sin una caja o contenedor que ocupe mucho espacio.
+- [ ] Cuando una tarea se le borra la fecha se añade automáticamente a la lista de tareas pendientes. Me ha pasado de borrar la fecha de un par de tareas y que desaparezcan.
 
 ### Infraestructura
 - [x] Backups automáticos de la base de datos

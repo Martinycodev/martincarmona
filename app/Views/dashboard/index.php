@@ -45,7 +45,12 @@ $title = 'Datos - MartinCarmona.com';
             <div class="weekday">Dom</div>
         </div>
 
-        <div class="calendar" id="calendar"></div>
+        <div class="calendar" id="calendar">
+            <!-- Spinner de carga inicial — se reemplaza al renderizar el calendario -->
+            <div class="calendar-spinner">
+                <div class="calendar-spinner-ring"></div>
+            </div>
+        </div>
 
         <!-- Zona "sin fecha": arrastrar tareas aquí para quitarles la fecha -->
         <div id="dropzone-sin-fecha" class="dropzone-sin-fecha">
@@ -98,6 +103,28 @@ $title = 'Datos - MartinCarmona.com';
 
 
 </div>
+<style>
+/* Spinner de carga del calendario */
+.calendar-spinner {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0;
+}
+.calendar-spinner-ring {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #333;
+    border-top-color: #4caf50;
+    border-radius: 50%;
+    animation: cal-spin .7s linear infinite;
+}
+@keyframes cal-spin {
+    to { transform: rotate(360deg); }
+}
+</style>
+
 <script>
     // Cache de tareas por mes para optimizar rendimiento
     const tareasCache = new Map();

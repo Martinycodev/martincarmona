@@ -3,23 +3,14 @@ $title = 'Búsqueda Avanzada de Tareas';
 ?>
 <div class="container">
         <div class="search-page">
-            <!-- Header con navegación -->
-            <div class="search-header">
-                <div class="search-header-left">
-                    <h1>🔍 Búsqueda Avanzada de Tareas</h1>
-                    <p class="search-subtitle">Centro de control para analizar y filtrar todas tus tareas</p>
-                </div>
-                <div class="search-header-right">
-                    <a href="<?= $this->url('/tareas') ?>" class="btn btn-secondary">📝 Vista Normal</a>
-                    <a href="<?= $this->url('/dashboard') ?>" class="btn btn-primary">📊 Dashboard</a>
-                </div>
-            </div>
+            <h2 style="text-align:center; margin-bottom:1.5rem; color:#fff;">🔍 Búsqueda Avanzada de Tareas</h2>
 
             <!-- Panel de filtros -->
             <div class="search-filters-panel">
                 <div class="filters-header">
                     <h3>🎛️ Filtros de Búsqueda</h3>
                     <div class="filters-actions">
+                        <a href="<?= $this->url('/tareas') ?>" class="btn-filter btn-clear" style="text-decoration:none;">📝 Ver todas</a>
                         <button class="btn-filter btn-clear" onclick="limpiarFiltros()">🗑️ Limpiar</button>
                         <button class="btn-filter btn-toggle" onclick="toggleFiltros()" id="toggleBtn">▼ Ocultar</button>
                     </div>
@@ -71,6 +62,18 @@ $title = 'Búsqueda Avanzada de Tareas';
                             </div>
                         </div>
 
+                        <!-- Fila 2b: Propietario -->
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="propietario">👤 Propietario:</label>
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" id="propietario" name="propietario_nombre" placeholder="Buscar propietario..." autocomplete="off">
+                                    <input type="hidden" id="propietario_id" name="propietario_id">
+                                    <div id="propietarioResults" class="autocomplete-results" style="display: none;"></div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Fila 3: Horas y ordenamiento -->
                         <div class="filter-row">
                             <div class="filter-group">
@@ -99,8 +102,8 @@ $title = 'Búsqueda Avanzada de Tareas';
                             <div class="filter-group">
                                 <label for="limite">📊 Límite de resultados:</label>
                                 <select id="limite" name="limite">
-                                    <option value="25">25 resultados</option>
-                                    <option value="50" selected>50 resultados</option>
+                                    <option value="25" selected>25 resultados</option>
+                                    <option value="50">50 resultados</option>
                                     <option value="100">100 resultados</option>
                                     <option value="200">200 resultados</option>
                                 </select>
@@ -223,6 +226,7 @@ $title = 'Búsqueda Avanzada de Tareas';
             document.getElementById('trabajador_id').value = '';
             document.getElementById('parcela_id').value = '';
             document.getElementById('trabajo_id').value = '';
+            document.getElementById('propietario_id').value = '';
             limpiarResultados();
         }
 
@@ -658,7 +662,10 @@ $title = 'Búsqueda Avanzada de Tareas';
             
             const trabajo_id = document.getElementById('trabajo_id').value;
             if (trabajo_id) formData.append('trabajo_id', trabajo_id);
-            
+
+            const propietario_id = document.getElementById('propietario_id').value;
+            if (propietario_id) formData.append('propietario_id', propietario_id);
+
             buscarTareas(formData);
         });
 
@@ -668,6 +675,7 @@ $title = 'Búsqueda Avanzada de Tareas';
             setupAutocomplete('trabajador', 'trabajador_id', 'trabajadorResults', '<?= $this->url("/trabajadores/buscar") ?>');
             setupAutocomplete('parcela', 'parcela_id', 'parcelaResults', '<?= $this->url("/parcelas/buscar") ?>');
             setupAutocomplete('trabajo', 'trabajo_id', 'trabajoResults', '<?= $this->url("/trabajos/buscar") ?>');
+            setupAutocomplete('propietario', 'propietario_id', 'propietarioResults', '<?= $this->url("/propietarios/buscar") ?>');
             
             // Cerrar modales al hacer clic fuera
             window.addEventListener('click', function(e) {

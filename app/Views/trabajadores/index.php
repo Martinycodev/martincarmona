@@ -82,23 +82,71 @@ $title = 'Gestión de Trabajadores';
         </div>
     </div>
 
-    <!-- Tabla de Trabajadores -->
-    <div class="table-container">
+    <?php
+    // Separar trabajadores activos (con tareas en el mes actual) de todos
+    $activos = array_filter($trabajadores, function($t) { return !empty($t['activo']); });
+    ?>
+
+    <!-- Tabla de Trabajadores Activos -->
+    <?php if (!empty($activos)): ?>
+    <div class="table-container" style="margin-bottom:2rem;">
+        <h3 style="color:#4caf50; margin-bottom:.75rem;">● Trabajadores activos este mes</h3>
         <table class="styled-table">
             <thead>
                 <tr>
                     <th style="width:50px">Foto</th>
                     <th>Nombre</th>
+                    <th>Teléfono</th>
                     <th>DNI</th>
-                    <th>Alta SS</th>
-                    <th style="width:80px;text-align:center">Estado</th>
-                    <th style="width:80px;text-align:center">Cuadrilla</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($activos as $trabajador): ?>
+                <?php
+                    $fotoSrc = !empty($trabajador['foto']) ? $this->url($trabajador['foto']) : null;
+                    $esCuadrilla = !empty($trabajador['cuadrilla']);
+                ?>
+                <tr data-id="<?= $trabajador['id'] ?>"
+                    onclick="window.location.href='<?= $this->url('/trabajadores/detalle?id=' . $trabajador['id']) ?>'"
+                    class="clickable-row">
+                    <td>
+                        <?php if ($fotoSrc): ?>
+                            <img src="<?= htmlspecialchars($fotoSrc) ?>" alt="Foto" class="worker-avatar">
+                        <?php else: ?>
+                            <div class="worker-avatar worker-avatar--empty">👤</div>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?= htmlspecialchars($trabajador['nombre'] ?? '-') ?>
+                        <?php if ($esCuadrilla): ?>
+                            <span class="badge-cuadrilla" title="Cuadrilla">👷</span>
+                        <?php endif; ?>
+                    </td>
+                    <td><?= htmlspecialchars($trabajador['telefono'] ?? '-') ?></td>
+                    <td><?= htmlspecialchars($trabajador['dni'] ?? '—') ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
+
+    <!-- Tabla de Todos los Trabajadores -->
+    <div class="table-container">
+        <h3 style="color:#ccc; margin-bottom:.75rem;">Todos los trabajadores</h3>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th style="width:50px">Foto</th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>DNI</th>
                 </tr>
             </thead>
             <tbody id="trabajadoresTableBody">
                 <?php if (empty($trabajadores)): ?>
                     <tr>
-                        <td colspan="6" class="no-data">
+                        <td colspan="4" class="no-data">
                             <div class="no-tareas">
                                 <h3>👷 No hay trabajadores registrados</h3>
                                 <p>Empieza añadiendo tu primer trabajador al equipo.</p>
@@ -109,14 +157,9 @@ $title = 'Gestión de Trabajadores';
                 <?php else: ?>
                     <?php foreach ($trabajadores as $trabajador): ?>
                     <?php
-                        $fotoSrc = !empty($trabajador['foto'])
-                            ? $this->url($trabajador['foto'])
-                            : null;
+                        $fotoSrc = !empty($trabajador['foto']) ? $this->url($trabajador['foto']) : null;
                         $esCuadrilla = !empty($trabajador['cuadrilla']);
                         $estaDeBaja = !empty($trabajador['fecha_baja']);
-                        $altaSs = !empty($trabajador['alta_ss'])
-                            ? date('d-m-Y', strtotime($trabajador['alta_ss']))
-                            : '—';
                     ?>
                     <tr data-id="<?= $trabajador['id'] ?>"
                         onclick="window.location.href='<?= $this->url('/trabajadores/detalle?id=' . $trabajador['id']) ?>'"
@@ -137,18 +180,8 @@ $title = 'Gestión de Trabajadores';
                                 <span class="badge-baja" title="Dado de baja el <?= date('d-m-Y', strtotime($trabajador['fecha_baja'])) ?>">🚫 Baja</span>
                             <?php endif; ?>
                         </td>
+                        <td><?= htmlspecialchars($trabajador['telefono'] ?? '-') ?></td>
                         <td><?= htmlspecialchars($trabajador['dni'] ?? '—') ?></td>
-                        <td><?= $altaSs ?></td>
-                        <td style="text-align:center">
-                            <?php if (!empty($trabajador['activo'])): ?>
-                                <span class="badge-activo" title="Activo este mes">● Activo</span>
-                            <?php else: ?>
-                                <span class="badge-inactivo" title="Inactivo este mes">○ Inactivo</span>
-                            <?php endif; ?>
-                        </td>
-                        <td style="text-align:center">
-                            <?= $esCuadrilla ? '<span class="cuadrilla-check">✓</span>' : '<span class="cuadrilla-no">—</span>' ?>
-                        </td>
                     </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

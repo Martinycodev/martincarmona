@@ -15,8 +15,8 @@ class RiegoController extends BaseController
     {
         $userId = $_SESSION['user_id'];
 
-        // Año seleccionado (GET param o null para todos)
-        $anio = isset($_GET['anio']) && $_GET['anio'] !== '' ? intval($_GET['anio']) : null;
+        // Año seleccionado (GET param o año actual por defecto)
+        $anio = isset($_GET['anio']) && $_GET['anio'] !== '' ? intval($_GET['anio']) : intval(date('Y'));
 
         // Datos del modelo
         $riegos   = $this->modelo->getAll($userId, $anio);

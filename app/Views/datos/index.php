@@ -2,9 +2,7 @@
 $title = 'Datos - MartinCarmona.com';
 ?>
 <div class="container">
-        <div class="welcome-section">
-            <h1>📊 Bases de Datos</h1>
-        </div>
+        <h2 style="text-align:center; margin:1.5rem 0;">📊 Bases de Datos</h2>
 
         <div class="actions-grid">
             <a href="<?= $this->url('/datos/trabajadores') ?>" class="action-card">

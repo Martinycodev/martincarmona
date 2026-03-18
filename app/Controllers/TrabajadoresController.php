@@ -72,8 +72,33 @@ class TrabajadoresController extends BaseController
     public function index()
     {
         $db = \Database::connect();
-        $result = $db->query("SELECT * FROM trabajadores ORDER BY nombre");
-        $trabajadores = $result->fetch_all(MYSQLI_ASSOC);
+        $mesActual = (int) date('n');
+        $anioActual = (int) date('Y');
+
+        // Consulta que detecta si el trabajador tiene tareas asignadas en el mes actual
+        $stmt = $db->prepare("
+            SELECT t.*,
+                   (SELECT COUNT(*) FROM tarea_trabajadores tt
+                    JOIN tareas ta ON tt.tarea_id = ta.id
+                    WHERE tt.trabajador_id = t.id
+                      AND MONTH(ta.fecha) = ?
+                      AND YEAR(ta.fecha) = ?) AS tareas_mes
+            FROM trabajadores t
+            ORDER BY t.nombre
+        ");
+        $stmt->bind_param("ii", $mesActual, $anioActual);
+        $stmt->execute();
+        $trabajadores = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        // Marcar como activo si tiene tareas en el mes actual
+        foreach ($trabajadores as &$trab) {
+            if (intval($trab['tareas_mes']) > 0) {
+                $trab['activo'] = 1;
+            }
+        }
+        unset($trab);
+
         $db->close();
         $data = [
             'trabajadores' => $trabajadores,

@@ -16,12 +16,11 @@
                     <th>Registros</th>
                     <th>Total kg</th>
                     <th>Beneficio</th>
-                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($campanas as $c): ?>
-                <tr>
+                <tr class="clickable-row" onclick="window.location.href='<?= $this->url('/campana/detalle?id=' . intval($c['id'])) ?>'">
                     <td><strong><?= htmlspecialchars($c['nombre']) ?></strong></td>
                     <td><?= htmlspecialchars($c['fecha_inicio']) ?></td>
                     <td><?= $c['fecha_fin'] ? htmlspecialchars($c['fecha_fin']) : '—' ?></td>
@@ -41,14 +40,10 @@
                             —
                         <?php endif; ?>
                     </td>
-                    <td>
-                        <a href="<?= $this->url('/campana/detalle?id=' . intval($c['id'])) ?>" class="btn btn-secondary btn-sm">📋 Ver</a>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarCampana(<?= intval($c['id']) ?>, <?= htmlspecialchars(json_encode($c['nombre']), ENT_QUOTES) ?>)">Eliminar</button>
-                    </td>
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($campanas)): ?>
-                <tr><td colspan="8" style="text-align:center; color:#6b7280; padding:2rem;">No hay campañas. Crea la primera para empezar.</td></tr>
+                <tr><td colspan="7" style="text-align:center; color:#6b7280; padding:2rem;">No hay campañas. Crea la primera para empezar.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -116,22 +111,6 @@ document.getElementById('formNuevaCampana').addEventListener('submit', function(
     })
     .catch(function() { btn.disabled = false; showToast('Error de conexión', 'error'); });
 });
-
-function eliminarCampana(id, nombre) {
-    if (!confirm('¿Eliminar la campaña "' + nombre + '" y todos sus registros?')) return;
-
-    fetch(basePath + '/campana/eliminar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-        body: JSON.stringify({ id: id })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(res) {
-        if (res.success) location.reload();
-        else showToast(res.message, 'error');
-    })
-    .catch(function() { showToast('Error de conexión', 'error'); });
-}
 
 document.getElementById('modalNueva').addEventListener('click', function(e) {
     if (e.target === this) cerrarModalNueva();
