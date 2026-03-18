@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="256" height="256" version="1.1" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-    <text x="32" y="48" text-anchor="middle" font-size="50">🌳</text>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo oscuro -->
+  <rect width="256" height="256" rx="32" fill="#1a1a1a"/>
+  <!-- Copa del olivo -->
+  <ellipse cx="128" cy="82" rx="56" ry="46" fill="#388e3c"/>
+  <ellipse cx="100" cy="96" rx="40" ry="36" fill="#4caf50"/>
+  <ellipse cx="156" cy="96" rx="40" ry="36" fill="#4caf50"/>
+  <ellipse cx="116" cy="72" rx="36" ry="30" fill="#66bb6a"/>
+  <ellipse cx="144" cy="76" rx="33" ry="28" fill="#66bb6a"/>
+  <ellipse cx="128" cy="108" rx="46" ry="30" fill="#388e3c"/>
+  <ellipse cx="128" cy="58" rx="26" ry="22" fill="#81c784"/>
+  <!-- Aceitunas -->
+  <circle cx="105" cy="90" r="5" fill="#2e7d32"/>
+  <circle cx="148" cy="86" r="5" fill="#2e7d32"/>
+  <circle cx="124" cy="106" r="5" fill="#2e7d32"/>
+  <circle cx="140" cy="112" r="5" fill="#2e7d32"/>
+  <!-- Tronco -->
+  <path d="M118 130 Q116 170 112 200 L144 200 Q140 170 138 130 Z" fill="#8B6914"/>
+  <!-- Base/raíces -->
+  <path d="M90 204 Q128 192 166 204" stroke="#8B6914" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Texto MC -->
+  <text x="128" y="240" text-anchor="middle" font-family="-apple-system,sans-serif" font-weight="bold" font-size="26" fill="#4caf50">MC</text>
 </svg>

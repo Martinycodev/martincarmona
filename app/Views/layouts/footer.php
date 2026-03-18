@@ -145,7 +145,7 @@
     <script>
     // Registrar Service Worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('<?= $this->url('/public/sw.php') ?>', { scope: '<?= APP_BASE_PATH ?>/' })
+        navigator.serviceWorker.register('<?= $this->url('/sw.js') ?>', { scope: '<?= APP_BASE_PATH ?>/' })
             .catch(function() { /* SW no soportado o error silencioso */ });
     }
 

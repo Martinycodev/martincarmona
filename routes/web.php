@@ -11,6 +11,10 @@
 $router->get('/', 'HomeController@index');
 $router->get('/enlaces', 'EnlacesController@index');
 
+// PWA: manifest y service worker (servidos por el router para evitar bloqueo .htaccess)
+$router->get('/manifest.json', 'PwaController@manifest');
+$router->get('/sw.js', 'PwaController@sw');
+
 // Contacto (landing page)
 $router->post('/contacto', 'ContactoController@enviar');
 

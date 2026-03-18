@@ -45,6 +45,9 @@
     }
     </script>
     <link rel="icon" href="<?= $this->url('/public/img/favicon.svg') ?>" type="image/svg+xml">
+    <!-- PWA -->
+    <link rel="manifest" href="<?= $this->url('/manifest.json') ?>">
+    <meta name="theme-color" content="#4caf50">
     <style>
         /* ===== RESET & BASE ===== */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -59,7 +62,7 @@
             --green-light:  #81c784;
             --green-dim:    rgba(76, 175, 80, 0.10);
             --text:         #e8f5e9;
-            --text-muted:   #7a977a;
+            --text-muted:   #9ab89a;
             --text-dim:     #3d5c3d;
         }
 
@@ -404,8 +407,8 @@
         }
         .lp-modal-close {
             position: absolute;
-            top: 16px;
-            right: 18px;
+            top: 10px;
+            right: 10px;
             background: none;
             border: none;
             color: var(--text-muted);
@@ -413,6 +416,11 @@
             cursor: pointer;
             transition: color 0.2s;
             line-height: 1;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .lp-modal-close:hover { color: var(--text); }
         .lp-modal-icon {
@@ -537,20 +545,33 @@
         .lp-carousel-dots {
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 12px;
             margin-top: 36px;
         }
         .lp-carousel-dot {
-            width: 8px;
-            height: 8px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            background: var(--border);
+            background: transparent;
             border: none;
             cursor: pointer;
             transition: all 0.25s;
             padding: 0;
+            position: relative;
         }
-        .lp-carousel-dot.active {
+        .lp-carousel-dot::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.25s;
+        }
+        .lp-carousel-dot.active::after {
             background: var(--green);
             width: 24px;
             border-radius: 4px;
@@ -738,11 +759,12 @@
     </nav>
 
 
+    <main>
     <!-- HERO -->
     <section class="lp-hero">
 
         <!-- Video de fondo: se elimina automáticamente en conexiones lentas o con ahorro de datos -->
-        <video class="lp-hero-video" autoplay muted loop playsinline preload="none">
+        <video class="lp-hero-video" autoplay muted loop playsinline preload="none" aria-hidden="true">
             <source src="<?= $this->url('/public/video/campo.mp4') ?>" type="video/mp4">
         </video>
 
@@ -835,7 +857,7 @@
     <!-- MODAL de funcionalidades (se rellena dinámicamente con JS) -->
     <div class="lp-modal-overlay" id="featureModal">
         <div class="lp-modal">
-            <button class="lp-modal-close" id="featureModalClose">&times;</button>
+            <button class="lp-modal-close" id="featureModalClose" aria-label="Cerrar">&times;</button>
             <span class="lp-modal-icon" id="featureModalIcon"></span>
             <div class="lp-modal-title" id="featureModalTitle"></div>
             <div class="lp-modal-body" id="featureModalBody"></div>
@@ -927,9 +949,9 @@
 
             <!-- Dots indicadores -->
             <div class="lp-carousel-dots">
-                <button class="lp-carousel-dot active" data-role="empresa"></button>
-                <button class="lp-carousel-dot" data-role="trabajador"></button>
-                <button class="lp-carousel-dot" data-role="propietario"></button>
+                <button class="lp-carousel-dot active" data-role="empresa" aria-label="Ver panel empresa"></button>
+                <button class="lp-carousel-dot" data-role="trabajador" aria-label="Ver panel trabajador"></button>
+                <button class="lp-carousel-dot" data-role="propietario" aria-label="Ver panel propietario"></button>
             </div>
         </section>
     </div>
@@ -1028,6 +1050,8 @@
         </div>
     </section>
 
+
+    </main>
 
     <!-- FOOTER -->
     <footer class="lp-footer">

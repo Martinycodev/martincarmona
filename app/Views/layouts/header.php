@@ -14,7 +14,7 @@
     <!-- Token CSRF para peticiones AJAX -->
     <?= \Core\CsrfMiddleware::getMetaTag() ?>
     <!-- PWA: manifest + theme-color -->
-    <link rel="manifest" href="<?= $this->url('/public/manifest.php') ?>">
+    <link rel="manifest" href="<?= $this->url('/manifest.json') ?>">
     <meta name="theme-color" content="#4caf50">
     <!-- iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
