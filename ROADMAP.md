@@ -214,7 +214,7 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 - [x] Sigue sin verse las imágenes subidas a tareas. Parece que se suben y se guardan pero en la previsualización desaparecen o no aparecen.
 - [x] En busqueda avanzada quiero añadir filtrar por propietarios
 - [x] Eliminar las welcome-section y sustituilas por texto centrado sobre el fondo, sin una caja o contenedor que ocupe mucho espacio.
-- [ ] Cuando una tarea se le borra la fecha se añade automáticamente a la lista de tareas pendientes. Me ha pasado de borrar la fecha de un par de tareas y que desaparezcan.
+- [x] Cuando una tarea se le borra la fecha se añade automáticamente a la lista de tareas pendientes. Me ha pasado de borrar la fecha de un par de tareas y que desaparezcan.
 
 ### Infraestructura
 - [x] Backups automáticos de la base de datos
