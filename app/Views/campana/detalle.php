@@ -52,8 +52,8 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
                     <td><?= !empty($r['fecha']) ? date('d-m-Y', strtotime($r['fecha'])) : '—' ?></td>
                     <td><?= htmlspecialchars($r['parcela_nombre'] ?? '—') ?></td>
                     <td><?= htmlspecialchars($r['calidad'] ?? '—') ?></td>
-                    <td><?= number_format($r['kilos'], 2, ',', '.') ?> kg</td>
-                    <td><?= $r['rendimiento_pct'] !== null ? number_format($r['rendimiento_pct'], 1, ',', '.') . ' %' : '—' ?></td>
+                    <td><?= number_format($r['kilos'], 0, ',', '.') ?> kg</td>
+                    <td><?= $r['rendimiento_pct'] !== null ? number_format($r['rendimiento_pct'], 2, ',', '.') . ' %' : '—' ?></td>
                     <td><?= $r['beneficio'] !== null ? number_format($r['beneficio'], 2, ',', '.') . ' €' : '—' ?></td>
                     <?php if (!$cerrada): ?>
                     <td>
@@ -71,7 +71,7 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
             <tfoot>
                 <tr style="font-weight:700; background:#1a1a1a; color:#fff;">
                     <td colspan="3">TOTAL</td>
-                    <td><?= number_format($totalKilos, 2, ',', '.') ?> kg</td>
+                    <td><?= number_format($totalKilos, 0, ',', '.') ?> kg</td>
                     <td>—</td>
                     <td><?= $totalBeneficio > 0 ? number_format($totalBeneficio, 2, ',', '.') . ' €' : '—' ?></td>
                     <?php if (!$cerrada): ?><td></td><?php endif; ?>

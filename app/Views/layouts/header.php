@@ -6,7 +6,7 @@
     <title><?= $title ?? 'MartinCarmona.com' ?></title>
     <!-- Favicons -->
     <link rel="icon" href="<?= $this->url('/public/img/favicon.svg') ?>" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="<?= $this->url('/public/img/favicon.svg') ?>">
+    <link rel="apple-touch-icon" sizes="152x152" href="<?= $this->url('/public/img/icons/icon-152x152.png') ?>">
     <!-- Fallback para navegadores que no soportan SVG -->
     <link rel="alternate icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABILAAASCwAAAAAAAAAAAAD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A" type="image/x-icon">
     <!-- Ruta base de la aplicación para JS -->
@@ -14,10 +14,13 @@
     <!-- Token CSRF para peticiones AJAX -->
     <?= \Core\CsrfMiddleware::getMetaTag() ?>
     <!-- PWA: manifest + theme-color -->
-    <link rel="manifest" href="<?= $this->url('/public/manifest.json') ?>">
+    <link rel="manifest" href="<?= $this->url('/public/manifest.php') ?>">
     <meta name="theme-color" content="#4caf50">
+    <!-- iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MartinCarmona">
+    <link rel="apple-touch-icon" href="<?= $this->url('/public/img/icons/icon-152x152.png') ?>">
     <!-- Estilos -->
     <link rel="stylesheet" href="<?= $this->url('/public/css/styles.css') ?>">
     <link rel="stylesheet" href="<?= $this->url('/public/css/autocomplete.css') ?>">

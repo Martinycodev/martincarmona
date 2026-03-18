@@ -141,12 +141,69 @@
     })();
     </script>
 
-    <!-- Registro del Service Worker para PWA -->
+    <!-- Registro del Service Worker + prompt de instalación PWA -->
     <script>
+    // Registrar Service Worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('<?= $this->url('/public/sw.js') ?>', { scope: '<?= APP_BASE_PATH ?>/' })
+        navigator.serviceWorker.register('<?= $this->url('/public/sw.php') ?>', { scope: '<?= APP_BASE_PATH ?>/' })
             .catch(function() { /* SW no soportado o error silencioso */ });
     }
+
+    // Banner de instalación PWA
+    (function() {
+        var deferredPrompt = null;
+
+        // No mostrar si ya está instalada como PWA
+        if (window.matchMedia('(display-mode: standalone)').matches) return;
+
+        // Capturar el evento beforeinstallprompt (Chrome/Edge/Samsung)
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallBanner();
+        });
+
+        function showInstallBanner() {
+            // No mostrar si el usuario ya lo descartó en esta sesión
+            if (sessionStorage.getItem('pwa-install-dismissed')) return;
+
+            var banner = document.createElement('div');
+            banner.id = 'pwa-install-banner';
+            banner.innerHTML =
+                '<span class="pwa-install-text">Instala MartinCarmona como app</span>' +
+                '<button id="pwa-install-btn" class="pwa-install-accept">Instalar</button>' +
+                '<button id="pwa-install-dismiss" class="pwa-install-close" title="Cerrar">✕</button>';
+
+            document.body.appendChild(banner);
+            // Forzar reflow para animar la entrada
+            banner.offsetHeight;
+            banner.classList.add('visible');
+
+            // Botón instalar
+            document.getElementById('pwa-install-btn').addEventListener('click', function() {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function(result) {
+                    deferredPrompt = null;
+                    removeBanner();
+                });
+            });
+
+            // Botón cerrar
+            document.getElementById('pwa-install-dismiss').addEventListener('click', function() {
+                sessionStorage.setItem('pwa-install-dismissed', '1');
+                removeBanner();
+            });
+        }
+
+        function removeBanner() {
+            var banner = document.getElementById('pwa-install-banner');
+            if (banner) {
+                banner.classList.remove('visible');
+                setTimeout(function() { banner.remove(); }, 300);
+            }
+        }
+    })();
     </script>
 
 </body>
