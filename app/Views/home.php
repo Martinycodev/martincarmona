@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión del Olivar - MartinCarmona</title>
-    <meta name="description" content="Gestiona tu olivar de forma integral: parcelas, trabajadores, tareas de campo, economía, campañas de aceituna y fitosanitarios. Plataforma digital para agricultores en Jaén y toda España.">
-    <meta name="keywords" content="Martín Carmona, MartinCarmona, gestión del olivar, olivar Jaén, Arjonilla, gestión agrícola, gestión de fincas, aceite de oliva, control de parcelas, tareas agrícolas">
+    <title>Martin Carmona - App de gestión para olivar y fincas agrícolas</title>
+    <meta name="description" content="Aplicación agrícola para organizar tu olivar: controla parcelas, trabajadores, tareas, economía y campañas de aceituna desde una sola plataforma. Sin papeles, sin hojas de cálculo.">
+    <meta name="keywords" content="app gestión olivar, aplicación agrícola, gestión de fincas, control de parcelas, olivar Jaén, MartinCarmona, tareas agrícolas, campañas aceituna">
     <link rel="canonical" href="https://martincarmona.com/">
     <meta name="author" content="Martín Carmona">
     <meta name="robots" content="index, follow">
     <!-- Open Graph (Facebook, WhatsApp, Telegram) -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://martincarmona.com/">
-    <meta property="og:title" content="Gestión del Olivar - MartinCarmona">
-    <meta property="og:description" content="Gestiona tu olivar de forma integral: parcelas, trabajadores, tareas de campo, economía, campañas de aceituna y fitosanitarios. Plataforma digital para agricultores.">
+    <meta property="og:title" content="Martin Carmona - App de gestión para olivar y fincas agrícolas">
+    <meta property="og:description" content="Aplicación agrícola para organizar tu olivar: controla parcelas, trabajadores, tareas, economía y campañas de aceituna desde una sola plataforma. Sin papeles, sin hojas de cálculo.">
     <meta property="og:image" content="https://martincarmona.com/public/img/og-cover.jpg">
     <meta property="og:locale" content="es_ES">
     <meta property="og:site_name" content="MartinCarmona.com">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Gestión del Olivar - MartinCarmona">
-    <meta name="twitter:description" content="Gestiona tu olivar de forma integral: parcelas, trabajadores, tareas de campo, economía, campañas de aceituna y fitosanitarios. Plataforma digital para agricultores.">
+    <meta name="twitter:title" content="Martin Carmona - App de gestión para olivar y fincas agrícolas">
+    <meta name="twitter:description" content="Aplicación agrícola para organizar tu olivar: controla parcelas, trabajadores, tareas, economía y campañas de aceituna desde una sola plataforma. Sin papeles, sin hojas de cálculo.">
     <meta name="twitter:image" content="https://martincarmona.com/public/img/og-cover.jpg">
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
@@ -28,7 +28,7 @@
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "MartinCarmona.com",
-        "description": "Plataforma de gestión integral de olivar en Arjonilla, Jaén",
+        "description": "Aplicación web de gestión integral de olivar y fincas agrícolas",
         "url": "https://martincarmona.com",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Web",
@@ -768,11 +768,11 @@
             <source src="<?= $this->url('/public/video/campo.mp4') ?>" type="video/mp4">
         </video>
 
-        <div class="lp-badge">Gestión de olivar · Plataforma completa</div>
-        <h1>Tu finca,<br><em>gestionada con precisión</em></h1>
+        <div class="lp-badge">App de gestión agrícola · Plataforma digital para olivar</div>
+        <h1>Tu olivar,<br><em>organizado desde una sola app</em></h1>
         <p class="lp-hero-desc">
-            Parcelas, personal, tareas y economía centralizados en una sola herramienta.
-            Sin hojas de cálculo, sin papeles.
+            Organiza parcelas, personal, tareas y economía de tu explotación desde el móvil o el ordenador.
+            Sin papeles, sin hojas de cálculo.
         </p>
         <div class="lp-hero-actions">
             <a href="#acceso" class="lp-btn-primary">Iniciar sesión</a>
