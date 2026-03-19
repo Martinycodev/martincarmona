@@ -412,8 +412,9 @@ class TaskSidebar {
         const imgEl = document.createElement('img');
         imgEl.src = imgUrl;
         imgEl.alt = img.original_filename || 'Imagen';
-        // Placeholder si falla la carga
+        // Placeholder si falla la carga — mostrar URL en consola para depuración
         imgEl.onerror = () => {
+            console.warn('[Imagen] No se pudo cargar:', imgUrl);
             imgEl.style.display = 'none';
             div.classList.add('sidebar-img-thumb-error');
             div.insertAdjacentHTML('afterbegin', '<span title="Imagen no disponible">🖼</span>');
