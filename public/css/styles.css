@@ -24,21 +24,20 @@ body {
 
 /* Estilos para el menú hamburguesa */
 .hamburger-menu {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 21px;
+    display: block;
+    width: 40px;
+    height: 40px;
     cursor: pointer;
     position: relative;
     z-index: 100;
-    margin-left: 20px;
-    padding: 10px;
+    margin-left: 15px;
+    padding: 0;
     border-radius: 5px;
     transition: background-color 0.3s ease;
     background: none;
     border: none;
-    box-sizing: content-box;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
 .hamburger-menu:hover {
@@ -47,11 +46,34 @@ body {
 
 .hamburger-menu span {
     display: block;
-    height: 3px;
-    width: 100%;
+    position: absolute;
+    left: 50%;
+    height: 2px;
+    width: 20px;
+    margin-left: -10px;
     background-color: white;
     transition: all 0.3s ease;
-    border-radius: 3px;
+    border-radius: 2px;
+}
+
+/* Posición de las 3 barras centradas verticalmente */
+.hamburger-menu span:nth-child(1) { top: 14px; }
+.hamburger-menu span:nth-child(2) { top: 20px; }
+.hamburger-menu span:nth-child(3) { top: 26px; }
+
+/* Animación hamburguesa → X */
+.hamburger-menu.active span:nth-child(1) {
+    top: 20px;
+    transform: rotate(45deg);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.active span:nth-child(3) {
+    top: 20px;
+    transform: rotate(-45deg);
 }
 
 .nav-menu {
@@ -1231,6 +1253,53 @@ body {
 
 .user-info .logout-btn {
     display: none;
+}
+
+/* Estilos responsive para el header en móvil */
+@media screen and (max-width: 480px) {
+    .header {
+        padding: 8px 10px;
+    }
+
+    .header-content {
+        padding: 0 5px;
+    }
+
+    .header-content h1 {
+        font-size: 1.2rem;
+    }
+
+    .user-info {
+        gap: 6px;
+    }
+
+    .user-info > span {
+        display: none;
+    }
+
+    .hamburger-menu {
+        width: 36px;
+        height: 36px;
+        margin-left: 6px;
+    }
+
+    .hamburger-menu span {
+        width: 18px;
+        margin-left: -9px;
+    }
+
+    .hamburger-menu span:nth-child(1) { top: 12px; }
+    .hamburger-menu span:nth-child(2) { top: 18px; }
+    .hamburger-menu span:nth-child(3) { top: 24px; }
+
+    .hamburger-menu.active span:nth-child(1) { top: 18px; }
+    .hamburger-menu.active span:nth-child(3) { top: 18px; }
+
+
+    .notif-bell {
+        font-size: 0.9rem;
+        padding: 4px;
+    }
 }
 
 /* Estilos responsive para el calendario */

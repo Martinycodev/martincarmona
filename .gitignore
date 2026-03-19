@@ -15,6 +15,7 @@ vendor/
 .vscode/
 .idea/
 *.code-workspace
+skills/
 
 # Cache de PHPUnit
 .phpunit.result.cache
@@ -37,3 +38,8 @@ public/uploads/tareas/*
 public/video/
 # Base de datos con datos (no subir a git)
 u873002419_campo.sql
+
+
+# Documentos en general (no subir a git)
+docs/
+
