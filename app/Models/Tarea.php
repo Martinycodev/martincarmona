@@ -1107,6 +1107,19 @@ class Tarea
             $result = $stmt->execute();
             $stmt->close();
 
+            // Si se actualizan las horas, propagar a tarea_trabajadores.horas_asignadas
+            if ($result && $column === 'horas') {
+                $horasVal = floatval($value);
+                $stmtTrab = $this->db->prepare("
+                    UPDATE tarea_trabajadores
+                    SET horas_asignadas = ?
+                    WHERE tarea_id = ?
+                ");
+                $stmtTrab->bind_param("di", $horasVal, $taskId);
+                $stmtTrab->execute();
+                $stmtTrab->close();
+            }
+
             return $result;
         } catch (\Exception $e) {
             \Core\Logger::app()->error("Error actualizando campo individual: " . $e->getMessage());

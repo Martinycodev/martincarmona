@@ -373,26 +373,37 @@ class TaskSidebar {
      */
     _crearImagenThumb(img, bustCache = false) {
         const div = document.createElement('div');
-        div.style.cssText = 'position:relative; width:80px; height:80px; border-radius:6px; overflow:hidden; border:1px solid #404040;';
+        div.className = 'sidebar-img-thumb';
         div.id = 'img-thumb-' + img.id;
 
         // Construir URL de la imagen con cache-bust opcional
-        let imgUrl = buildUrl(img.file_path.replace(/^\//, ''));
+        let imgUrl = buildUrl('/' + img.file_path.replace(/^\//, ''));
         if (bustCache) {
             imgUrl += '?t=' + Date.now();
         }
 
+        const self = this;
+        const imageId = img.id;
+
         const a = document.createElement('a');
         a.href = imgUrl;
-        a.target = '_blank';
         a.onclick = (e) => {
             e.preventDefault();
-            // Abrir lightbox si existe
+            // Abrir lightbox con botón eliminar conectado a esta imagen
             const lb = document.getElementById('img-lightbox');
             const lbImg = document.getElementById('img-lightbox-img');
+            const lbDel = document.getElementById('img-lightbox-delete');
             if (lb && lbImg) {
                 lbImg.src = imgUrl;
                 lb.classList.add('open');
+                // Conectar botón eliminar del lightbox a esta imagen
+                if (lbDel) {
+                    lbDel.onclick = (ev) => {
+                        ev.stopPropagation();
+                        self._eliminarImagen(imageId);
+                        window.closeLightbox();
+                    };
+                }
             } else {
                 window.open(imgUrl, '_blank');
             }
@@ -400,24 +411,24 @@ class TaskSidebar {
 
         const imgEl = document.createElement('img');
         imgEl.src = imgUrl;
-        imgEl.style.cssText = 'width:100%; height:100%; object-fit:cover;';
         imgEl.alt = img.original_filename || 'Imagen';
         // Placeholder si falla la carga
         imgEl.onerror = () => {
             imgEl.style.display = 'none';
-            div.style.cssText += 'display:flex; align-items:center; justify-content:center; background:#2a2a2a; color:#666; font-size:1.5rem;';
+            div.classList.add('sidebar-img-thumb-error');
             div.insertAdjacentHTML('afterbegin', '<span title="Imagen no disponible">🖼</span>');
         };
         a.appendChild(imgEl);
 
+        // Botón eliminar en thumbnail — solo visible en desktop
         const delBtn = document.createElement('button');
+        delBtn.className = 'sidebar-img-thumb-del';
         delBtn.innerHTML = '×';
-        delBtn.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.7); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:14px; cursor:pointer; line-height:1; padding:0;';
         delBtn.title = 'Eliminar imagen';
         delBtn.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
-            this._eliminarImagen(img.id);
+            this._eliminarImagen(imageId);
         };
 
         div.appendChild(a);
