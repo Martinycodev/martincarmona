@@ -215,6 +215,21 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 - [x] En busqueda avanzada quiero añadir filtrar por propietarios
 - [x] Eliminar las welcome-section y sustituilas por texto centrado sobre el fondo, sin una caja o contenedor que ocupe mucho espacio.
 - [x] Cuando una tarea se le borra la fecha se añade automáticamente a la lista de tareas pendientes. Me ha pasado de borrar la fecha de un par de tareas y que desaparezcan.
+- [x] Arreglar las notificaciones, se queda en cargando... Y las notificaciones me gustaría que valoremos los recordatorios de itv, los pagos de los trabajadores, añadir otra notificacion estandar de mandar Jornadas reales a la gestoria.
+- [x] añadir la opción de detalle de vehículo, y dentro poder editar los datos, añadir la opción de última itv y programar el recordatorio para la nueva fecha de validez cada vez que se actualice. 
+- [x] Dentro de vehículos/detalle que tengamos el tema del precio del seguro y aseguradora junto con teléfono de contacto de la aseguradora.
+- [x] Me gustaría añadir una imagen de la parcela que aparezca en una columna a la derecha de datos de la parcela. en proporción 1:1 y que cuando pinches la veas completa.
+- [x] Plantear que los trabajos tengan categoría. Aún no se cómo separarlos y que en el dashboard se vean por colores.
+- [x] En el modo movil, cuando abro un día para ver las tareas me gustaría que junto a la fecha hubieran unas flechas que me permita pasar al día siguiente y al anterior.
+- [x] Podríamos Poner en el centro del header el logo del icono de arbol y en la esquina izquierda añadir un icono  de Calendario para que se entienda como el inicio o el home. 
+- [x] Cuando seleccionamos trabajadores o parcelas se seleccionan con un tag verde. Me gustaría que en el apartado de trabajo también ocurra, aunque solo se pueda seleccionar uno. Si está seleccionado y elegimos otro se sustituye por el nuevo.
+- [x] El quickbutton de busqueda avanzada me gustaría que tubiese un nombre más corto, solo Tareas. y una vez dentro poder darle a ver todas. El boton de  ver todas en /busqueda lo quiero de color verde.
+- [x] Valorar que haya formularios reactivos en el sidebar, Por ejemplo:
+ - Para que en el caso de seleccionar "Abrir riego" se crea un registro en la gestión de riego y que contenga la fecha y la parcela.
+ - En el caso de seleccionar Recoger Aceituna que cree un nuevo registro con la fecha y la parcela.
+ - En el caso de echar herbicida o sulfato que se cree el registro de aplicación de fitosanitarios con la fecha y la parcela. Más adelante se completaría la información
+ - Plantear la posibilidad que al actualizar la tarea y cambiar el tipo de trabajo se borre el registro creado.
+
 
 ### Infraestructura
 - [x] Backups automáticos de la base de datos

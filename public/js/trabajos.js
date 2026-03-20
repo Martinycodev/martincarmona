@@ -43,6 +43,9 @@ async function editJob(id, buttonElement = null) {
             document.getElementById('editNombre').value = job.nombre || '';
             document.getElementById('editPrecioHora').value = job.precio_hora || '';
             document.getElementById('editDescripcion').value = job.descripcion || '';
+            // Seleccionar categoría en el dropdown
+            var catSelect = document.getElementById('editCategoria');
+            if (catSelect) catSelect.value = job.categoria || 'otro';
 
             // Mostrar/ocultar sección de documento
             const preview = document.getElementById('documentoPreview');

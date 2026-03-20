@@ -255,6 +255,18 @@ class TaskSidebar {
     _buildTrabajoSection(tarea) {
         const wrap = this._makeSectionEl('🔨 Tipo de trabajo', 'trabajo');
 
+        // Tag del trabajo seleccionado (solo 1, se sustituye al cambiar)
+        const tagContainer = document.createElement('div');
+        tagContainer.className = 'sidebar-tags';
+        tagContainer.id = `sidebar-tags-trabajo-${this.taskId}`;
+
+        const currentTrabajo = tarea.trabajos && tarea.trabajos.length ? tarea.trabajos[0] : null;
+        if (currentTrabajo) {
+            tagContainer.appendChild(this._makeTag(currentTrabajo.nombre, () => {
+                this._quitarTrabajo(tagContainer);
+            }));
+        }
+
         const cbWrap = document.createElement('div');
         cbWrap.className = 'combobox-wrap';
         cbWrap.id = `cb-sidebar-work-${this.taskId}`;
@@ -279,7 +291,6 @@ class TaskSidebar {
         cbWrap.appendChild(list);
 
         // Pre-rellenar con el trabajo actual
-        const currentTrabajo = tarea.trabajos && tarea.trabajos.length ? tarea.trabajos[0] : null;
         if (currentTrabajo) {
             input.value     = currentTrabajo.nombre;
             hiddenVal.value = currentTrabajo.id;
@@ -299,9 +310,20 @@ class TaskSidebar {
             }
         }
 
+        wrap.appendChild(tagContainer);
         wrap.appendChild(cbWrap);
         wrap.appendChild(costeEl);
         return wrap;
+    }
+
+    /**
+     * Quitar el trabajo asignado (vaciar tag + llamar backend con trabajo_id=0)
+     */
+    async _quitarTrabajo(tagContainer) {
+        tagContainer.innerHTML = '';
+        _resetCombobox(`cb-sidebar-work-${this.taskId}`);
+        await this._cambiarTrabajo(0, '');
+        this._actualizarCoste();
     }
 
     _actualizarCoste() {
@@ -831,6 +853,16 @@ class TaskSidebar {
             const data = await res.json();
 
             if (data.success) {
+                // Actualizar tag verde del trabajo
+                const tagContainer = document.getElementById(`sidebar-tags-trabajo-${this.taskId}`);
+                if (tagContainer) {
+                    tagContainer.innerHTML = '';
+                    if (trabajoId > 0 && trabajoNombre) {
+                        tagContainer.appendChild(this._makeTag(trabajoNombre, () => {
+                            this._quitarTrabajo(tagContainer);
+                        }));
+                    }
+                }
                 this._markSaved('trabajo');
                 window.needsReload = true;
             } else {

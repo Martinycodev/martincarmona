@@ -622,6 +622,133 @@ class ParcelasController extends BaseController
         echo json_encode(['success' => true, 'message' => 'Documento eliminado correctamente']);
     }
 
+    /**
+     * POST /parcelas/subirImagen — Subir imagen de la parcela (1:1)
+     */
+    public function subirImagen()
+    {
+        header('Content-Type: application/json');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        $this->validateCsrf();
+
+        $userId = intval($_SESSION['user_id']);
+        $id = intval($_POST['id'] ?? 0);
+
+        if (!$id) {
+            echo json_encode(['success' => false, 'message' => 'ID de parcela requerido']);
+            return;
+        }
+
+        if (!isset($_FILES['imagen']) || $_FILES['imagen']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['success' => false, 'message' => 'No se recibió la imagen']);
+            return;
+        }
+
+        $file = $_FILES['imagen'];
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($file['tmp_name']);
+        $allowed = ['image/jpeg', 'image/png', 'image/webp'];
+
+        if (!in_array($mime, $allowed)) {
+            echo json_encode(['success' => false, 'message' => 'Solo se permiten imágenes JPG, PNG o WebP']);
+            return;
+        }
+
+        // Limitar tamaño a 5MB
+        if ($file['size'] > 5 * 1024 * 1024) {
+            echo json_encode(['success' => false, 'message' => 'La imagen no puede superar los 5MB']);
+            return;
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $uploadDir = BASE_PATH . '/public/uploads/parcelas/';
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $filename = 'parcela_' . $id . '_' . time() . '.' . $ext;
+        $targetPath = $uploadDir . $filename;
+
+        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+            echo json_encode(['success' => false, 'message' => 'Error al guardar la imagen']);
+            return;
+        }
+
+        $relativePath = '/public/uploads/parcelas/' . $filename;
+
+        // Eliminar imagen anterior si existe
+        $db = \Database::connect();
+        $stmt = $db->prepare("SELECT imagen FROM parcelas WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $id, $userId);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if ($row && !empty($row['imagen'])) {
+            $oldPath = BASE_PATH . $row['imagen'];
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+        }
+
+        // Guardar nueva ruta
+        $stmt = $db->prepare("UPDATE parcelas SET imagen = ?, updated_at = NOW() WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("sii", $relativePath, $id, $userId);
+
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true, 'imagen' => $relativePath]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al actualizar la base de datos']);
+        }
+        $stmt->close();
+    }
+
+    /**
+     * POST /parcelas/eliminarImagen — Eliminar imagen de la parcela
+     */
+    public function eliminarImagen()
+    {
+        header('Content-Type: application/json');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        $this->validateCsrf();
+
+        $userId = intval($_SESSION['user_id']);
+        $input = json_decode(file_get_contents('php://input'), true);
+        $id = intval($input['id'] ?? 0);
+
+        if (!$id) {
+            echo json_encode(['success' => false, 'message' => 'ID requerido']);
+            return;
+        }
+
+        $db = \Database::connect();
+        $stmt = $db->prepare("SELECT imagen FROM parcelas WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $id, $userId);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if ($row && !empty($row['imagen'])) {
+            $filePath = BASE_PATH . $row['imagen'];
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        $stmt = $db->prepare("UPDATE parcelas SET imagen = NULL WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $id, $userId);
+        $stmt->execute();
+        $stmt->close();
+
+        echo json_encode(['success' => true]);
+    }
+
     public function __destruct()
     {
         if ($this->db) {

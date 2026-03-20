@@ -32,9 +32,18 @@
 
     <div class="header">
         <div class="header-content">
-            <h1><a href="<?= $this->url('/') ?>" style="text-decoration: none; color:white"> 🌳</a></h1>
+            <!-- Izquierda: icono calendario = home -->
+            <div class="header-left">
+                <a href="<?= $this->url('/') ?>" class="header-home-btn" title="Inicio — Calendario">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </a>
+            </div>
+            <!-- Centro: logo árbol -->
+            <div class="header-center">
+                <a href="<?= $this->url('/') ?>" style="text-decoration:none;color:white;font-size:1.4rem;">🌳</a>
+            </div>
+            <!-- Derecha: acciones -->
             <div class="user-info">
-                <span><strong><?= isset($user) && isset($user['name']) ? htmlspecialchars($user['name']) : 'Invitado' ?></strong></span>
                 <span id="offline-queue-badge" class="offline-queue-badge" style="display:none" title="Formularios pendientes de enviar">0</span>
                 <!-- Campanita de notificaciones -->
                 <button id="notif-bell" class="notif-bell" onclick="toggleNotifPanel()" title="Notificaciones">

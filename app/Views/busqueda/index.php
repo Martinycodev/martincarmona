@@ -10,7 +10,7 @@ $title = 'Búsqueda Avanzada de Tareas';
                 <div class="filters-header">
                     <h3>🎛️ Filtros de Búsqueda</h3>
                     <div class="filters-actions">
-                        <a href="<?= $this->url('/tareas') ?>" class="btn-filter btn-clear" style="text-decoration:none;">📝 Ver todas</a>
+                        <a href="<?= $this->url('/tareas') ?>" class="btn-filter" style="text-decoration:none;background:#4caf50;color:#fff;border:none;">Ver todas</a>
                         <button class="btn-filter btn-clear" onclick="limpiarFiltros()">🗑️ Limpiar</button>
                         <button class="btn-filter btn-toggle" onclick="toggleFiltros()" id="toggleBtn">▼ Ocultar</button>
                     </div>

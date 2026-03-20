@@ -461,12 +461,13 @@ class Tarea
             }
             $stmt->close();
 
-            // Obtener todos los trabajos en una sola consulta
+            // Obtener todos los trabajos en una sola consulta (incluye categoría para colores)
             $stmt = $this->db->prepare("
-                SELECT 
+                SELECT
                     ttj.tarea_id,
                     tj.id,
-                    tj.nombre
+                    tj.nombre,
+                    tj.categoria
                 FROM tarea_trabajos ttj
                 JOIN trabajos tj ON ttj.trabajo_id = tj.id
                 WHERE ttj.tarea_id IN ($placeholders)
@@ -479,7 +480,8 @@ class Tarea
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['tarea_id']]['trabajos'][] = [
                     'id' => $row['id'],
-                    'nombre' => $row['nombre']
+                    'nombre' => $row['nombre'],
+                    'categoria' => $row['categoria'] ?? 'otro'
                 ];
             }
             $stmt->close();
@@ -507,13 +509,15 @@ class Tarea
                     $tarea['parcela'] = null;
                 }
 
-                // Trabajos
+                // Trabajos (incluye categoría para colores en calendario)
                 if (!empty($tarea['trabajos'])) {
                     $tarea['trabajo_nombre'] = $tarea['trabajos'][0]['nombre'];
                     $tarea['trabajo'] = $tarea['trabajos'][0]['id'];
+                    $tarea['trabajo_categoria'] = $tarea['trabajos'][0]['categoria'] ?? 'otro';
                 } else {
                     $tarea['trabajo_nombre'] = '';
                     $tarea['trabajo'] = null;
+                    $tarea['trabajo_categoria'] = 'otro';
                 }
             }
 
@@ -624,12 +628,13 @@ class Tarea
             }
             $stmt->close();
 
-            // Obtener todos los trabajos en una sola consulta
+            // Obtener todos los trabajos en una sola consulta (incluye categoría para colores)
             $stmt = $this->db->prepare("
-                SELECT 
+                SELECT
                     ttj.tarea_id,
                     tj.id,
-                    tj.nombre
+                    tj.nombre,
+                    tj.categoria
                 FROM tarea_trabajos ttj
                 JOIN trabajos tj ON ttj.trabajo_id = tj.id
                 WHERE ttj.tarea_id IN ($placeholders)
@@ -642,7 +647,8 @@ class Tarea
             while ($row = $result->fetch_assoc()) {
                 $tareas[$row['tarea_id']]['trabajos'][] = [
                     'id' => $row['id'],
-                    'nombre' => $row['nombre']
+                    'nombre' => $row['nombre'],
+                    'categoria' => $row['categoria'] ?? 'otro'
                 ];
             }
             $stmt->close();
@@ -670,13 +676,15 @@ class Tarea
                     $tarea['parcela'] = null;
                 }
 
-                // Trabajos
+                // Trabajos (incluye categoría para colores en calendario)
                 if (!empty($tarea['trabajos'])) {
                     $tarea['trabajo_nombre'] = $tarea['trabajos'][0]['nombre'];
                     $tarea['trabajo'] = $tarea['trabajos'][0]['id'];
+                    $tarea['trabajo_categoria'] = $tarea['trabajos'][0]['categoria'] ?? 'otro';
                 } else {
                     $tarea['trabajo_nombre'] = '';
                     $tarea['trabajo'] = null;
+                    $tarea['trabajo_categoria'] = 'otro';
                 }
             }
 

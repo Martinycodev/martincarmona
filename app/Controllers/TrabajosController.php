@@ -109,19 +109,21 @@ class TrabajosController extends BaseController
             $nombre = trim($input['nombre'] ?? '');
             $descripcion = trim($input['descripcion'] ?? '');
             $precio_hora = floatval($input['precio_hora'] ?? 0);
-            
+            $categorias_validas = ['campo','tratamiento','recoleccion','riego','poda','mantenimiento','otro'];
+            $categoria = in_array($input['categoria'] ?? '', $categorias_validas) ? $input['categoria'] : 'otro';
+
             if (empty($nombre)) {
                 echo json_encode(['success' => false, 'message' => 'El nombre es requerido']);
                 return;
             }
-            
+
             if ($precio_hora < 0) {
                 echo json_encode(['success' => false, 'message' => 'El precio por hora debe ser mayor o igual a 0']);
                 return;
             }
-            
+
             $db = \Database::connect();
-            
+
             // Verificar si ya existe un trabajo con el mismo nombre para este usuario
             $stmt = $db->prepare("SELECT id FROM trabajos WHERE nombre = ? AND id_user = ?");
             $stmt->bind_param("si", $nombre, $_SESSION['user_id']);
@@ -132,9 +134,9 @@ class TrabajosController extends BaseController
                 return;
             }
             $stmt->close();
-            
-            $stmt = $db->prepare("INSERT INTO trabajos (nombre, descripcion, precio_hora, id_user) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssdi", $nombre, $descripcion, $precio_hora, $_SESSION['user_id']);
+
+            $stmt = $db->prepare("INSERT INTO trabajos (nombre, descripcion, precio_hora, categoria, id_user) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssdsi", $nombre, $descripcion, $precio_hora, $categoria, $_SESSION['user_id']);
             
             if ($stmt->execute()) {
                 echo json_encode(['success' => true, 'message' => 'Trabajo creado correctamente', 'id' => $db->insert_id]);
@@ -214,24 +216,26 @@ class TrabajosController extends BaseController
             $nombre = trim($input['nombre'] ?? '');
             $descripcion = trim($input['descripcion'] ?? '');
             $precio_hora = floatval($input['precio_hora'] ?? 0);
-            
+            $categorias_validas = ['campo','tratamiento','recoleccion','riego','poda','mantenimiento','otro'];
+            $categoria = in_array($input['categoria'] ?? '', $categorias_validas) ? $input['categoria'] : 'otro';
+
             if ($id <= 0) {
                 echo json_encode(['success' => false, 'message' => 'ID no válido']);
                 return;
             }
-            
+
             if (empty($nombre)) {
                 echo json_encode(['success' => false, 'message' => 'El nombre es requerido']);
                 return;
             }
-            
+
             if ($precio_hora < 0) {
                 echo json_encode(['success' => false, 'message' => 'El precio por hora debe ser mayor o igual a 0']);
                 return;
             }
-            
+
             $db = \Database::connect();
-            
+
             // Verificar si ya existe otro trabajo con el mismo nombre para este usuario
             $stmt = $db->prepare("SELECT id FROM trabajos WHERE nombre = ? AND id != ? AND id_user = ?");
             $stmt->bind_param("sii", $nombre, $id, $_SESSION['user_id']);
@@ -242,9 +246,9 @@ class TrabajosController extends BaseController
                 return;
             }
             $stmt->close();
-            
-            $stmt = $db->prepare("UPDATE trabajos SET nombre = ?, descripcion = ?, precio_hora = ? WHERE id = ? AND id_user = ?");
-            $stmt->bind_param("ssdii", $nombre, $descripcion, $precio_hora, $id, $_SESSION['user_id']);
+
+            $stmt = $db->prepare("UPDATE trabajos SET nombre = ?, descripcion = ?, precio_hora = ?, categoria = ? WHERE id = ? AND id_user = ?");
+            $stmt->bind_param("ssdsii", $nombre, $descripcion, $precio_hora, $categoria, $id, $_SESSION['user_id']);
             
             if ($stmt->execute()) {
                 if ($stmt->affected_rows > 0) {

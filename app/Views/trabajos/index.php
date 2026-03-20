@@ -30,6 +30,18 @@ $title = 'Gestión de Trabajos';
                     </div>
                     
                     <div class="form-row">
+                        <div class="form-group">
+                            <label for="categoria">Categoría:</label>
+                            <select id="categoria" name="categoria">
+                                <option value="campo">🟢 Campo (laboreo, desbrozar)</option>
+                                <option value="tratamiento">🔵 Tratamiento (herbicida, sulfato)</option>
+                                <option value="recoleccion">🟠 Recolección (aceituna)</option>
+                                <option value="riego">🔷 Riego</option>
+                                <option value="poda">🟣 Poda</option>
+                                <option value="mantenimiento">🟡 Mantenimiento</option>
+                                <option value="otro" selected>⚪ Otro</option>
+                            </select>
+                        </div>
                         <div class="form-group full-width">
                             <label for="descripcion">Descripción:</label>
                             <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripción opcional del trabajo"></textarea>
@@ -50,6 +62,7 @@ $title = 'Gestión de Trabajos';
                 <thead>
                     <tr>
                         <th>Nombre</th>
+                        <th>Categoría</th>
                         <th>Precio/Hora</th>
                         <th>Descripción</th>
                         <th>Documento</th>
@@ -61,6 +74,7 @@ $title = 'Gestión de Trabajos';
                         class="clickable-row"
                         onclick="editJob(<?= $trabajo['id'] ?>, this)">
                         <td><?= htmlspecialchars($trabajo['nombre'] ?? '-') ?></td>
+                        <td><span class="cat-badge cat-<?= htmlspecialchars($trabajo['categoria'] ?? 'otro') ?>"><?= htmlspecialchars(ucfirst($trabajo['categoria'] ?? 'otro')) ?></span></td>
                         <td>€<?= number_format($trabajo['precio_hora'] ?? 0, 2) ?></td>
                         <td><?= htmlspecialchars($trabajo['descripcion'] ?? '') ?></td>
                         <td>
@@ -97,6 +111,18 @@ $title = 'Gestión de Trabajos';
                     </div>
                     
                     <div class="form-row">
+                        <div class="form-group">
+                            <label for="editCategoria">Categoría:</label>
+                            <select id="editCategoria" name="categoria">
+                                <option value="campo">🟢 Campo (laboreo, desbrozar)</option>
+                                <option value="tratamiento">🔵 Tratamiento (herbicida, sulfato)</option>
+                                <option value="recoleccion">🟠 Recolección (aceituna)</option>
+                                <option value="riego">🔷 Riego</option>
+                                <option value="poda">🟣 Poda</option>
+                                <option value="mantenimiento">🟡 Mantenimiento</option>
+                                <option value="otro">⚪ Otro</option>
+                            </select>
+                        </div>
                         <div class="form-group full-width">
                             <label for="editDescripcion">Descripción:</label>
                             <textarea id="editDescripcion" name="descripcion" rows="3"></textarea>

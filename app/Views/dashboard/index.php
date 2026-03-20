@@ -6,7 +6,7 @@ $title = 'Datos - MartinCarmona.com';
     <div class="quick-actions">
 
         <div class="quick-buttons">
-            <a href="<?= $this->url('/busqueda') ?>" class="btn btn-info">🔍 Búsqueda Avanzada</a>
+            <a href="<?= $this->url('/busqueda') ?>" class="btn btn-info">🔍 Tareas</a>
             <a href="<?= $this->url('/economia?openModal=true') ?>" class="btn btn-primary">💰 Añadir Movimiento</a>
             <?php if (!empty($campanaActiva)): ?>
                 <a href="<?= $this->url('/campana') ?>" class="btn btn-success">🫒 Campaña activa</a>
@@ -230,7 +230,8 @@ $title = 'Datos - MartinCarmona.com';
                 } else {
                     tareas.forEach((tarea) => {
                         const displayText = tarea.trabajo_nombre || tarea.titulo || 'Sin título';
-                        dayHTML += `<div class="task" draggable="true" data-id="${tarea.id}" data-fecha="${dateStr}" onclick="window.taskSidebar && window.taskSidebar.open(${tarea.id})" title="${tarea.descripcion || ''}">${displayText}</div>`;
+                        const cat = tarea.trabajo_categoria || 'otro';
+                        dayHTML += `<div class="task task-cat-${cat}" draggable="true" data-id="${tarea.id}" data-fecha="${dateStr}" onclick="window.taskSidebar && window.taskSidebar.open(${tarea.id})" title="${tarea.descripcion || ''}">${displayText}</div>`;
                     });
                 }
             }
@@ -385,7 +386,11 @@ $title = 'Datos - MartinCarmona.com';
             var modalHTML = '<div id="mobileDayModal">'
                 + '<div class="mobile-day-sheet">'
                 +   '<div class="mobile-day-sheet-header">'
-                +     '<h3 id="mobileDayTitle">—</h3>'
+                +     '<div class="mobile-day-nav">'
+                +       '<button class="mobile-day-nav-btn" onclick="navegarDia(-1)" title="Día anterior">◀</button>'
+                +       '<h3 id="mobileDayTitle">—</h3>'
+                +       '<button class="mobile-day-nav-btn" onclick="navegarDia(1)" title="Día siguiente">▶</button>'
+                +     '</div>'
                 +     '<button class="mobile-day-sheet-close" onclick="cerrarModalDia()">&times;</button>'
                 +   '</div>'
                 +   '<div class="mobile-day-sheet-body" id="mobileDayBody"></div>'
@@ -400,7 +405,20 @@ $title = 'Datos - MartinCarmona.com';
         }
     }
 
+    // Fecha activa en el modal de día (para navegación con flechas)
+    var _currentModalDate = null;
+
+    // Navegar al día anterior o siguiente desde el modal
+    window.navegarDia = function(offset) {
+        if (!_currentModalDate) return;
+        var d = new Date(_currentModalDate + 'T00:00:00');
+        d.setDate(d.getDate() + offset);
+        var newDate = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        abrirModalDia(newDate);
+    };
+
     function abrirModalDia(dateStr) {
+        _currentModalDate = dateStr;
         var modal = document.getElementById('mobileDayModal');
         var title = document.getElementById('mobileDayTitle');
         var body  = document.getElementById('mobileDayBody');

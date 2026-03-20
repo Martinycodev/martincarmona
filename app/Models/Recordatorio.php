@@ -215,6 +215,59 @@ class Recordatorio
         return 1;
     }
 
+    /**
+     * Generar recordatorio de enviar jornadas reales a la gestoría.
+     * Se crea al inicio de cada mes si hubo tareas con trabajadores el mes anterior.
+     */
+    public function generarJornadas($userId)
+    {
+        $mesAnterior = (int) date('n', strtotime('first day of last month'));
+        $anioAnterior = (int) date('Y', strtotime('first day of last month'));
+        $nombreMes = [
+            1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',
+            7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'
+        ];
+
+        // Comprobar si hubo tareas con trabajadores asignados el mes anterior
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) as total FROM tareas t
+            INNER JOIN tarea_trabajadores tt ON t.id = tt.tarea_id
+            WHERE t.id_user = ? AND MONTH(t.fecha) = ? AND YEAR(t.fecha) = ?
+        ");
+        $stmt->bind_param("iii", $userId, $mesAnterior, $anioAnterior);
+        $stmt->execute();
+        $hayTareas = intval($stmt->get_result()->fetch_assoc()['total'] ?? 0);
+        $stmt->close();
+
+        if ($hayTareas === 0) return 0;
+
+        // Comprobar si ya existe este recordatorio
+        $clave = "jornadas-{$mesAnterior}-{$anioAnterior}";
+        $stmt = $this->db->prepare("
+            SELECT id FROM recordatorios
+            WHERE id_user = ? AND tipo = 'jornadas' AND titulo = ?
+        ");
+        $stmt->bind_param("is", $userId, $clave);
+        $stmt->execute();
+        $existe = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if ($existe) return 0;
+
+        $titulo = $clave;
+        $desc = "Enviar las jornadas reales de {$nombreMes[$mesAnterior]} {$anioAnterior} a la gestoría.";
+        $fechaAviso = date('Y-m-d', strtotime('first day of this month'));
+
+        $ins = $this->db->prepare("
+            INSERT INTO recordatorios (id_user, tipo, titulo, descripcion, fecha_aviso)
+            VALUES (?, 'jornadas', ?, ?, ?)
+        ");
+        $ins->bind_param("isss", $userId, $titulo, $desc, $fechaAviso);
+        $ins->execute();
+        $ins->close();
+        return 1;
+    }
+
     // ── Configuración de notificaciones ─────────────────────────────────
 
     /**
@@ -234,6 +287,7 @@ class Recordatorio
                 ['itv', 1, 15],
                 ['cuentas', 1, 1],
                 ['fitosanitario', 1, 7],
+                ['jornadas', 1, 1],
                 ['personalizado', 1, 0],
             ];
             foreach ($defaults as $d) {

@@ -111,6 +111,8 @@ $router->post('/parcelas/eliminar', 'ParcelasController@eliminar');
 $router->get('/parcelas/detalle', 'ParcelasController@detalle');
 $router->post('/parcelas/subirDocumento', 'ParcelasController@subirDocumento');
 $router->post('/parcelas/eliminarDocumento', 'ParcelasController@eliminarDocumento');
+$router->post('/parcelas/subirImagen', 'ParcelasController@subirImagen');
+$router->post('/parcelas/eliminarImagen', 'ParcelasController@eliminarImagen');
 
 // Propietarios
 $router->get('/propietarios/buscar', 'PropietariosController@buscar');
@@ -124,6 +126,10 @@ $router->post('/propietarios/subirImagenDni', 'PropietariosController@subirImage
 
 // Vehículos
 $router->get('/datos/vehiculos', 'VehiculosController@index');
+$router->get('/vehiculos/detalle', 'VehiculosController@detalle');
+$router->post('/vehiculos/actualizar', 'VehiculosController@actualizar');
+$router->post('/vehiculos/crear', 'VehiculosController@crear');
+$router->post('/vehiculos/eliminar', 'VehiculosController@eliminar');
 $router->post('/vehiculos/subirDocumento', 'VehiculosController@subirDocumento');
 
 // Herramientas

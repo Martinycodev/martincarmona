@@ -149,6 +149,31 @@ body {
     padding: 0 20px;
     box-sizing: border-box;
 }
+.header-left {
+    display: flex;
+    align-items: center;
+    min-width: 40px;
+}
+.header-home-btn {
+    color: #ccc;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+}
+.header-home-btn:hover {
+    background: #3a3a3a;
+    color: #4caf50;
+}
+.header-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
 
 .user-info {
     display: flex;
@@ -615,9 +640,31 @@ body {
 }
 
 .task:hover {
-    background-color: #45a049;
+    filter: brightness(1.15);
     transform: scale(1.02);
 }
+
+/* Colores por categoría de trabajo */
+.task-cat-campo       { background-color: #4caf50; } /* Verde — laboreo */
+.task-cat-tratamiento { background-color: #2196f3; } /* Azul — fitosanitarios */
+.task-cat-recoleccion { background-color: #ff9800; } /* Naranja — aceituna */
+.task-cat-riego       { background-color: #00bcd4; } /* Cian — riego */
+.task-cat-poda        { background-color: #9c27b0; } /* Morado — poda */
+.task-cat-mantenimiento { background-color: #ffc107; color: #333; } /* Amarillo — mantenimiento */
+.task-cat-otro        { background-color: #78909c; } /* Gris — otro */
+
+/* Badges de categoría en tabla de trabajos */
+.cat-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.75rem; font-weight: 600; color: #fff;
+}
+.cat-campo       { background: #4caf50; }
+.cat-tratamiento { background: #2196f3; }
+.cat-recoleccion { background: #ff9800; }
+.cat-riego       { background: #00bcd4; }
+.cat-poda        { background: #9c27b0; }
+.cat-mantenimiento { background: #ffc107; color: #333; }
+.cat-otro        { background: #78909c; }
 
 /* Drag & Drop */
 .task.dragging {
@@ -5195,6 +5242,31 @@ textarea {
     margin: 0;
     font-size: 1.1rem;
     color: #fff;
+}
+.mobile-day-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.mobile-day-nav-btn {
+    background: none;
+    border: 1px solid #555;
+    color: #ccc;
+    font-size: 1rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+.mobile-day-nav-btn:hover,
+.mobile-day-nav-btn:active {
+    background: #4caf50;
+    color: #fff;
+    border-color: #4caf50;
 }
 .mobile-day-sheet-close {
     background: none;

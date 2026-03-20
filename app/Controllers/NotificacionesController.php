@@ -37,6 +37,9 @@ class NotificacionesController extends BaseController
         if (!empty($config['cuentas']['activo'])) {
             $this->modelo->generarCuentas($userId);
         }
+        if (!empty($config['jornadas']['activo'])) {
+            $this->modelo->generarJornadas($userId);
+        }
 
         // Obtener recordatorios activos
         $recordatorios = $this->modelo->getActivos($userId);

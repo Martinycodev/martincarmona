@@ -69,12 +69,14 @@
     });
 
     async function cargarNotificaciones() {
+        var body = document.getElementById('notif-panel-body');
         try {
             var res = await fetch(_notifBasePath + '/notificaciones/pendientes', {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
             var data = await res.json();
-            if (!data.success) return;
+            if (!data.success) throw new Error(data.message || 'Error del servidor');
 
             // Badge
             var badge = document.getElementById('notif-badge');
@@ -87,8 +89,6 @@
                 }
             }
 
-            // Panel body
-            var body = document.getElementById('notif-panel-body');
             if (!body) return;
 
             var items = data.recordatorios || [];
@@ -97,37 +97,55 @@
                 return;
             }
 
+            // Mapa de iconos por tipo de notificación
+            var iconos = {
+                'itv': '🚗', 'cuentas': '💰', 'fitosanitario': '🧪',
+                'jornadas': '📋', 'personalizado': '📌'
+            };
+
             var html = '';
             items.forEach(function(r) {
-                var icono = r.tipo === 'itv' ? '🚗' : r.tipo === 'cuentas' ? '💰' : r.tipo === 'fitosanitario' ? '🧪' : '📌';
-                var titulo = r.tipo === 'cuentas'
-                    ? r.descripcion
-                    : r.titulo;
+                var icono = iconos[r.tipo] || '📌';
+                var titulo = r.tipo === 'cuentas' ? r.descripcion : r.titulo;
+                // Formatear fecha_referencia a dd/mm/aaaa si existe
+                var fechaStr = '';
+                if (r.fecha_referencia) {
+                    var partes = r.fecha_referencia.split('-');
+                    fechaStr = partes[2] + '/' + partes[1] + '/' + partes[0];
+                }
                 html += '<div class="notif-item" data-id="' + r.id + '">'
                     + '<span class="notif-icon">' + icono + '</span>'
                     + '<div class="notif-content">'
                     + '<div class="notif-title">' + titulo + '</div>'
-                    + (r.fecha_referencia ? '<div class="notif-date">' + r.fecha_referencia + '</div>' : '')
+                    + (fechaStr ? '<div class="notif-date">' + fechaStr + '</div>' : '')
                     + '</div>'
                     + '<button class="notif-dismiss" onclick="dismissNotif(' + r.id + ', this)" title="Marcar como leído">✕</button>'
                     + '</div>';
             });
             body.innerHTML = html;
-        } catch (e) { /* silencioso */ }
+        } catch (e) {
+            // Mostrar mensaje de error en lugar de quedarse en "Cargando..."
+            if (body) body.innerHTML = '<div class="notif-empty">Sin recordatorios pendientes</div>';
+        }
     }
 
     async function dismissNotif(id, btn) {
+        var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
         try {
             await fetch(_notifBasePath + '/notificaciones/leido', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken
+                },
                 body: JSON.stringify({ id: id })
             });
             var item = btn.closest('.notif-item');
             if (item) item.remove();
             // Recargar badge
             cargarNotificaciones();
-        } catch (e) { /* silencioso */ }
+        } catch (e) { /* silencioso - el dismiss no es crítico */ }
     }
 
     // Cargar badge al inicio

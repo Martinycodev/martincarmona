@@ -3,7 +3,7 @@
 CREATE TABLE IF NOT EXISTS `recordatorios` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_user` bigint(20) NOT NULL,
-  `tipo` enum('itv','cuentas','fitosanitario','personalizado') NOT NULL DEFAULT 'personalizado',
+  `tipo` enum('itv','cuentas','fitosanitario','jornadas','personalizado') NOT NULL DEFAULT 'personalizado',
   `titulo` varchar(255) NOT NULL,
   `descripcion` text DEFAULT NULL,
   `fecha_aviso` date NOT NULL COMMENT 'Fecha en la que se debe mostrar el recordatorio',
@@ -28,8 +28,12 @@ CREATE TABLE IF NOT EXISTS `notificaciones_config` (
   UNIQUE KEY `uk_user_tipo` (`id_user`, `tipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Si la tabla ya existe, añadir el tipo 'jornadas' al enum
+-- ALTER TABLE `recordatorios` MODIFY COLUMN `tipo` enum('itv','cuentas','fitosanitario','jornadas','personalizado') NOT NULL DEFAULT 'personalizado';
+
 -- Insertar config por defecto (se ejecuta al primer login o por seed)
 -- INSERT IGNORE INTO notificaciones_config (id_user, tipo, activo, dias_antelacion) VALUES
 -- (USER_ID, 'itv', 1, 15),
 -- (USER_ID, 'cuentas', 1, 1),
--- (USER_ID, 'fitosanitario', 1, 7);
+-- (USER_ID, 'fitosanitario', 1, 7),
+-- (USER_ID, 'jornadas', 1, 1);

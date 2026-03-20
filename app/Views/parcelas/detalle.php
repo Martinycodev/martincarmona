@@ -11,38 +11,63 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
         </div>
     </div>
 
-    <!-- Datos generales -->
+    <!-- Datos generales + Imagen -->
     <div class="card">
         <div class="card-header"><h3>Datos de la Parcela</h3></div>
-        <div class="detail-grid">
-            <div><strong>Olivos:</strong> <?= intval($parcela['olivos']) ?></div>
-            <?php if (($parcela['riego_secano'] ?? '') !== 'secano'): ?>
-            <div><strong>Hidrante:</strong> <?= intval($parcela['hidrante'] ?? 0) ?></div>
-            <?php endif; ?>
-            <?php if (!empty($parcela['referencia_catastral'])): ?>
-            <div><strong>Referencia catastral:</strong> <?= htmlspecialchars($parcela['referencia_catastral']) ?></div>
-            <?php endif; ?>
-            <?php if (!empty($parcela['num_municipio']) || !empty($parcela['num_poligono']) || !empty($parcela['num_parcela'])): ?>
-            <div><strong>SIGPAC:</strong> Mun. <?= htmlspecialchars($parcela['num_municipio'] ?? '—') ?> / Pol. <?= htmlspecialchars($parcela['num_poligono'] ?? '—') ?> / Par. <?= htmlspecialchars($parcela['num_parcela'] ?? '—') ?></div>
-            <?php endif; ?>
-            <?php if (!empty($parcela['tipo_olivos'])): ?>
-            <div><strong>Tipo de olivos:</strong> <?= htmlspecialchars($parcela['tipo_olivos']) ?></div>
-            <?php endif; ?>
-            <?php if (!empty($parcela['año_plantacion'])): ?>
-            <div><strong>Año de plantación:</strong> <?= intval($parcela['año_plantacion']) ?></div>
-            <?php endif; ?>
-            <?php if (!empty($parcela['tipo_plantacion'])): ?>
-            <div><strong>Tipo de plantación:</strong> <?= htmlspecialchars($parcela['tipo_plantacion']) ?></div>
-            <?php endif; ?>
-            <?php if (!empty($parcela['riego_secano'])): ?>
-            <div><strong>Riego / Secano:</strong> <?= htmlspecialchars($parcela['riego_secano']) ?></div>
-            <?php endif; ?>
-            <?php if (!empty($parcela['corta'])): ?>
-            <div><strong>Corta:</strong> <?= htmlspecialchars($parcela['corta']) ?></div>
-            <?php endif; ?>
-            <?php if (!empty($parcela['descripcion'])): ?>
-            <div style="grid-column: 1 / -1;"><strong>Descripción:</strong> <?= htmlspecialchars($parcela['descripcion']) ?></div>
-            <?php endif; ?>
+        <div class="parcela-datos-layout">
+            <!-- Columna izquierda: datos -->
+            <div class="detail-grid" style="flex:1;">
+                <div><strong>Olivos:</strong> <?= intval($parcela['olivos']) ?></div>
+                <?php if (($parcela['riego_secano'] ?? '') !== 'secano'): ?>
+                <div><strong>Hidrante:</strong> <?= intval($parcela['hidrante'] ?? 0) ?></div>
+                <?php endif; ?>
+                <?php if (!empty($parcela['referencia_catastral'])): ?>
+                <div><strong>Referencia catastral:</strong> <?= htmlspecialchars($parcela['referencia_catastral']) ?></div>
+                <?php endif; ?>
+                <?php if (!empty($parcela['num_municipio']) || !empty($parcela['num_poligono']) || !empty($parcela['num_parcela'])): ?>
+                <div><strong>SIGPAC:</strong> Mun. <?= htmlspecialchars($parcela['num_municipio'] ?? '—') ?> / Pol. <?= htmlspecialchars($parcela['num_poligono'] ?? '—') ?> / Par. <?= htmlspecialchars($parcela['num_parcela'] ?? '—') ?></div>
+                <?php endif; ?>
+                <?php if (!empty($parcela['tipo_olivos'])): ?>
+                <div><strong>Tipo de olivos:</strong> <?= htmlspecialchars($parcela['tipo_olivos']) ?></div>
+                <?php endif; ?>
+                <?php if (!empty($parcela['año_plantacion'])): ?>
+                <div><strong>Año de plantación:</strong> <?= intval($parcela['año_plantacion']) ?></div>
+                <?php endif; ?>
+                <?php if (!empty($parcela['tipo_plantacion'])): ?>
+                <div><strong>Tipo de plantación:</strong> <?= htmlspecialchars($parcela['tipo_plantacion']) ?></div>
+                <?php endif; ?>
+                <?php if (!empty($parcela['riego_secano'])): ?>
+                <div><strong>Riego / Secano:</strong> <?= htmlspecialchars($parcela['riego_secano']) ?></div>
+                <?php endif; ?>
+                <?php if (!empty($parcela['corta'])): ?>
+                <div><strong>Corta:</strong> <?= htmlspecialchars($parcela['corta']) ?></div>
+                <?php endif; ?>
+                <?php if (!empty($parcela['descripcion'])): ?>
+                <div style="grid-column: 1 / -1;"><strong>Descripción:</strong> <?= htmlspecialchars($parcela['descripcion']) ?></div>
+                <?php endif; ?>
+            </div>
+            <!-- Columna derecha: imagen de la parcela -->
+            <div class="parcela-imagen-col">
+                <div class="parcela-imagen-wrap" id="parcelaImagenWrap">
+                    <?php if (!empty($parcela['imagen'])): ?>
+                        <img src="<?= $this->url($parcela['imagen']) ?>" alt="Imagen de <?= htmlspecialchars($parcela['nombre']) ?>"
+                             class="parcela-imagen" onclick="openLightbox(this.src)"
+                             title="Click para ver en grande">
+                        <button class="parcela-imagen-delete" onclick="eliminarImagenParcela()" title="Eliminar imagen">✕</button>
+                    <?php else: ?>
+                        <div class="parcela-imagen-placeholder" onclick="document.getElementById('inputImagenParcela').click()">
+                            <span>+</span>
+                            <small>Subir imagen</small>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <input type="file" id="inputImagenParcela" accept="image/jpeg,image/png,image/webp" style="display:none"
+                       onchange="subirImagenParcela(this)">
+                <?php if (!empty($parcela['imagen'])): ?>
+                <button class="btn btn-secondary btn-sm" style="margin-top:8px;width:100%;"
+                        onclick="document.getElementById('inputImagenParcela').click()">Cambiar imagen</button>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
@@ -390,4 +415,154 @@ function eliminarDocumento(id) {
         }
     });
 }
+
+// --- Imagen de parcela ---
+function subirImagenParcela(input) {
+    var file = input.files[0];
+    if (!file) return;
+
+    var formData = new FormData();
+    formData.append('imagen', file);
+    formData.append('id', <?= intval($parcela['id']) ?>);
+    formData.append('csrf_token', csrfToken);
+
+    fetch(basePath + '/parcelas/subirImagen', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrfToken },
+        body: formData
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+        if (res.success) {
+            if (typeof showToast === 'function') showToast('Imagen subida correctamente', 'success');
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            if (typeof showToast === 'function') showToast(res.message || 'Error al subir', 'error');
+        }
+    })
+    .catch(function() { if (typeof showToast === 'function') showToast('Error de conexión', 'error'); });
+    input.value = '';
+}
+
+function eliminarImagenParcela() {
+    if (!confirm('¿Eliminar la imagen de esta parcela?')) return;
+    fetch(basePath + '/parcelas/eliminarImagen', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+        body: JSON.stringify({ id: <?= intval($parcela['id']) ?> })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+        if (res.success) {
+            location.reload();
+        } else {
+            if (typeof showToast === 'function') showToast(res.message || 'Error', 'error');
+        }
+    });
+}
+
+// Abrir lightbox (usa el lightbox global del footer)
+function openLightbox(src) {
+    var lb = document.getElementById('img-lightbox');
+    var img = document.getElementById('img-lightbox-img');
+    if (lb && img) {
+        img.src = src;
+        lb.style.display = 'flex';
+    }
+}
 </script>
+
+<style>
+/* Layout datos + imagen de parcela */
+.parcela-datos-layout {
+    display: flex;
+    gap: 24px;
+    padding: 0;
+}
+.parcela-imagen-col {
+    flex: 0 0 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 16px 16px 0;
+}
+.parcela-imagen-wrap {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #333;
+    border: 2px solid #444;
+}
+.parcela-imagen {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.parcela-imagen:hover {
+    opacity: 0.85;
+}
+.parcela-imagen-delete {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0,0,0,0.7);
+    color: #f44336;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.parcela-imagen-wrap:hover .parcela-imagen-delete {
+    opacity: 1;
+}
+.parcela-imagen-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.parcela-imagen-placeholder:hover {
+    background: #3a3a3a;
+    color: #4caf50;
+}
+.parcela-imagen-placeholder span {
+    font-size: 2rem;
+    line-height: 1;
+}
+.parcela-imagen-placeholder small {
+    margin-top: 4px;
+    font-size: 0.8rem;
+}
+
+/* Responsive: en móvil, imagen arriba */
+@media (max-width: 640px) {
+    .parcela-datos-layout {
+        flex-direction: column-reverse;
+    }
+    .parcela-imagen-col {
+        flex: none;
+        padding: 16px 16px 0;
+        align-items: center;
+    }
+    .parcela-imagen-wrap {
+        width: 160px;
+        height: 160px;
+    }
+}
+</style>

@@ -923,16 +923,16 @@ class TareasController extends BaseController
         $userId = $_SESSION['user_id'];
         $input = json_decode(file_get_contents('php://input'), true);
 
-        $tareaId  = intval($input['tarea_id'] ?? 0);
+        $tareaId   = intval($input['tarea_id'] ?? 0);
         $trabajoId = intval($input['trabajo_id'] ?? 0);
 
-        if (!$tareaId || !$trabajoId) {
+        if (!$tareaId) {
             echo json_encode(['success' => false, 'message' => 'Datos incompletos']);
             return;
         }
 
-        // Obtener horas de la tarea
-        $stmt = $this->db->prepare("SELECT horas FROM tareas WHERE id = ? AND id_user = ?");
+        // Obtener datos de la tarea
+        $stmt = $this->db->prepare("SELECT horas, fecha FROM tareas WHERE id = ? AND id_user = ?");
         $stmt->bind_param("ii", $tareaId, $userId);
         $stmt->execute();
         $tarea = $stmt->get_result()->fetch_assoc();
@@ -943,53 +943,171 @@ class TareasController extends BaseController
             return;
         }
 
+        // Obtener la categoría del trabajo anterior (para borrar registros reactivos)
+        $categoriaAnterior = $this->_getCategoriaTrabajoActual($tareaId);
+
+        // Si trabajo_id=0 es que se quita el trabajo
         $result = $this->tareaModel->cambiarTrabajo($tareaId, $trabajoId, $tarea['horas']);
 
-        // Auto-registro en campaña activa si el trabajo es "recoger aceituna"
         if ($result) {
-            $stmtTr = $this->db->prepare("SELECT nombre FROM trabajos WHERE id = ? AND id_user = ?");
-            $stmtTr->bind_param("ii", $trabajoId, $userId);
-            $stmtTr->execute();
-            $trabajoRow = $stmtTr->get_result()->fetch_assoc();
-            $stmtTr->close();
+            // Borrar registros reactivos del trabajo anterior
+            if ($categoriaAnterior) {
+                $this->_borrarRegistroReactivo($categoriaAnterior, $tareaId, $userId);
+            }
 
-            if ($trabajoRow && stripos($trabajoRow['nombre'], 'recoger aceituna') !== false) {
-                $campanaModel = new \App\Models\Campana();
-                $campanaActiva = $campanaModel->getActiva($userId);
+            // Crear registro reactivo del nuevo trabajo (si aplica)
+            if ($trabajoId > 0) {
+                $stmtTr = $this->db->prepare("SELECT nombre, categoria FROM trabajos WHERE id = ? AND id_user = ?");
+                $stmtTr->bind_param("ii", $trabajoId, $userId);
+                $stmtTr->execute();
+                $trabajoRow = $stmtTr->get_result()->fetch_assoc();
+                $stmtTr->close();
 
-                if ($campanaActiva) {
-                    // Obtener fecha y parcelas de la tarea
-                    $stmtT = $this->db->prepare("SELECT fecha FROM tareas WHERE id = ?");
-                    $stmtT->bind_param("i", $tareaId);
-                    $stmtT->execute();
-                    $tareaData = $stmtT->get_result()->fetch_assoc();
-                    $stmtT->close();
-
-                    $fecha = $tareaData['fecha'] ?? date('Y-m-d');
-
-                    // Obtener parcelas asignadas a esta tarea
-                    $stmtP = $this->db->prepare("SELECT parcela_id FROM tarea_parcelas WHERE tarea_id = ?");
-                    $stmtP->bind_param("i", $tareaId);
-                    $stmtP->execute();
-                    $parcelasRes = $stmtP->get_result()->fetch_all(MYSQLI_ASSOC);
-                    $stmtP->close();
-
-                    foreach ($parcelasRes as $p) {
-                        // Crear registro con kilos=0 (se rellenará después manualmente)
-                        $campanaModel->crearRegistro(
-                            $campanaActiva['id'],
-                            $p['parcela_id'],
-                            $fecha,
-                            0,    // kilos (se rellena manualmente)
-                            0,    // rendimiento
-                            $userId
-                        );
-                    }
+                if ($trabajoRow) {
+                    $this->_crearRegistroReactivo(
+                        $trabajoRow['categoria'],
+                        $tareaId,
+                        $tarea['fecha'] ?? date('Y-m-d'),
+                        $userId,
+                        $trabajoRow['nombre']
+                    );
                 }
             }
         }
 
         echo json_encode(['success' => $result, 'message' => $result ? 'Trabajo actualizado' : 'Error al cambiar trabajo']);
+    }
+
+    /**
+     * Obtener la categoría del trabajo actualmente asignado a una tarea
+     */
+    private function _getCategoriaTrabajoActual($tareaId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT tj.categoria FROM tarea_trabajos tt
+            JOIN trabajos tj ON tt.trabajo_id = tj.id
+            WHERE tt.tarea_id = ? LIMIT 1
+        ");
+        $stmt->bind_param("i", $tareaId);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $row ? $row['categoria'] : null;
+    }
+
+    /**
+     * Crear registro reactivo según la categoría del trabajo:
+     * - riego → registro en riegos
+     * - recoleccion → registro en campana_registros (si hay campaña activa)
+     * - tratamiento → registro en fitosanitarios_aplicaciones
+     */
+    private function _crearRegistroReactivo($categoria, $tareaId, $fecha, $userId, $trabajoNombre)
+    {
+        // Obtener parcelas asignadas a esta tarea
+        $stmtP = $this->db->prepare("SELECT parcela_id FROM tarea_parcelas WHERE tarea_id = ?");
+        $stmtP->bind_param("i", $tareaId);
+        $stmtP->execute();
+        $parcelas = $stmtP->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmtP->close();
+
+        $parcelaId = !empty($parcelas) ? intval($parcelas[0]['parcela_id']) : null;
+
+        switch ($categoria) {
+            case 'riego':
+                // Crear registro de riego con fecha_ini = fecha de la tarea
+                $stmt = $this->db->prepare("
+                    INSERT INTO riegos (parcela_id, tarea_id, fecha_ini, id_user)
+                    VALUES (?, ?, ?, ?)
+                ");
+                $stmt->bind_param("iisi", $parcelaId, $tareaId, $fecha, $userId);
+                $stmt->execute();
+                $stmt->close();
+                break;
+
+            case 'recoleccion':
+                // Crear registro en campaña activa (si existe)
+                $campanaModel = new \App\Models\Campana();
+                $campanaActiva = $campanaModel->getActiva($userId);
+                if ($campanaActiva) {
+                    foreach ($parcelas as $p) {
+                        // Comprobar si ya existe un registro para esta tarea
+                        $check = $this->db->prepare("
+                            SELECT id FROM campana_registros WHERE tarea_id = ? AND parcela_id = ?
+                        ");
+                        $check->bind_param("ii", $tareaId, $p['parcela_id']);
+                        $check->execute();
+                        $existe = $check->get_result()->fetch_assoc();
+                        $check->close();
+
+                        if (!$existe) {
+                            $stmt = $this->db->prepare("
+                                INSERT INTO campana_registros (campana_id, parcela_id, tarea_id, fecha, kilos, rendimiento_pct, id_user)
+                                VALUES (?, ?, ?, ?, 0, 0, ?)
+                            ");
+                            $campanaId = $campanaActiva['id'];
+                            $stmt->bind_param("iiisi", $campanaId, $p['parcela_id'], $tareaId, $fecha, $userId);
+                            $stmt->execute();
+                            $stmt->close();
+                        }
+                    }
+                }
+                break;
+
+            case 'tratamiento':
+                // Crear registro de aplicación fitosanitaria
+                // Usar el nombre del trabajo como producto por defecto
+                $producto = $trabajoNombre;
+                foreach ($parcelas as $p) {
+                    // Comprobar si ya existe registro para esta tarea y parcela
+                    $check = $this->db->prepare("
+                        SELECT id FROM fitosanitarios_aplicaciones WHERE tarea_id = ? AND parcela_id = ?
+                    ");
+                    $check->bind_param("ii", $tareaId, $p['parcela_id']);
+                    $check->execute();
+                    $existe = $check->get_result()->fetch_assoc();
+                    $check->close();
+
+                    if (!$existe) {
+                        $stmt = $this->db->prepare("
+                            INSERT INTO fitosanitarios_aplicaciones (parcela_id, producto, fecha, tarea_id, id_user)
+                            VALUES (?, ?, ?, ?, ?)
+                        ");
+                        $stmt->bind_param("issii", $p['parcela_id'], $producto, $fecha, $tareaId, $userId);
+                        $stmt->execute();
+                        $stmt->close();
+                    }
+                }
+                break;
+        }
+    }
+
+    /**
+     * Borrar registros reactivos creados automáticamente al cambiar de trabajo
+     */
+    private function _borrarRegistroReactivo($categoria, $tareaId, $userId)
+    {
+        switch ($categoria) {
+            case 'riego':
+                $stmt = $this->db->prepare("DELETE FROM riegos WHERE tarea_id = ? AND id_user = ?");
+                $stmt->bind_param("ii", $tareaId, $userId);
+                $stmt->execute();
+                $stmt->close();
+                break;
+
+            case 'recoleccion':
+                $stmt = $this->db->prepare("DELETE FROM campana_registros WHERE tarea_id = ? AND id_user = ?");
+                $stmt->bind_param("ii", $tareaId, $userId);
+                $stmt->execute();
+                $stmt->close();
+                break;
+
+            case 'tratamiento':
+                $stmt = $this->db->prepare("DELETE FROM fitosanitarios_aplicaciones WHERE tarea_id = ? AND id_user = ?");
+                $stmt->bind_param("ii", $tareaId, $userId);
+                $stmt->execute();
+                $stmt->close();
+                break;
+        }
     }
 
     /**

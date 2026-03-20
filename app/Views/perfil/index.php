@@ -428,6 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var tiposLabels = {
         'itv':            { icon: '🚗', label: 'ITV de vehículos' },
         'cuentas':        { icon: '💰', label: 'Cierre de cuentas mensuales' },
+        'jornadas':       { icon: '📋', label: 'Jornadas reales a gestoría' },
         'fitosanitario':  { icon: '🧪', label: 'Fitosanitarios (stock bajo)' },
         'personalizado':  { icon: '📌', label: 'Recordatorios personalizados' }
     };
@@ -460,9 +461,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.toggleNotifTipo = async function(tipo, activo) {
+        var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
         await fetch(basePath + '/notificaciones/toggleConfig', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
             body: JSON.stringify({ tipo: tipo, activo: activo })
         });
         if (typeof showToast === 'function') showToast('Configuración guardada', 'success');
@@ -502,9 +504,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.eliminarRecordatorio = async function(id, btn) {
+        var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
         await fetch(basePath + '/notificaciones/eliminar', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
             body: JSON.stringify({ id: id })
         });
         btn.closest('div').remove();
@@ -520,9 +523,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!titulo || !fecha) return;
 
+        var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
         var res = await fetch(basePath + '/notificaciones/crear', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
             body: JSON.stringify({ titulo: titulo, descripcion: desc, fecha_aviso: fecha })
         });
         var data = await res.json();
