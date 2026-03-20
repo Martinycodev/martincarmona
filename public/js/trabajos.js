@@ -41,7 +41,7 @@ async function editJob(id, buttonElement = null) {
             const job = data.trabajo;
             document.getElementById('editId').value = job.id;
             document.getElementById('editNombre').value = job.nombre || '';
-            document.getElementById('editPrecioHora').value = job.precio_hora || '';
+            document.getElementById('editPrecioHora').value = job.precio_hora ?? 0;
             document.getElementById('editDescripcion').value = job.descripcion || '';
             // Seleccionar categoría en el dropdown
             var catSelect = document.getElementById('editCategoria');

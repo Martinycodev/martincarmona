@@ -544,8 +544,8 @@ class TareasController extends BaseController
             $uploadedImages = [];
             $errors = [];
 
-            // Límite: 5MB por imagen, máximo 10 imágenes a la vez
-            $maxFileSize = 5 * 1024 * 1024;
+            // Límite: 10MB por imagen (las fotos de móvil se comprimen en cliente antes de subir)
+            $maxFileSize = 10 * 1024 * 1024;
             $maxFiles = 10;
 
             $files = $_FILES['imagenes'];
@@ -566,7 +566,7 @@ class TareasController extends BaseController
 
                     // Validar tamaño
                     if ($files['size'][$i] > $maxFileSize) {
-                        $errors[] = "$originalName: supera 5MB";
+                        $errors[] = "$originalName: supera 10MB";
                         continue;
                     }
 
@@ -639,56 +639,7 @@ class TareasController extends BaseController
         }
     }
 
-    /**
-     * Optimizar imagen: redimensionar si supera 1920px de ancho y comprimir
-     * Devuelve ['path' => ..., 'extension' => ..., 'mime' => ...] o false
-     */
-    private function optimizarImagen($tmpPath, $mimeType, $basePath, $originalExt)
-    {
-        // Si GD está disponible, redimensionar y comprimir
-        if (\function_exists('imagecreatefromjpeg')) {
-            $maxWidth = 1920;
-            $image = null;
-
-            switch ($mimeType) {
-                case 'image/jpeg': $image = @\imagecreatefromjpeg($tmpPath); break;
-                case 'image/png':  $image = @\imagecreatefrompng($tmpPath);  break;
-                case 'image/webp': $image = @\imagecreatefromwebp($tmpPath); break;
-            }
-
-            if ($image) {
-                $origWidth  = \imagesx($image);
-                $origHeight = \imagesy($image);
-
-                if ($origWidth > $maxWidth) {
-                    $ratio     = $maxWidth / $origWidth;
-                    $newWidth  = $maxWidth;
-                    $newHeight = intval($origHeight * $ratio);
-                    $resized   = \imagecreatetruecolor($newWidth, $newHeight);
-                    \imagealphablending($resized, false);
-                    \imagesavealpha($resized, true);
-                    \imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
-                    \imagedestroy($image);
-                    $image = $resized;
-                }
-
-                $dest = $basePath . '.jpg';
-                $ok = \imagejpeg($image, $dest, 80);
-                \imagedestroy($image);
-
-                if ($ok) {
-                    return ['path' => $dest, 'extension' => 'jpg', 'mime' => 'image/jpeg'];
-                }
-            }
-        }
-
-        // Fallback sin GD: copiar el archivo original tal cual
-        $dest = $basePath . '.' . $originalExt;
-        if (\move_uploaded_file($tmpPath, $dest)) {
-            return ['path' => $dest, 'extension' => $originalExt, 'mime' => $mimeType];
-        }
-        return false;
-    }
+    // optimizarImagen() se hereda de BaseController
 
     /**
      * Eliminar una imagen

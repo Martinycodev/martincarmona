@@ -72,13 +72,16 @@ async function editWorker(id, buttonElement = null) {
     }
 }
 
-// Subir foto de perfil
+// Subir foto de perfil (con compresión client-side para fotos de móvil)
 async function subirFoto(workerId, fileInput) {
     const file = fileInput.files && fileInput.files[0];
     if (!file) return;
 
+    // Comprimir imagen antes de subir (reduce fotos de móvil de 8-12MB a ~1-2MB)
+    const compressed = await compressImage(file);
+
     const formData = new FormData();
-    formData.append('foto', file);
+    formData.append('foto', compressed);
     formData.append('id', workerId);
 
     // CSRF token

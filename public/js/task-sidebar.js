@@ -956,14 +956,14 @@ class TaskSidebar {
         const files = fileInput.files;
         if (!files.length) return;
 
-        // Validar tamaño en cliente: máx 5MB por imagen, máx 10 imágenes
-        const maxSize = 5 * 1024 * 1024;
+        // Validar tamaño en cliente: máx 10MB por imagen (antes de comprimir), máx 10 imágenes
+        const maxSize = 10 * 1024 * 1024;
         const maxFiles = 10;
         const validFiles = [];
 
         for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
             if (files[i].size > maxSize) {
-                showToast(`${files[i].name} supera 5MB y se omitirá`, 'error');
+                showToast(`${files[i].name} supera 10MB y se omitirá`, 'error');
             } else {
                 validFiles.push(files[i]);
             }
@@ -974,11 +974,16 @@ class TaskSidebar {
             return;
         }
 
+        showToast('Comprimiendo ' + validFiles.length + ' imagen(es)...', 'info');
+
+        // Comprimir imágenes antes de subir (reduce fotos de móvil de 8-12MB a ~1-2MB)
+        const compressedFiles = await compressImages(validFiles);
+
         const formData = new FormData();
         formData.append('tarea_id', this.taskId);
-        validFiles.forEach(f => formData.append('imagenes[]', f));
+        compressedFiles.forEach(f => formData.append('imagenes[]', f));
 
-        showToast('Subiendo ' + validFiles.length + ' imagen(es)...', 'info');
+        showToast('Subiendo ' + compressedFiles.length + ' imagen(es)...', 'info');
 
         try {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';

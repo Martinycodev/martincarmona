@@ -372,17 +372,20 @@ function showToastDet(message, type) {
     }, 3000);
 }
 
-function subirDocumento(input, tipo) {
+async function subirDocumento(input, tipo) {
     if (!input.files || !input.files[0]) return;
 
     var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     var basePath = window._APP_BASE_PATH || '';
     var trabajadorId = <?= intval($trabajador['id']) ?>;
 
+    // Comprimir imagen antes de subir (no afecta PDFs, la función los devuelve tal cual)
+    var compressed = await compressImage(input.files[0]);
+
     var formData = new FormData();
     formData.append('id', trabajadorId);
     formData.append('tipo', tipo);
-    formData.append('documento', input.files[0]);
+    formData.append('documento', compressed);
     formData.append('csrf_token', csrfToken);
 
     fetch(basePath + '/trabajadores/subirDocumento', {

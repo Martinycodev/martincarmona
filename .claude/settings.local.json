@@ -40,7 +40,17 @@
       "Bash(./vendor/bin/phpunit --colors=always)",
       "Bash(php -l app/Controllers/ReportesController.php)",
       "Read(//c/xampp/**)",
-      "Read(//c/xampp/apache/logs/**)"
+      "Read(//c/xampp/apache/logs/**)",
+      "Bash(xargs cat:*)",
+      "Bash(php -l app/Controllers/BaseController.php)",
+      "Bash(php -l app/Controllers/TareasController.php)",
+      "Bash(php -l app/Controllers/PropietariosController.php)",
+      "Bash(php -l app/Controllers/TrabajadoresController.php)",
+      "Bash(php -l app/Controllers/ParcelasController.php)",
+      "Bash(node -c public/js/modal-functions.js)",
+      "Bash(node -c public/js/task-sidebar.js)",
+      "Bash(node -c public/js/trabajadores.js)",
+      "Bash(node -c public/js/trabajos.js)"
     ]
   }
 }

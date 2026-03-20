@@ -657,9 +657,9 @@ class ParcelasController extends BaseController
             return;
         }
 
-        // Limitar tamaño a 5MB
-        if ($file['size'] > 5 * 1024 * 1024) {
-            echo json_encode(['success' => false, 'message' => 'La imagen no puede superar los 5MB']);
+        // Limitar tamaño a 10MB (las fotos de móvil se comprimen en cliente antes de subir)
+        if ($file['size'] > 10 * 1024 * 1024) {
+            echo json_encode(['success' => false, 'message' => 'La imagen no puede superar los 10MB']);
             return;
         }
 
@@ -669,14 +669,16 @@ class ParcelasController extends BaseController
             mkdir($uploadDir, 0755, true);
         }
 
-        $filename = 'parcela_' . $id . '_' . time() . '.' . $ext;
-        $targetPath = $uploadDir . $filename;
+        // Optimizar imagen: redimensionar y comprimir con GD (reduce peso de fotos de móvil)
+        $basePath = $uploadDir . 'parcela_' . $id . '_' . time();
+        $saved = $this->optimizarImagen($file['tmp_name'], $mime, $basePath, $ext);
 
-        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        if (!$saved) {
             echo json_encode(['success' => false, 'message' => 'Error al guardar la imagen']);
             return;
         }
 
+        $filename     = basename($saved['path']);
         $relativePath = '/public/uploads/parcelas/' . $filename;
 
         // Eliminar imagen anterior si existe

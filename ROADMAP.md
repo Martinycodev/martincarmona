@@ -230,6 +230,8 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
  - En el caso de echar herbicida o sulfato que se cree el registro de aplicación de fitosanitarios con la fecha y la parcela. Más adelante se completaría la información
  - Plantear la posibilidad que al actualizar la tarea y cambiar el tipo de trabajo se borre el registro creado.
 
+- [x] Arreglar modal de trabajos.
+- [ ] en gestión de tareas /tareas en la tabla, me gustaría cambiar la columna de acciones por la de trabajo, y que aparezca el tipo de trabajo. quitando el botón de eliminar con el icono de papelera.
 
 ### Infraestructura
 - [x] Backups automáticos de la base de datos

@@ -140,18 +140,16 @@ function positionModalInViewport(modal) {
     const modalContent = modal.querySelector('.modal-content');
     if (!modalContent) return;
 
-    // Obtener dimensiones del viewport
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const windowHeight = window.innerHeight;
 
-    // Calcular posición Y para centrar en el viewport actual
-    // Dejar espacio para que el modal sea completamente visible
-    const modalHeight = Math.min(windowHeight * 0.8, 600); // Máximo 80% del viewport o 600px
-    const targetY = scrollTop + (windowHeight - modalHeight) / 2;
+    // Calcular posición Y para centrar en el viewport
+    // El padre .modal es position:fixed, así que no necesitamos sumar scrollTop
+    const modalHeight = Math.min(windowHeight * 0.8, 600);
+    const targetY = (windowHeight - modalHeight) / 2;
 
-    // Asegurar que el modal esté completamente visible
-    const minY = scrollTop + 20; // 20px desde el top del viewport
-    const maxY = scrollTop + windowHeight - modalHeight - 20; // 20px desde el bottom
+    // Asegurar que el modal no se salga del viewport
+    const minY = 20;
+    const maxY = windowHeight - modalHeight - 20;
 
     const finalY = Math.max(minY, Math.min(targetY, maxY));
 
@@ -404,7 +402,97 @@ function setButtonLoading(btn, loading) {
     }
 }
 
+// ── Compresión de imágenes client-side (Canvas API) ──────────────────────
+// Redimensiona y comprime imágenes antes de subirlas al servidor.
+// Ideal para fotos de móvil que suelen pesar 5-15MB.
+// Devuelve un File comprimido (JPEG) o el archivo original si no es imagen.
+//
+// Uso:
+//   const comprimido = await compressImage(file);
+//   formData.append('imagen', comprimido);
+//
+// Opciones por defecto:
+//   maxWidth: 1920px, quality: 0.85 (JPEG)
+function compressImage(file, options = {}) {
+    const maxWidth = options.maxWidth || 1920;
+    const quality  = options.quality  || 0.85;
+
+    // Solo comprimir imágenes (no PDFs ni otros archivos)
+    if (!file.type.startsWith('image/')) {
+        return Promise.resolve(file);
+    }
+
+    return new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            var img = new Image();
+
+            img.onload = function() {
+                // Calcular nuevas dimensiones manteniendo proporción
+                var width  = img.width;
+                var height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round(height * (maxWidth / width));
+                    width  = maxWidth;
+                }
+
+                // Dibujar en canvas y exportar como JPEG comprimido
+                var canvas = document.createElement('canvas');
+                canvas.width  = width;
+                canvas.height = height;
+
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob(function(blob) {
+                    if (!blob) {
+                        // Fallback: devolver archivo original si canvas falla
+                        resolve(file);
+                        return;
+                    }
+
+                    // Crear un File a partir del Blob para mantener compatibilidad
+                    var compressedName = file.name.replace(/\.[^.]+$/, '.jpg');
+                    var compressed = new File([blob], compressedName, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+
+                    resolve(compressed);
+                }, 'image/jpeg', quality);
+            };
+
+            img.onerror = function() {
+                // Si no se puede cargar la imagen, devolver original
+                resolve(file);
+            };
+
+            img.src = e.target.result;
+        };
+
+        reader.onerror = function() {
+            resolve(file);
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+// Comprimir múltiples archivos en paralelo
+// Uso: const comprimidos = await compressImages(fileList);
+function compressImages(files, options) {
+    var promises = [];
+    for (var i = 0; i < files.length; i++) {
+        promises.push(compressImage(files[i], options));
+    }
+    return Promise.all(promises);
+}
+
 // Exportar funciones para uso global
+window.compressImage  = compressImage;
+window.compressImages = compressImages;
 window.showToast = showToast;
 window.showConfirm = showConfirm;
 window.setButtonLoading = setButtonLoading;

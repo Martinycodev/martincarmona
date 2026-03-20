@@ -301,12 +301,15 @@ function subirDoc(tipo) {
     document.getElementById('fileInputVehiculo').click();
 }
 
-document.getElementById('fileInputVehiculo').addEventListener('change', function() {
+document.getElementById('fileInputVehiculo').addEventListener('change', async function() {
     var file = this.files[0];
     if (!file) return;
 
+    // Comprimir imagen antes de subir (no afecta PDFs)
+    var compressed = await compressImage(file);
+
     var formData = new FormData();
-    formData.append('archivo', file);
+    formData.append('archivo', compressed);
     formData.append('id', vehiculoId);
     formData.append('tipo', _uploadTipo);
     formData.append('csrf_token', csrfToken);

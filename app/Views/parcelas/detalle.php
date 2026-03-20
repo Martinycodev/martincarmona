@@ -417,12 +417,15 @@ function eliminarDocumento(id) {
 }
 
 // --- Imagen de parcela ---
-function subirImagenParcela(input) {
+async function subirImagenParcela(input) {
     var file = input.files[0];
     if (!file) return;
 
+    // Comprimir imagen antes de subir (fotos de móvil pueden pesar 5-15MB)
+    var compressed = await compressImage(file);
+
     var formData = new FormData();
-    formData.append('imagen', file);
+    formData.append('imagen', compressed);
     formData.append('id', <?= intval($parcela['id']) ?>);
     formData.append('csrf_token', csrfToken);
 

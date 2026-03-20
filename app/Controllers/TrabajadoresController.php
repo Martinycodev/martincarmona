@@ -363,14 +363,16 @@ class TrabajadoresController extends BaseController
             unlink($old);
         }
 
-        $filename = 'foto.' . strtolower($ext);
-        $dest     = $uploadDir . $filename;
+        // Optimizar imagen: redimensionar y comprimir con GD (reduce peso de fotos de móvil)
+        $basePath = $uploadDir . 'foto';
+        $saved = $this->optimizarImagen($file['tmp_name'], $mimeType, $basePath, strtolower($ext));
 
-        if (!move_uploaded_file($file['tmp_name'], $dest)) {
+        if (!$saved) {
             echo json_encode(['success' => false, 'message' => 'Error al guardar la imagen']);
             return;
         }
 
+        $filename = basename($saved['path']);
         $fotoPath = '/public/uploads/trabajadores/' . $id . '/' . $filename;
 
         try {
@@ -596,8 +598,8 @@ class TrabajadoresController extends BaseController
             return;
         }
 
-        if ($file['size'] > 5 * 1024 * 1024) {
-            echo json_encode(['success' => false, 'message' => 'El archivo no puede superar 5MB']);
+        if ($file['size'] > 10 * 1024 * 1024) {
+            echo json_encode(['success' => false, 'message' => 'El archivo no puede superar 10MB']);
             return;
         }
 
@@ -631,13 +633,26 @@ class TrabajadoresController extends BaseController
             unlink($old);
         }
 
-        $filename = $filenameBase . '.' . $ext;
-        $dest     = $uploadDir . $filename;
+        // Optimizar si es imagen (no PDFs). Redimensiona y comprime con GD.
+        if (str_starts_with($mimeType, 'image/')) {
+            $basePath = $uploadDir . $filenameBase;
+            $saved = $this->optimizarImagen($file['tmp_name'], $mimeType, $basePath, $ext);
 
-        if (!move_uploaded_file($file['tmp_name'], $dest)) {
-            $db->close();
-            echo json_encode(['success' => false, 'message' => 'Error al guardar el archivo']);
-            return;
+            if (!$saved) {
+                $db->close();
+                echo json_encode(['success' => false, 'message' => 'Error al guardar el archivo']);
+                return;
+            }
+            $filename = basename($saved['path']);
+        } else {
+            // PDF: guardar tal cual
+            $filename = $filenameBase . '.' . $ext;
+            $dest     = $uploadDir . $filename;
+            if (!move_uploaded_file($file['tmp_name'], $dest)) {
+                $db->close();
+                echo json_encode(['success' => false, 'message' => 'Error al guardar el archivo']);
+                return;
+            }
         }
 
         $path = '/public/uploads/trabajadores/' . $id . '/' . $filename;

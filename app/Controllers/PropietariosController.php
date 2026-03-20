@@ -391,8 +391,8 @@ class PropietariosController extends BaseController
             return;
         }
 
-        if ($file['size'] > 5 * 1024 * 1024) {
-            echo json_encode(['success' => false, 'message' => 'El archivo no puede superar 5MB']);
+        if ($file['size'] > 10 * 1024 * 1024) {
+            echo json_encode(['success' => false, 'message' => 'El archivo no puede superar 10MB']);
             return;
         }
 
@@ -421,14 +421,16 @@ class PropietariosController extends BaseController
             unlink($old);
         }
 
-        $filename = 'dni_' . $lado . '.' . $ext;
-        $dest     = $uploadDir . $filename;
+        // Optimizar imagen: redimensionar y comprimir con GD (reduce peso de fotos de móvil)
+        $basePath = $uploadDir . 'dni_' . $lado;
+        $saved = $this->optimizarImagen($file['tmp_name'], $mimeType, $basePath, $ext);
 
-        if (!move_uploaded_file($file['tmp_name'], $dest)) {
+        if (!$saved) {
             echo json_encode(['success' => false, 'message' => 'Error al guardar la imagen']);
             return;
         }
 
+        $filename  = basename($saved['path']);
         $imagePath = '/public/uploads/propietarios/' . $id . '/' . $filename;
         $campo     = ($lado === 'anverso') ? 'imagen_dni_anverso' : 'imagen_dni_reverso';
 

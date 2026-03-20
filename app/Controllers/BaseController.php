@@ -263,4 +263,62 @@ class BaseController
         // Token válido - permitir continuar
         return true;
     }
+
+    /**
+     * Optimizar imagen: redimensionar si supera maxWidth y comprimir a JPEG.
+     * Útil para fotos de móvil que suelen pesar 5-15MB.
+     *
+     * @param string $tmpPath    Ruta temporal del archivo subido
+     * @param string $mimeType   Tipo MIME real del archivo
+     * @param string $basePath   Ruta destino SIN extensión
+     * @param string $originalExt Extensión original del archivo
+     * @param int    $maxWidth   Ancho máximo en px (default 1920)
+     * @param int    $quality    Calidad JPEG 0-100 (default 80)
+     * @return array|false ['path' => ..., 'extension' => ..., 'mime' => ...] o false
+     */
+    protected function optimizarImagen($tmpPath, $mimeType, $basePath, $originalExt, $maxWidth = 1920, $quality = 80)
+    {
+        // Si GD está disponible, redimensionar y comprimir
+        if (\function_exists('imagecreatefromjpeg')) {
+            $image = null;
+
+            switch ($mimeType) {
+                case 'image/jpeg': $image = @\imagecreatefromjpeg($tmpPath); break;
+                case 'image/png':  $image = @\imagecreatefrompng($tmpPath);  break;
+                case 'image/webp': $image = @\imagecreatefromwebp($tmpPath); break;
+            }
+
+            if ($image) {
+                $origWidth  = \imagesx($image);
+                $origHeight = \imagesy($image);
+
+                if ($origWidth > $maxWidth) {
+                    $ratio     = $maxWidth / $origWidth;
+                    $newWidth  = $maxWidth;
+                    $newHeight = intval($origHeight * $ratio);
+                    $resized   = \imagecreatetruecolor($newWidth, $newHeight);
+                    \imagealphablending($resized, false);
+                    \imagesavealpha($resized, true);
+                    \imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+                    \imagedestroy($image);
+                    $image = $resized;
+                }
+
+                $dest = $basePath . '.jpg';
+                $ok = \imagejpeg($image, $dest, $quality);
+                \imagedestroy($image);
+
+                if ($ok) {
+                    return ['path' => $dest, 'extension' => 'jpg', 'mime' => 'image/jpeg'];
+                }
+            }
+        }
+
+        // Fallback sin GD: copiar el archivo original tal cual
+        $dest = $basePath . '.' . $originalExt;
+        if (\move_uploaded_file($tmpPath, $dest)) {
+            return ['path' => $dest, 'extension' => $originalExt, 'mime' => $mimeType];
+        }
+        return false;
+    }
 }

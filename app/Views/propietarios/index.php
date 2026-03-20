@@ -362,7 +362,7 @@ $title = 'Gestión de Propietarios';
         });
     };
 
-    window.subirDni = function (input, lado) {
+    window.subirDni = async function (input, lado) {
         var id = parseInt(document.getElementById('editId').value);
         if (!id || id <= 0) {
             showToast('Guarda el propietario antes de subir imágenes', 'error');
@@ -372,10 +372,13 @@ $title = 'Gestión de Propietarios';
         var file = input.files[0];
         if (!file) return;
 
+        // Comprimir imagen antes de subir (fotos de móvil pueden pesar 5-15MB)
+        var compressed = await compressImage(file);
+
         var formData = new FormData();
         formData.append('id', id);
         formData.append('lado', lado);
-        formData.append('imagen', file);
+        formData.append('imagen', compressed);
         formData.append('csrf_token', csrfToken);
 
         fetch(basePath + '/propietarios/subirImagenDni', {
