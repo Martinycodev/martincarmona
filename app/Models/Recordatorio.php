@@ -56,13 +56,13 @@ class Recordatorio
     /**
      * Crear un recordatorio personalizado
      */
-    public function crear($userId, $titulo, $descripcion, $fechaAviso)
+    public function crear($userId, $titulo, $descripcion, $fechaAviso, $repeticion = null)
     {
         $stmt = $this->db->prepare("
-            INSERT INTO recordatorios (id_user, tipo, titulo, descripcion, fecha_aviso)
-            VALUES (?, 'personalizado', ?, ?, ?)
+            INSERT INTO recordatorios (id_user, tipo, titulo, descripcion, fecha_aviso, repeticion)
+            VALUES (?, 'personalizado', ?, ?, ?, ?)
         ");
-        $stmt->bind_param("isss", $userId, $titulo, $descripcion, $fechaAviso);
+        $stmt->bind_param("issss", $userId, $titulo, $descripcion, $fechaAviso, $repeticion);
         $ok = $stmt->execute();
         $id = $this->db->insert_id;
         $stmt->close();
@@ -70,14 +70,41 @@ class Recordatorio
     }
 
     /**
-     * Marcar como leído
+     * Marcar como leído. Si tiene repetición, genera el siguiente automáticamente.
      */
     public function marcarLeido($id, $userId)
     {
+        // Obtener datos del recordatorio antes de marcarlo
+        $stmt = $this->db->prepare("SELECT titulo, descripcion, fecha_aviso, repeticion FROM recordatorios WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $id, $userId);
+        $stmt->execute();
+        $rec = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        // Marcar como leído
         $stmt = $this->db->prepare("UPDATE recordatorios SET leido = 1 WHERE id = ? AND id_user = ?");
         $stmt->bind_param("ii", $id, $userId);
         $ok = $stmt->execute();
         $stmt->close();
+
+        // Si tiene repetición, crear el siguiente recordatorio
+        if ($ok && $rec && !empty($rec['repeticion'])) {
+            $fechaBase = $rec['fecha_aviso'];
+            $rep = $rec['repeticion'];
+
+            if ($rep === 'mensual') {
+                $nuevaFecha = date('Y-m-d', strtotime($fechaBase . ' +1 month'));
+            } elseif ($rep === 'anual') {
+                $nuevaFecha = date('Y-m-d', strtotime($fechaBase . ' +1 year'));
+            } elseif (ctype_digit($rep)) {
+                $nuevaFecha = date('Y-m-d', strtotime($fechaBase . ' +' . intval($rep) . ' days'));
+            } else {
+                return $ok;
+            }
+
+            $this->crear($userId, $rec['titulo'], $rec['descripcion'], $nuevaFecha, $rep);
+        }
+
         return $ok;
     }
 
@@ -221,20 +248,36 @@ class Recordatorio
      */
     public function generarJornadas($userId)
     {
-        $mesAnterior = (int) date('n', strtotime('first day of last month'));
-        $anioAnterior = (int) date('Y', strtotime('first day of last month'));
+        $diaActual = (int) date('j');
+        $diasEnMes = (int) date('t');
         $nombreMes = [
             1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',
             7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'
         ];
 
-        // Comprobar si hubo tareas con trabajadores asignados el mes anterior
+        // Ventana de aviso: últimos 2 días del mes → aviso del mes actual
+        //                   primeros 5 días del mes → aviso del mes anterior
+        //                   fuera de esta ventana → no generar nada
+        if ($diaActual >= ($diasEnMes - 1)) {
+            // Últimos 2 días: recordatorio del mes actual (preaviso)
+            $mesObjetivo = (int) date('n');
+            $anioObjetivo = (int) date('Y');
+        } elseif ($diaActual <= 5) {
+            // Primeros 5 días: recordatorio del mes anterior
+            $mesObjetivo = (int) date('n', strtotime('first day of last month'));
+            $anioObjetivo = (int) date('Y', strtotime('first day of last month'));
+        } else {
+            // Fuera de ventana, no generar recordatorio
+            return 0;
+        }
+
+        // Comprobar si hubo tareas con trabajadores asignados en el mes objetivo
         $stmt = $this->db->prepare("
             SELECT COUNT(*) as total FROM tareas t
             INNER JOIN tarea_trabajadores tt ON t.id = tt.tarea_id
             WHERE t.id_user = ? AND MONTH(t.fecha) = ? AND YEAR(t.fecha) = ?
         ");
-        $stmt->bind_param("iii", $userId, $mesAnterior, $anioAnterior);
+        $stmt->bind_param("iii", $userId, $mesObjetivo, $anioObjetivo);
         $stmt->execute();
         $hayTareas = intval($stmt->get_result()->fetch_assoc()['total'] ?? 0);
         $stmt->close();
@@ -242,7 +285,7 @@ class Recordatorio
         if ($hayTareas === 0) return 0;
 
         // Comprobar si ya existe este recordatorio
-        $clave = "jornadas-{$mesAnterior}-{$anioAnterior}";
+        $clave = "jornadas-{$mesObjetivo}-{$anioObjetivo}";
         $stmt = $this->db->prepare("
             SELECT id FROM recordatorios
             WHERE id_user = ? AND tipo = 'jornadas' AND titulo = ?
@@ -255,8 +298,8 @@ class Recordatorio
         if ($existe) return 0;
 
         $titulo = $clave;
-        $desc = "Enviar las jornadas reales de {$nombreMes[$mesAnterior]} {$anioAnterior} a la gestoría.";
-        $fechaAviso = date('Y-m-d', strtotime('first day of this month'));
+        $desc = "Enviar las jornadas reales de {$nombreMes[$mesObjetivo]} {$anioObjetivo} a la gestoría.";
+        $fechaAviso = date('Y-m-d');
 
         $ins = $this->db->prepare("
             INSERT INTO recordatorios (id_user, tipo, titulo, descripcion, fecha_aviso)

@@ -187,12 +187,16 @@ class TareasController extends BaseController
 
         $titulo = trim($input['titulo'] ?? '');
 
+        // Si no tiene fecha → estado pendiente; si tiene → realizada
+        $estado = ($fecha === null) ? 'pendiente' : 'realizada';
+
         $tareaData = [
             'fecha'       => $fecha,
             'titulo'      => $titulo,
             'descripcion' => '',
             'trabajo'     => 0,
             'horas'       => 0,
+            'estado'      => $estado,
         ];
 
         $result = $this->tareaModel->create($tareaData, $userId);

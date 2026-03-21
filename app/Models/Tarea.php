@@ -40,17 +40,19 @@ class Tarea
             }
 
             // Crear la tarea principal (solo campos esenciales)
+            $estado = $data['estado'] ?? 'realizada';
             $stmt = $this->db->prepare("
-                INSERT INTO tareas (fecha, titulo, descripcion, horas, id_user, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+                INSERT INTO tareas (fecha, titulo, descripcion, horas, estado, id_user, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
             ");
 
             $stmt->bind_param(
-                "sssdi",
+                "sssdsi",
                 $data['fecha'],
                 $data['titulo'],
                 $data['descripcion'],
                 $data['horas'],
+                $estado,
                 $userId
             );
 

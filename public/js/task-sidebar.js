@@ -274,7 +274,7 @@ class TaskSidebar {
         const input = document.createElement('input');
         input.type = 'text';
         input.className = 'combobox-input sidebar-inline-select';
-        input.placeholder = '— Sin asignar';
+        input.placeholder = '— Buscar y seleccionar';
         input.autocomplete = 'off';
         input.spellcheck = false;
 
@@ -1144,10 +1144,12 @@ function initCombobox(wrapperId, options, onSelect = null, onCreate = null) {
     }
 
     function selectItem(opt) {
-        input.value     = opt.nombre;
         hiddenVal.value = opt.id;
         closeList();
         if (onSelect) onSelect(opt);
+        // Limpiar el input tras la selección para que vuelva el placeholder
+        input.value = '';
+        hiddenVal.value = '';
     }
 
     function openList() {

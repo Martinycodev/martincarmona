@@ -18,8 +18,8 @@ $title = 'Gestión de Tareas';
                 <tr>
                     <th>Fecha</th>
                     <th>Título</th>
+                    <th>Trabajo</th>
                     <th>Horas</th>
-                    <th class="actions-column">Acciones</th>
                 </tr>
             </thead>
             <tbody id="tareasTableBody">
@@ -27,19 +27,19 @@ $title = 'Gestión de Tareas';
                     <?php foreach ($tareas as $tarea): ?>
                         <tr data-id="<?= $tarea['id'] ?>"
                             style="cursor:pointer;"
-                            onclick="if(event.target.closest('.btn-delete')) return; window.taskSidebar && window.taskSidebar.open(<?= $tarea['id'] ?>)">
+                            onclick="window.taskSidebar && window.taskSidebar.open(<?= $tarea['id'] ?>)">
                             <td><?= htmlspecialchars(date('d-m-Y', strtotime($tarea['fecha']))) ?></td>
                             <td class="description-cell">
                                 <?= htmlspecialchars($tarea['titulo'] ?: ($tarea['descripcion'] ?? 'Sin título')) ?>
                             </td>
-                            <td><?= $tarea['horas'] ? number_format($tarea['horas'], 1) . 'h' : '0h' ?></td>
-                            <td class="actions">
-                                <button class="btn-icon btn-delete"
-                                    onclick="deleteTarea(<?= $tarea['id'] ?>, '<?= htmlspecialchars($tarea['titulo'] ?: ($tarea['descripcion'] ?? 'Sin título'), ENT_QUOTES) ?>')"
-                                    title="Eliminar">
-                                    🗑️
-                                </button>
+                            <td>
+                                <?php if (!empty($tarea['trabajos'])): ?>
+                                    <?= htmlspecialchars(implode(', ', array_column($tarea['trabajos'], 'nombre'))) ?>
+                                <?php else: ?>
+                                    <span style="color:#666;">—</span>
+                                <?php endif; ?>
                             </td>
+                            <td><?= $tarea['horas'] ? number_format($tarea['horas'], 1) . 'h' : '0h' ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -114,34 +114,3 @@ $title = 'Gestión de Tareas';
 
 </div>
 
-<script>
-    async function deleteTarea(id, descripcion) {
-        if (!confirm(`¿Estás seguro de que quieres eliminar la tarea "${descripcion}"?`)) return;
-
-        try {
-            const response = await fetch(buildUrl('/tareas/eliminar'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({ id })
-            });
-            const data = await response.json();
-
-            if (data.success) {
-                document.querySelector(`tr[data-id="${id}"]`)?.remove();
-                showToast('Tarea eliminada correctamente', 'success');
-            } else {
-                showToast('Error al eliminar: ' + (data.message || 'Error desconocido'), 'error');
-            }
-        } catch (error) {
-            console.error('Error eliminando tarea:', error);
-            showToast('Error de conexión', 'error');
-        }
-    }
-</script>
-
-</body>
-
-</html>

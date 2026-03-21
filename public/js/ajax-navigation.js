@@ -8,6 +8,8 @@ class AjaxNavigation {
         this.currentUrl = window.location.pathname;
         this.contentContainer = null;
         this.loadingIndicator = null;
+        this.abortController = null; // Para cancelar peticiones en curso
+        this.navigating = false;     // Guard contra navegaciones concurrentes
         this.init();
     }
 
@@ -67,29 +69,15 @@ class AjaxNavigation {
     }
 
     interceptNavigationLinks() {
-        // Interceptar clics en enlaces del menú de navegación
-        const navLinks = document.querySelectorAll('.nav-menu a[href]');
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const url = link.getAttribute('href');
-                this.navigateTo(url);
-            });
-        });
+        // Selectores de enlaces que deben usar navegación AJAX
+        const selectors = '.nav-menu a[href], .action-card[href], .nav-card[href]';
+        const links = document.querySelectorAll(selectors);
 
-        // Interceptar clics en enlaces de acción
-        const actionLinks = document.querySelectorAll('.action-card[href]');
-        actionLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const url = link.getAttribute('href');
-                this.navigateTo(url);
-            });
-        });
+        links.forEach(link => {
+            // Evitar duplicar listeners — marcar el enlace como ya interceptado
+            if (link.dataset.ajaxBound) return;
+            link.dataset.ajaxBound = '1';
 
-        // Interceptar clics en enlaces de navegación rápida
-        const quickNavLinks = document.querySelectorAll('.nav-card[href]');
-        quickNavLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const url = link.getAttribute('href');
@@ -119,6 +107,11 @@ class AjaxNavigation {
     }
 
     async navigateTo(url) {
+        // Cancelar navegación anterior si sigue en curso
+        if (this.abortController) {
+            this.abortController.abort();
+        }
+
         // Actualizar la URL en el navegador sin recargar la página
         history.pushState({ url: url }, '', url);
 
@@ -130,18 +123,23 @@ class AjaxNavigation {
     }
 
     async loadContent(url, showLoading = true) {
+        // Crear nuevo AbortController para esta petición
+        this.abortController = new AbortController();
+        const signal = this.abortController.signal;
+
         try {
             if (showLoading) {
                 this.showLoading();
             }
 
-            // Realizar petición AJAX
+            // Realizar petición AJAX (cancelable)
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'text/html'
-                }
+                },
+                signal: signal
             });
 
             if (!response.ok) {
@@ -177,6 +175,8 @@ class AjaxNavigation {
             }
 
         } catch (error) {
+            // Si la petición fue cancelada (nueva navegación), ignorar silenciosamente
+            if (error.name === 'AbortError') return;
             console.error('Error cargando contenido:', error);
             this.showError('Error al cargar la página. Por favor, inténtalo de nuevo.');
         } finally {

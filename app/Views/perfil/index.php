@@ -125,6 +125,23 @@ $title = 'Mi Perfil - MartinCarmona.com';
                     style="padding:10px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff;">
                 <input type="date" id="rec-fecha" required
                     style="padding:10px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff;">
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <label style="color:#aaa; font-size:0.85rem; white-space:nowrap;">🔁 Repetición:</label>
+                    <select id="rec-repeticion"
+                        style="flex:1; padding:10px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff;"
+                        onchange="document.getElementById('rec-dias-custom').style.display = this.value === 'custom' ? 'flex' : 'none';">
+                        <option value="">Sin repetición</option>
+                        <option value="mensual">Cada mes</option>
+                        <option value="anual">Cada año</option>
+                        <option value="custom">Cada X días</option>
+                    </select>
+                </div>
+                <div id="rec-dias-custom" style="display:none; gap:8px; align-items:center;">
+                    <label style="color:#aaa; font-size:0.85rem; white-space:nowrap;">Cada</label>
+                    <input type="number" id="rec-dias" min="1" max="365" placeholder="15"
+                        style="width:80px; padding:10px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff;">
+                    <span style="color:#aaa; font-size:0.85rem;">días</span>
+                </div>
                 <button type="submit" class="btn btn-primary" style="align-self:flex-start;">+ Crear recordatorio</button>
             </form>
 
@@ -426,11 +443,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // ── Notificaciones ───────────────────────────────────────────────────
     var basePath = window._APP_BASE_PATH || '';
     var tiposLabels = {
-        'itv':            { icon: '🚗', label: 'ITV de vehículos' },
-        'cuentas':        { icon: '💰', label: 'Cierre de cuentas mensuales' },
-        'jornadas':       { icon: '📋', label: 'Jornadas reales a gestoría' },
-        'fitosanitario':  { icon: '🧪', label: 'Fitosanitarios (stock bajo)' },
-        'personalizado':  { icon: '📌', label: 'Recordatorios personalizados' }
+        'itv':            { icon: '🚗', label: 'ITV de vehículos', desc: 'Te avisará 30 días antes del vencimiento de la ITV de tus vehículos.' },
+        'cuentas':        { icon: '💰', label: 'Cierre de cuentas mensuales', desc: 'Recordatorio a principio de mes para revisar el cierre económico del mes anterior.' },
+        'jornadas':       { icon: '📋', label: 'Jornadas reales a gestoría', desc: 'Aparece 2 días antes de fin de mes y permanece hasta el día 5 del mes siguiente.' },
+        'fitosanitario':  { icon: '🧪', label: 'Fitosanitarios (stock bajo)', desc: 'Te avisa cuando algún producto fitosanitario tiene stock en 0.' },
+        'personalizado':  { icon: '📌', label: 'Recordatorios personalizados', desc: 'Recordatorios que tú mismo creas con fecha y descripción.' }
     };
 
     // Cargar configuración de tipos
@@ -449,12 +466,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 var cfg = data.config[tipo] || { activo: 1 };
                 var info = tiposLabels[tipo];
                 var div = document.createElement('div');
-                div.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#333; border-radius:8px;';
-                div.innerHTML = '<span style="color:#ddd;">' + info.icon + ' ' + info.label + '</span>'
+                div.style.cssText = 'padding:10px 12px; background:#333; border-radius:8px;';
+                div.innerHTML = '<div style="display:flex; align-items:center; justify-content:space-between;">'
+                    + '<span style="color:#ddd;">' + info.icon + ' ' + info.label + '</span>'
                     + '<label class="toggle-switch">'
                     + '<input type="checkbox" ' + (cfg.activo == 1 ? 'checked' : '') + ' onchange="toggleNotifTipo(\'' + tipo + '\', this.checked)">'
                     + '<span class="toggle-slider"></span>'
-                    + '</label>';
+                    + '</label>'
+                    + '</div>'
+                    + '<p style="margin:4px 0 0; font-size:0.78rem; color:#888; line-height:1.3;">' + info.desc + '</p>';
                 container.appendChild(div);
             });
         } catch(e) {}
@@ -523,11 +543,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!titulo || !fecha) return;
 
+        // Obtener valor de repetición
+        var repSelect = document.getElementById('rec-repeticion').value;
+        var repeticion = null;
+        if (repSelect === 'mensual' || repSelect === 'anual') {
+            repeticion = repSelect;
+        } else if (repSelect === 'custom') {
+            var dias = parseInt(document.getElementById('rec-dias').value);
+            if (!dias || dias < 1) {
+                if (typeof showToast === 'function') showToast('Indica el número de días', 'error');
+                return;
+            }
+            repeticion = String(dias);
+        }
+
         var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
         var res = await fetch(basePath + '/notificaciones/crear', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
-            body: JSON.stringify({ titulo: titulo, descripcion: desc, fecha_aviso: fecha })
+            body: JSON.stringify({ titulo: titulo, descripcion: desc, fecha_aviso: fecha, repeticion: repeticion })
         });
         var data = await res.json();
 
@@ -536,6 +570,8 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('rec-titulo').value = '';
             document.getElementById('rec-desc').value = '';
             document.getElementById('rec-fecha').value = '';
+            document.getElementById('rec-repeticion').value = '';
+            document.getElementById('rec-dias-custom').style.display = 'none';
             cargarRecordatoriosPerfil();
         }
     });

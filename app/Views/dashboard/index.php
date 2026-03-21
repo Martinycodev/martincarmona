@@ -175,7 +175,7 @@ $title = 'Datos - MartinCarmona.com';
                 tasks[fecha] = [];
                 tasksData[fecha] = [];
             }
-            tasks[fecha].push(tarea.trabajo_nombre || tarea.titulo || 'Sin título');
+            tasks[fecha].push(tarea.titulo || tarea.trabajo_nombre || 'Sin título');
             tasksData[fecha].push(tarea);
         });
     }
@@ -229,7 +229,10 @@ $title = 'Datos - MartinCarmona.com';
                     dayHTML += `<div class="task-dots"><span class="task"></span><span class="task-count">x${tareas.length}</span></div>`;
                 } else {
                     tareas.forEach((tarea) => {
-                        const displayText = tarea.trabajo_nombre || tarea.titulo || 'Sin título';
+                        // Priorizar título sobre nombre del trabajo, limitar a 7 palabras
+                        let displayText = tarea.titulo || tarea.trabajo_nombre || 'Sin título';
+                        const words = displayText.split(/\s+/);
+                        if (words.length > 7) displayText = words.slice(0, 7).join(' ') + '…';
                         const cat = tarea.trabajo_categoria || 'otro';
                         dayHTML += `<div class="task task-cat-${cat}" draggable="true" data-id="${tarea.id}" data-fecha="${dateStr}" onclick="window.taskSidebar && window.taskSidebar.open(${tarea.id})" title="${tarea.descripcion || ''}">${displayText}</div>`;
                     });
@@ -437,7 +440,7 @@ $title = 'Datos - MartinCarmona.com';
             html += '<div class="mobile-day-empty">No hay tareas este día</div>';
         } else {
             tareasDelDia.forEach(function(tarea) {
-                var nombre = tarea.trabajo_nombre || tarea.titulo || 'Sin título';
+                var nombre = tarea.titulo || tarea.trabajo_nombre || 'Sin título';
                 html += '<div class="mobile-day-task" onclick="cerrarModalDia(); window.taskSidebar && window.taskSidebar.open(' + tarea.id + ')">'
                     + '<span class="mobile-day-task-name">' + nombre + '</span>'
                     + '<span class="mobile-day-task-arrow">›</span>'

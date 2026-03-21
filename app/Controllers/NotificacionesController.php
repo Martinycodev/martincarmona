@@ -68,13 +68,23 @@ class NotificacionesController extends BaseController
         $titulo = trim($input['titulo'] ?? '');
         $descripcion = trim($input['descripcion'] ?? '');
         $fechaAviso = trim($input['fecha_aviso'] ?? '');
+        $repeticion = isset($input['repeticion']) ? trim($input['repeticion']) : null;
 
         if (empty($titulo) || empty($fechaAviso)) {
             echo json_encode(['success' => false, 'message' => 'Título y fecha son obligatorios']);
             return;
         }
 
-        $id = $this->modelo->crear($_SESSION['user_id'], $titulo, $descripcion, $fechaAviso);
+        // Validar repetición: 'mensual', 'anual', o número de días
+        if ($repeticion !== null && $repeticion !== '') {
+            if (!in_array($repeticion, ['mensual', 'anual']) && !ctype_digit($repeticion)) {
+                $repeticion = null;
+            }
+        } else {
+            $repeticion = null;
+        }
+
+        $id = $this->modelo->crear($_SESSION['user_id'], $titulo, $descripcion, $fechaAviso, $repeticion);
 
         if ($id) {
             echo json_encode(['success' => true, 'id' => $id]);
