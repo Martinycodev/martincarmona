@@ -38,7 +38,7 @@ class TrabajadoresController extends BaseController
             $stmt = $this->db->prepare("
                 SELECT id, nombre, dni, ss
                 FROM trabajadores
-                WHERE nombre LIKE ?
+                WHERE nombre LIKE ? AND id_user = ?
                 ORDER BY nombre
                 LIMIT 10
             ");
@@ -47,7 +47,7 @@ class TrabajadoresController extends BaseController
                 throw new \Exception("Error en la preparación de la consulta: " . $this->db->error);
             }
 
-            $stmt->bind_param("s", $query);
+            $stmt->bind_param("si", $query, $_SESSION['user_id']);
 
             if (!$stmt->execute()) {
                 throw new \Exception("Error al ejecutar la consulta: " . $stmt->error);
@@ -76,6 +76,7 @@ class TrabajadoresController extends BaseController
         $anioActual = (int) date('Y');
 
         // Consulta que detecta si el trabajador tiene tareas asignadas en el mes actual
+        // Filtrada por id_user para que cada usuario solo vea sus trabajadores
         $stmt = $db->prepare("
             SELECT t.*,
                    (SELECT COUNT(*) FROM tarea_trabajadores tt
@@ -84,9 +85,10 @@ class TrabajadoresController extends BaseController
                       AND MONTH(ta.fecha) = ?
                       AND YEAR(ta.fecha) = ?) AS tareas_mes
             FROM trabajadores t
+            WHERE t.id_user = ?
             ORDER BY t.nombre
         ");
-        $stmt->bind_param("ii", $mesActual, $anioActual);
+        $stmt->bind_param("iii", $mesActual, $anioActual, $_SESSION['user_id']);
         $stmt->execute();
         $trabajadores = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
@@ -155,8 +157,8 @@ class TrabajadoresController extends BaseController
             $db = \Database::connect();
 
             if (!empty($dni)) {
-                $stmt = $db->prepare("SELECT id FROM trabajadores WHERE dni = ?");
-                $stmt->bind_param("s", $dni);
+                $stmt = $db->prepare("SELECT id FROM trabajadores WHERE dni = ? AND id_user = ?");
+                $stmt->bind_param("si", $dni, $_SESSION['user_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 if ($result->num_rows > 0) {
@@ -201,8 +203,8 @@ class TrabajadoresController extends BaseController
 
         try {
             $db = \Database::connect();
-            $stmt = $db->prepare("SELECT * FROM trabajadores WHERE id = ?");
-            $stmt->bind_param("i", $id);
+            $stmt = $db->prepare("SELECT * FROM trabajadores WHERE id = ? AND id_user = ?");
+            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
             $stmt->execute();
             $result = $stmt->get_result();
 
@@ -273,11 +275,11 @@ class TrabajadoresController extends BaseController
 
             if (!empty($dni)) {
                 \Core\Logger::app()->error("Verificando DNI duplicado: $dni para ID: $id");
-                $stmt = $db->prepare("SELECT id FROM trabajadores WHERE dni = ? AND id != ?");
+                $stmt = $db->prepare("SELECT id FROM trabajadores WHERE dni = ? AND id != ? AND id_user = ?");
                 if (!$stmt) {
                     throw new \Exception("Error preparando consulta DNI: " . $db->error);
                 }
-                $stmt->bind_param("si", $dni, $id);
+                $stmt->bind_param("sii", $dni, $id, $_SESSION['user_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 if ($result->num_rows > 0) {
@@ -291,11 +293,11 @@ class TrabajadoresController extends BaseController
             }
 
             \Core\Logger::app()->error("Preparando consulta UPDATE");
-            $stmt = $db->prepare("UPDATE trabajadores SET nombre = ?, dni = ?, ss = ?, alta_ss = ?, baja_ss = ?, cuadrilla = ? WHERE id = ?");
+            $stmt = $db->prepare("UPDATE trabajadores SET nombre = ?, dni = ?, ss = ?, alta_ss = ?, baja_ss = ?, cuadrilla = ? WHERE id = ? AND id_user = ?");
             if (!$stmt) {
                 throw new \Exception("Error preparando consulta UPDATE: " . $db->error);
             }
-            $stmt->bind_param("sssssii", $nombre, $dni, $ss, $alta_ss, $baja_ss, $cuadrilla, $id);
+            $stmt->bind_param("sssssiii", $nombre, $dni, $ss, $alta_ss, $baja_ss, $cuadrilla, $id, $_SESSION['user_id']);
 
             if ($stmt->execute()) {
                 if ($stmt->affected_rows >= 0) {

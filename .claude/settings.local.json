@@ -50,7 +50,9 @@
       "Bash(node -c public/js/modal-functions.js)",
       "Bash(node -c public/js/task-sidebar.js)",
       "Bash(node -c public/js/trabajadores.js)",
-      "Bash(node -c public/js/trabajos.js)"
+      "Bash(node -c public/js/trabajos.js)",
+      "Bash(find /c/xampp/htdocs/martincarmona -name *migration* -o -name *schema* -o -name *.sql)",
+      "Bash(php -r \"echo password_hash\\(''Demo2024!'', PASSWORD_DEFAULT\\);\")"
     ]
   }
 }
