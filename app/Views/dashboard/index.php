@@ -567,7 +567,7 @@ $title = 'Datos - MartinCarmona.com';
                 chip.dataset.id = t.id;
                 chip.dataset.tipo = 'pendiente';
 
-                var nombre = t.trabajos || t.titulo || 'Sin título';
+                var nombre = t.titulo || t.trabajos || 'Sin título';
                 chip.innerHTML = '<span class="pending-chip-name">' + nombre + '</span>';
 
                 // Click → abrir sidebar

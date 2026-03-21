@@ -2,9 +2,10 @@
 
     <footer class="site-footer">
         <div class="footer-content">
-            &copy; <?= date('Y') ?> MartinCarmona.com <a href="https://auth-db699.hstgr.io/" target="_blank" style="color: #2a2a2a">bbdd</a>
+            &copy; <?= date('Y') ?> MartinCarmona.com 
             <span class="footer-sep">·</span>
             <a href="#" class="tour-help-link" onclick="event.preventDefault(); window.guidedTour && window.guidedTour.start('dashboard', true)">Ayuda</a>
+            <span class="footer-sep">·</span><a href="https://auth-db699.hstgr.io/" target="_blank" style="color: #2a2a2a">bbdd</a>
         </div>
     </footer>
 

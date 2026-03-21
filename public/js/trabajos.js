@@ -2,6 +2,29 @@
  * Funciones específicas para la vista de trabajos
  */
 
+// ── Selector visual de categoría ──────────────────────────────────────────────
+function initCatPicker(pickerId) {
+    var picker = document.getElementById(pickerId);
+    if (!picker) return;
+    picker.addEventListener('click', function(e) {
+        var chip = e.target.closest('.cat-chip');
+        if (!chip) return;
+        picker.querySelectorAll('.cat-chip').forEach(function(c) { c.classList.remove('active'); });
+        chip.classList.add('active');
+        picker.querySelector('input[type="hidden"]').value = chip.dataset.val;
+    });
+}
+
+function setCatPicker(pickerId, value) {
+    var picker = document.getElementById(pickerId);
+    if (!picker) return;
+    picker.querySelectorAll('.cat-chip').forEach(function(c) { c.classList.remove('active'); });
+    var target = picker.querySelector('[data-val="' + value + '"]');
+    if (target) target.classList.add('active');
+    picker.querySelector('input[type="hidden"]').value = value || 'otro';
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Función para abrir modal de crear trabajo
 function openCreateModal() {
     openCreateSection();
@@ -43,9 +66,7 @@ async function editJob(id, buttonElement = null) {
             document.getElementById('editNombre').value = job.nombre || '';
             document.getElementById('editPrecioHora').value = job.precio_hora ?? 0;
             document.getElementById('editDescripcion').value = job.descripcion || '';
-            // Seleccionar categoría en el dropdown
-            var catSelect = document.getElementById('editCategoria');
-            if (catSelect) catSelect.value = job.categoria || 'otro';
+            setCatPicker('catPickerEdit', job.categoria || 'otro');
 
             // Mostrar/ocultar sección de documento
             const preview = document.getElementById('documentoPreview');
@@ -188,7 +209,9 @@ function reloadTable() {
 
 // Inicializar formularios — funciona tanto en carga normal como en carga AJAX dinámica
 function initTrabajosForms() {
-    
+    initCatPicker('catPickerCreate');
+    initCatPicker('catPickerEdit');
+
     // Manejo del formulario de crear
     const createForm = document.getElementById('createJobForm');
     if (createForm) {

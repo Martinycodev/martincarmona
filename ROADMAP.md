@@ -1,7 +1,7 @@
 # ROADMAP — Sistema de Gestión Agrícola
 
 > Documento de planificación y estado del proyecto.
-> **Última actualización:** 15 de marzo de 2026
+> **Última actualización:** 21 de marzo de 2026
 
 ---
 
@@ -254,6 +254,13 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 ### DevOps
 - [ ] `docker-compose.yml` para desarrollo reproducible
 - [ ] GitHub Actions para tests automáticos en cada push
+
+---
+
+## Mejoras UX completadas
+
+- [x] **Trabajos — selector de categoría visual:** reemplazado el `<select>` por chips de colores en el modal de crear y editar, mostrando los colores reales de cada categoría. *(21/03/2026)*
+- [x] **Dashboard — tareas pendientes muestran el título:** el panel de tareas pendientes ahora prioriza el título de la tarea sobre el tipo de trabajo. *(21/03/2026)*
 
 ---
 

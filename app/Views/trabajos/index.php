@@ -31,16 +31,17 @@ $title = 'Gestión de Trabajos';
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="categoria">Categoría:</label>
-                            <select id="categoria" name="categoria">
-                                <option value="campo">🟢 Campo (laboreo, desbrozar)</option>
-                                <option value="tratamiento">🔵 Tratamiento (herbicida, sulfato)</option>
-                                <option value="recoleccion">🟠 Recolección (aceituna)</option>
-                                <option value="riego">🔷 Riego</option>
-                                <option value="poda">🟣 Poda</option>
-                                <option value="mantenimiento">🟡 Mantenimiento</option>
-                                <option value="otro" selected>⚪ Otro</option>
-                            </select>
+                            <label>Categoría:</label>
+                            <div class="cat-picker" id="catPickerCreate">
+                                <input type="hidden" id="categoria" name="categoria" value="otro">
+                                <button type="button" class="cat-chip cat-campo"        data-val="campo">Campo</button>
+                                <button type="button" class="cat-chip cat-tratamiento"  data-val="tratamiento">Tratamiento</button>
+                                <button type="button" class="cat-chip cat-recoleccion"  data-val="recoleccion">Recolección</button>
+                                <button type="button" class="cat-chip cat-riego"        data-val="riego">Riego</button>
+                                <button type="button" class="cat-chip cat-poda"         data-val="poda">Poda</button>
+                                <button type="button" class="cat-chip cat-mantenimiento" data-val="mantenimiento">Mantenimiento</button>
+                                <button type="button" class="cat-chip cat-otro active"  data-val="otro">Otro</button>
+                            </div>
                         </div>
                         <div class="form-group full-width">
                             <label for="descripcion">Descripción:</label>
@@ -112,16 +113,17 @@ $title = 'Gestión de Trabajos';
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="editCategoria">Categoría:</label>
-                            <select id="editCategoria" name="categoria">
-                                <option value="campo">🟢 Campo (laboreo, desbrozar)</option>
-                                <option value="tratamiento">🔵 Tratamiento (herbicida, sulfato)</option>
-                                <option value="recoleccion">🟠 Recolección (aceituna)</option>
-                                <option value="riego">🔷 Riego</option>
-                                <option value="poda">🟣 Poda</option>
-                                <option value="mantenimiento">🟡 Mantenimiento</option>
-                                <option value="otro">⚪ Otro</option>
-                            </select>
+                            <label>Categoría:</label>
+                            <div class="cat-picker" id="catPickerEdit">
+                                <input type="hidden" id="editCategoria" name="categoria" value="otro">
+                                <button type="button" class="cat-chip cat-campo"        data-val="campo">Campo</button>
+                                <button type="button" class="cat-chip cat-tratamiento"  data-val="tratamiento">Tratamiento</button>
+                                <button type="button" class="cat-chip cat-recoleccion"  data-val="recoleccion">Recolección</button>
+                                <button type="button" class="cat-chip cat-riego"        data-val="riego">Riego</button>
+                                <button type="button" class="cat-chip cat-poda"         data-val="poda">Poda</button>
+                                <button type="button" class="cat-chip cat-mantenimiento" data-val="mantenimiento">Mantenimiento</button>
+                                <button type="button" class="cat-chip cat-otro"         data-val="otro">Otro</button>
+                            </div>
                         </div>
                         <div class="form-group full-width">
                             <label for="editDescripcion">Descripción:</label>
