@@ -78,6 +78,10 @@ class AjaxNavigation {
             if (link.dataset.ajaxBound) return;
             link.dataset.ajaxBound = '1';
 
+            // No interceptar enlaces que requieren navegación completa (logout, etc.)
+            const href = link.getAttribute('href') || '';
+            if (href.includes('/logout')) return;
+
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const url = link.getAttribute('href');

@@ -52,11 +52,11 @@ class EconomiaController extends BaseController
      */
     public function index(): void
     {
-        $resumen         = $this->movimiento->getResumen();
+        $resumen         = $this->movimiento->getResumen($this->userId());
         $deudaMesActual  = $this->pagoMensual->getDeudaMesActual($this->userId());
         $deudaPendiente  = array_sum(array_column($deudaMesActual, 'deuda_calculada'));
-        $ultimosGastos  = array_slice($this->movimiento->getAllGastos(), 0, 5);
-        $ultimosIngresos = array_slice($this->movimiento->getAllIngresos(), 0, 5);
+        $ultimosGastos  = array_slice($this->movimiento->getAllGastos($this->userId()), 0, 5);
+        $ultimosIngresos = array_slice($this->movimiento->getAllIngresos($this->userId()), 0, 5);
 
         $this->render('economia/index', [
             'title'          => 'Economía — Dashboard',
@@ -73,7 +73,7 @@ class EconomiaController extends BaseController
      */
     public function gastos(): void
     {
-        $gastos      = $this->movimiento->getAllGastos();
+        $gastos      = $this->movimiento->getAllGastos($this->userId());
         $proveedores = $this->proveedor->getAll($this->userId());
         $vehiculos   = $this->vehiculo->getAll($this->userId());
         $parcelas    = $this->parcela->getAll($this->userId());
@@ -95,7 +95,7 @@ class EconomiaController extends BaseController
      */
     public function ingresos(): void
     {
-        $ingresos = $this->movimiento->getAllIngresos();
+        $ingresos = $this->movimiento->getAllIngresos($this->userId());
 
         $this->render('economia/ingresos', [
             'title'      => 'Economía — Ingresos',
@@ -135,7 +135,7 @@ class EconomiaController extends BaseController
 
         $data = $this->extractMovimientoData($_POST);
 
-        if ($this->movimiento->create($data)) {
+        if ($this->movimiento->create($data, $this->userId())) {
             $this->json(['success' => true, 'message' => 'Guardado correctamente']);
         } else {
             http_response_code(500);
@@ -151,7 +151,7 @@ class EconomiaController extends BaseController
         $id   = (int) ($_POST['id'] ?? 0);
         $data = $this->extractMovimientoData($_POST);
 
-        if ($this->movimiento->update($id, $data)) {
+        if ($this->movimiento->update($id, $data, $this->userId())) {
             $this->json(['success' => true, 'message' => 'Actualizado correctamente']);
         } else {
             http_response_code(500);
@@ -166,7 +166,7 @@ class EconomiaController extends BaseController
 
         $id = (int) ($_POST['id'] ?? 0);
 
-        if ($this->movimiento->delete($id)) {
+        if ($this->movimiento->delete($id, $this->userId())) {
             $this->json(['success' => true, 'message' => 'Eliminado correctamente']);
         } else {
             http_response_code(500);
@@ -177,7 +177,7 @@ class EconomiaController extends BaseController
     public function obtener(): void
     {
         $id = (int) ($_GET['id'] ?? 0);
-        $row = $this->movimiento->getById($id);
+        $row = $this->movimiento->getById($id, $this->userId());
 
         if ($row) {
             $this->json(['success' => true, 'data' => $row]);

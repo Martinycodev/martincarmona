@@ -7,7 +7,7 @@
 
 ## Estado General
 
-Aplicación **operativa en producción** con arquitectura MVC, 26 controladores, 9 modelos, sistema multi-rol y todos los módulos core completados. Las fases 1-6 están cerradas. Queda trabajo de pulido, UX móvil y automatizaciones.
+Aplicación **operativa en producción** con arquitectura MVC, 26 controladores, 15 modelos, ~143 rutas, sistema multi-rol, PWA instalable con soporte offline. Las fases 1-11 están cerradas. Queda trabajo de exportación, DevOps y ajustes de colores.
 
 ---
 
@@ -240,7 +240,11 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 - [ ] Los colores de los trabajos son muy chulos pero el de recolección es naranja y con el texto blanco por lo que cuesta leerlo, y el de mantenimiento es amarillo y has puesto el texto negro, me gustaría que mantuviesen unos colores oscuros para que faciliten la lectura del texto blanco, podemos añadir el color verde olivo para la recolección, el marron para el campo (laboreo), y un tono purpura o morado para el mantenimiento. Podemos poner un tono rosa oscuro para los tratamientos sulfatos ya que el azul es muy parecido al de riego.
 - [x] Me he dado cuenta que puede ser confuso la selección del tipo de trabajo. Quiero que al seleccionar el trabajo se borre el campo de escribir y aparezca de nuevo el place-holder. que quiero que ponga - Buscar y seleccionar.
 - [x] Añadir en crear recordatorio personalizado la opción de periodicidad, que llamaremos repetición. Y pondremos la opción de "cada mes", "Cada año", "Cada X días"
-- [ ] cambiar los colores de la seleccion de categortías en el modal de trabajos.
+- [x] Al hacer logout se queda en martincarmona.com/logout y sigue teniendo el header y se queda un poco pillado. Lo suyo es que al cerrar sesión te mande a martincarmon.com y ya.
+- [x] El color morado de la categoría resulta ser demasiado oscuro. podemos pasarlo a un color un poco más violeta. que tenga buen contraste con el gris del fondo y que el texto blanco se lea bien.
+- [x] En el modo movil las tareas se ven desde el mobiledaysheetbody tienen un pequeño borde izquierdo de color verde. Podríamos hacer que ese borde sea del color de la categoría.
+- [x] El apartado de economía tiene el error de que muestra todos los registros de la base de datos, por lo que necesito que estos registros sean de cada usuario de manera privada. Ahora desde mi cuenta estoy viendo las finanzas de la cuenta demo.
+
 
 ### Infraestructura
 - [x] Backups automáticos de la base de datos
@@ -254,13 +258,6 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 ### DevOps
 - [ ] `docker-compose.yml` para desarrollo reproducible
 - [ ] GitHub Actions para tests automáticos en cada push
-
----
-
-## Mejoras UX completadas
-
-- [x] **Trabajos — selector de categoría visual:** reemplazado el `<select>` por chips de colores en el modal de crear y editar, mostrando los colores reales de cada categoría. *(21/03/2026)*
-- [x] **Dashboard — tareas pendientes muestran el título:** el panel de tareas pendientes ahora prioriza el título de la tarea sobre el tipo de trabajo. *(21/03/2026)*
 
 ---
 

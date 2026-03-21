@@ -52,7 +52,22 @@
       "Bash(node -c public/js/trabajadores.js)",
       "Bash(node -c public/js/trabajos.js)",
       "Bash(find /c/xampp/htdocs/martincarmona -name *migration* -o -name *schema* -o -name *.sql)",
-      "Bash(php -r \"echo password_hash\\(''Demo2024!'', PASSWORD_DEFAULT\\);\")"
+      "Bash(php -r \"echo password_hash\\(''Demo2024!'', PASSWORD_DEFAULT\\);\")",
+      "Read(//c/Program Files/Git/**)",
+      "Bash(\"/c/Users/Martin/Desktop/Claude Remote.bat\":*)",
+      "Bash(\"/c/Users/Martin/Desktop/claude-start.sh\":*)",
+      "Bash(\"/c/Users/Martin/Desktop/claude-remote.sh\":*)",
+      "Bash(\"/c/Users/Martin/Desktop/Claude Code.bat\":*)",
+      "Bash(powershell -Command \":*)",
+      "Bash(where claude:*)",
+      "Bash(npm root:*)",
+      "Read(//c/Users/Martin/AppData/Roaming/npm/**)",
+      "Bash(powershell -Command \"Get-Command claude | Select-Object Source\")",
+      "Bash(npm list:*)",
+      "Bash(npx --yes @anthropic-ai/claude-code --version)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Martin\\Desktop"
     ]
   }
 }

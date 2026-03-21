@@ -487,18 +487,18 @@ class ReportesController extends BaseController {
         $db   = \Database::connect();
         $aniosDisponibles = $this->getAniosDisponibles($db, $userId);
 
-        // Evolución mensual: ingresos vs gastos del año seleccionado
+        // Evolución mensual: ingresos vs gastos del año seleccionado (filtrado por usuario)
         $stmt = $db->prepare("
             SELECT
                 MONTH(fecha) AS mes,
                 SUM(CASE WHEN tipo = 'ingreso' THEN importe ELSE 0 END) AS ingresos,
                 SUM(CASE WHEN tipo = 'gasto'   THEN importe ELSE 0 END) AS gastos
             FROM movimientos
-            WHERE YEAR(fecha) = ?
+            WHERE YEAR(fecha) = ? AND id_user = ?
             GROUP BY MONTH(fecha)
             ORDER BY mes
         ");
-        $stmt->bind_param("i", $anio);
+        $stmt->bind_param("ii", $anio, $userId);
         $stmt->execute();
         $evMap = [];
         foreach ($stmt->get_result()->fetch_all(MYSQLI_ASSOC) as $r) {
@@ -531,11 +531,11 @@ class ReportesController extends BaseController {
         $stmt = $db->prepare("
             SELECT categoria, tipo, SUM(importe) AS total
             FROM movimientos
-            WHERE YEAR(fecha) = ?
+            WHERE YEAR(fecha) = ? AND id_user = ?
             GROUP BY categoria, tipo
             ORDER BY total DESC
         ");
-        $stmt->bind_param("i", $anio);
+        $stmt->bind_param("ii", $anio, $userId);
         $stmt->execute();
         $categoriasGasto   = [];
         $categoriasIngreso = [];
@@ -552,15 +552,15 @@ class ReportesController extends BaseController {
         }
         $stmt->close();
 
-        // Top 5 movimientos más grandes del año
+        // Top 10 movimientos más grandes del año (filtrado por usuario)
         $stmt = $db->prepare("
             SELECT fecha, concepto, tipo, categoria, importe, cuenta
             FROM movimientos
-            WHERE YEAR(fecha) = ?
+            WHERE YEAR(fecha) = ? AND id_user = ?
             ORDER BY importe DESC
             LIMIT 10
         ");
-        $stmt->bind_param("i", $anio);
+        $stmt->bind_param("ii", $anio, $userId);
         $stmt->execute();
         $topMovimientos = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();

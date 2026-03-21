@@ -646,7 +646,7 @@ body {
 
 /* Colores por categoría de trabajo */
 .task-cat-campo       { background-color: #5d4037; } /* Marrón tierra */
-.task-cat-tratamiento { background-color: #4a148c; } /* Morado profundo */
+.task-cat-tratamiento { background-color: #7c4dff; } /* Violeta vibrante */
 .task-cat-recoleccion { background-color: #2e7d32; } /* Verde bosque */
 .task-cat-riego       { background-color: #1565c0; } /* Azul medio */
 .task-cat-poda        { background-color: #bf360c; } /* Naranja tostado */
@@ -659,7 +659,7 @@ body {
     font-size: 0.75rem; font-weight: 600; color: #fff;
 }
 .cat-campo       { background: #5d4037; }
-.cat-tratamiento { background: #4a148c; }
+.cat-tratamiento { background: #7c4dff; }
 .cat-recoleccion { background: #2e7d32; }
 .cat-riego       { background: #1565c0; }
 .cat-poda        { background: #bf360c; }
@@ -5305,7 +5305,7 @@ textarea {
     gap: 10px;
     min-height: 48px;
     transition: background 0.15s;
-    border-left: 3px solid #4caf50;
+    border-left: 3px solid #4caf50; /* Color por defecto, se sobreescribe con JS según categoría */
 }
 .mobile-day-task:active {
     background: #3a3a3a;

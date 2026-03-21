@@ -86,7 +86,7 @@ class Tarea
             // ===== NUEVA LÓGICA: ACTUALIZAR MOVIMIENTOS MENSUALES =====
             // Solo procesar si hay trabajadores y trabajo asignado
             if (!empty($trabajadores) && isset($data['trabajo']) && $data['trabajo'] > 0) {
-                $this->actualizarMovimientosMensuales($trabajadores, $data['trabajo'], $data['horas'], $data['fecha']);
+                $this->actualizarMovimientosMensuales($trabajadores, $data['trabajo'], $data['horas'], $data['fecha'], $userId);
             }
 
             // ===== HOOK FITOSANITARIOS =====
@@ -1277,7 +1277,7 @@ class Tarea
      * @param string $fecha Fecha de la tarea
      * @return bool True si se actualizaron correctamente todos los movimientos
      */
-    private function actualizarMovimientosMensuales($trabajadores, $trabajoId, $horas, $fecha)
+    private function actualizarMovimientosMensuales($trabajadores, $trabajoId, $horas, $fecha, $userId = null)
     {
         try {
             // Calcular el total de la tarea (mismo para todos los trabajadores)
@@ -1294,7 +1294,7 @@ class Tarea
 
             foreach ($trabajadores as $trabajadorId) {
                 // Actualizar el movimiento mensual del trabajador
-                $resultado = $this->actualizarMovimientoMensualTrabajador($trabajadorId, $fecha, $totalTarea);
+                $resultado = $this->actualizarMovimientoMensualTrabajador($trabajadorId, $fecha, $totalTarea, $userId);
 
                 if (!$resultado) {
                     $todosExitosos = false;
@@ -1319,23 +1319,28 @@ class Tarea
      * @param float $importe Importe a sumar
      * @return bool True si se actualizó correctamente
      */
-    private function actualizarMovimientoMensualTrabajador($trabajadorId, $fecha, $importe)
+    private function actualizarMovimientoMensualTrabajador($trabajadorId, $fecha, $importe, $userId = null)
     {
         try {
             // Obtener año y mes de la fecha
             $year = date('Y', strtotime($fecha));
             $month = date('m', strtotime($fecha));
 
-            // Buscar movimiento existente para el trabajador en ese mes
-            $sql = "SELECT * FROM movimientos 
-                    WHERE trabajador_id = ? 
-                    AND YEAR(fecha) = ? 
+            // Buscar movimiento existente para el trabajador en ese mes (filtrado por usuario)
+            $sql = "SELECT * FROM movimientos
+                    WHERE trabajador_id = ?
+                    AND YEAR(fecha) = ?
                     AND MONTH(fecha) = ?
                     AND tipo = 'gasto'
-                    AND categoria = 'pago'";
+                    AND categoria = 'pago'"
+                    . ($userId ? " AND id_user = ?" : "");
 
             $stmt = $this->db->prepare($sql);
-            $stmt->bind_param("iii", $trabajadorId, $year, $month);
+            if ($userId) {
+                $stmt->bind_param("iiii", $trabajadorId, $year, $month, $userId);
+            } else {
+                $stmt->bind_param("iii", $trabajadorId, $year, $month);
+            }
             $stmt->execute();
             $result = $stmt->get_result();
             $movimiento = $result->fetch_assoc();
@@ -1361,11 +1366,12 @@ class Tarea
                 setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'es');
                 $concepto = "Sueldo - " . date('F Y', strtotime($fechaInicioMes));
 
-                $sql = "INSERT INTO movimientos (fecha, tipo, concepto, categoria, importe, trabajador_id, estado) 
-                        VALUES (?, 'gasto', ?, 'pago', ?, ?, 'pendiente')";
+                $sql = "INSERT INTO movimientos (id_user, fecha, tipo, concepto, categoria, importe, trabajador_id, estado)
+                        VALUES (?, ?, 'gasto', ?, 'pago', ?, ?, 'pendiente')";
 
                 $stmt = $this->db->prepare($sql);
-                $stmt->bind_param("ssdi", $fechaInicioMes, $concepto, $importe, $trabajadorId);
+                $userIdVal = $userId ?? 1;
+                $stmt->bind_param("issdi", $userIdVal, $fechaInicioMes, $concepto, $importe, $trabajadorId);
                 $resultado = $stmt->execute();
                 $stmt->close();
 

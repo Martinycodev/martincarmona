@@ -53,23 +53,23 @@ class Movimiento
 
     // ─── Lecturas ─────────────────────────────────────────────────────────────
 
-    public function getAllGastos(): array
+    public function getAllGastos(int $userId): array
     {
-        $sql = self::SELECT_JOINS . "WHERE m.tipo = 'gasto' ORDER BY m.fecha DESC, m.id DESC";
-        return $this->fetchAll($sql);
+        $sql = self::SELECT_JOINS . "WHERE m.tipo = 'gasto' AND m.id_user = ? ORDER BY m.fecha DESC, m.id DESC";
+        return $this->fetchAllPrepared($sql, "i", $userId);
     }
 
-    public function getAllIngresos(): array
+    public function getAllIngresos(int $userId): array
     {
-        $sql = self::SELECT_JOINS . "WHERE m.tipo = 'ingreso' ORDER BY m.fecha DESC, m.id DESC";
-        return $this->fetchAll($sql);
+        $sql = self::SELECT_JOINS . "WHERE m.tipo = 'ingreso' AND m.id_user = ? ORDER BY m.fecha DESC, m.id DESC";
+        return $this->fetchAllPrepared($sql, "i", $userId);
     }
 
-    public function getById(int $id): ?array
+    public function getById(int $id, int $userId): ?array
     {
-        $sql = self::SELECT_JOINS . "WHERE m.id = ?";
+        $sql = self::SELECT_JOINS . "WHERE m.id = ? AND m.id_user = ?";
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("i", $id);
+        $stmt->bind_param("ii", $id, $userId);
         $stmt->execute();
         $row = $stmt->get_result()->fetch_assoc();
         $stmt->close();
@@ -77,9 +77,9 @@ class Movimiento
     }
 
     /**
-     * Resumen financiero: saldo banco, saldo efectivo, deuda pendiente trabajadores
+     * Resumen financiero: saldo banco, saldo efectivo (filtrado por usuario)
      */
-    public function getResumen(): array
+    public function getResumen(int $userId): array
     {
         $sql = "SELECT
             COALESCE(SUM(CASE WHEN tipo='ingreso' AND cuenta='banco'     THEN importe ELSE 0 END), 0)
@@ -90,24 +90,29 @@ class Movimiento
 
             COALESCE(SUM(CASE WHEN tipo='ingreso' THEN importe ELSE 0 END), 0)  AS total_ingresos,
             COALESCE(SUM(CASE WHEN tipo='gasto'   THEN importe ELSE 0 END), 0)  AS total_gastos
-        FROM movimientos";
+        FROM movimientos WHERE id_user = ?";
 
-        $result = $this->db->query($sql);
-        return $result->fetch_assoc() ?? [];
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $row ?? [];
     }
 
     // ─── Escritura ────────────────────────────────────────────────────────────
 
-    public function create(array $data): bool
+    public function create(array $data, int $userId): bool
     {
         $sql = "INSERT INTO movimientos
-                    (fecha, tipo, concepto, categoria, importe, cuenta,
+                    (id_user, fecha, tipo, concepto, categoria, importe, cuenta,
                      proveedor_id, trabajador_id, vehiculo_id, parcela_id, estado)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->bind_param(
-            "ssssdsiiiis",
+            "issssdsiiiis",
+            $userId,
             $data['fecha'],
             $data['tipo'],
             $data['concepto'],
@@ -125,18 +130,18 @@ class Movimiento
         return $result;
     }
 
-    public function update(int $id, array $data): bool
+    public function update(int $id, array $data, int $userId): bool
     {
         $sql = "UPDATE movimientos
                 SET fecha = ?, tipo = ?, concepto = ?, categoria = ?,
                     importe = ?, cuenta = ?,
                     proveedor_id = ?, trabajador_id = ?, vehiculo_id = ?,
                     parcela_id = ?, estado = ?
-                WHERE id = ?";
+                WHERE id = ? AND id_user = ?";
 
         $stmt = $this->db->prepare($sql);
         $stmt->bind_param(
-            "ssssdsiiiisi",
+            "ssssdsiiiisii",
             $data['fecha'],
             $data['tipo'],
             $data['concepto'],
@@ -148,17 +153,18 @@ class Movimiento
             $data['vehiculo_id'],
             $data['parcela_id'],
             $data['estado'],
-            $id
+            $id,
+            $userId
         );
         $result = $stmt->execute();
         $stmt->close();
         return $result;
     }
 
-    public function delete(int $id): bool
+    public function delete(int $id, int $userId): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM movimientos WHERE id = ?");
-        $stmt->bind_param("i", $id);
+        $stmt = $this->db->prepare("DELETE FROM movimientos WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $id, $userId);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
@@ -166,15 +172,17 @@ class Movimiento
 
     // ─── Helpers privados ─────────────────────────────────────────────────────
 
-    private function fetchAll(string $sql): array
+    private function fetchAllPrepared(string $sql, string $types, ...$params): array
     {
-        $result = $this->db->query($sql);
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
         $rows = [];
-        if ($result && $result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $rows[] = $row;
-            }
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
         }
+        $stmt->close();
         return $rows;
     }
 }

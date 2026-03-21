@@ -439,9 +439,17 @@ $title = 'Datos - MartinCarmona.com';
         if (tareasDelDia.length === 0) {
             html += '<div class="mobile-day-empty">No hay tareas este día</div>';
         } else {
+            // Mapeo de categoría → color (debe coincidir con .task-cat-* en styles.css)
+            var catColores = {
+                campo: '#5d4037', tratamiento: '#7c4dff', recoleccion: '#2e7d32',
+                riego: '#1565c0', poda: '#bf360c', mantenimiento: '#b71c1c',
+                otro: '#546e7a'
+            };
             tareasDelDia.forEach(function(tarea) {
                 var nombre = tarea.titulo || tarea.trabajo_nombre || 'Sin título';
-                html += '<div class="mobile-day-task" onclick="cerrarModalDia(); window.taskSidebar && window.taskSidebar.open(' + tarea.id + ')">'
+                var cat = tarea.trabajo_categoria || 'otro';
+                var borderColor = catColores[cat] || '#4caf50';
+                html += '<div class="mobile-day-task" style="border-left-color:' + borderColor + '" onclick="cerrarModalDia(); window.taskSidebar && window.taskSidebar.open(' + tarea.id + ')">'
                     + '<span class="mobile-day-task-name">' + nombre + '</span>'
                     + '<span class="mobile-day-task-arrow">›</span>'
                     + '</div>';
