@@ -6150,26 +6150,20 @@ body.tour-active {
     color: #ccc;
 }
 
-/* Boton de ayuda "?" en el header */
-.tour-help-btn {
-    background: none;
-    border: 1.5px solid #555;
-    color: #aaa;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    font-size: 0.85rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
+/* Link de ayuda en el footer */
+.footer-sep {
+    color: #555;
+    margin: 0 4px;
 }
 
-.tour-help-btn:hover {
-    border-color: #4caf50;
+.tour-help-link {
+    color: #888;
+    text-decoration: none;
+    font-size: inherit;
+    transition: color 0.2s;
+}
+
+.tour-help-link:hover {
     color: #4caf50;
 }
 
