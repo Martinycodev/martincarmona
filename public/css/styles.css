@@ -5952,3 +5952,235 @@ a:focus-visible {
         font-size: 0.85rem;
     }
 }
+
+/* ===== GUIDED TOUR / WALKTHROUGH ===== */
+
+/* Overlay transparente que bloquea clicks fuera del elemento */
+.tour-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    background: transparent;
+}
+
+/* Bloquear scroll del body durante el tour */
+body.tour-active {
+    overflow: hidden;
+}
+
+/* Spotlight: el elemento destacado "brilla" sobre el fondo oscurecido */
+.tour-highlight {
+    position: relative !important;
+    z-index: 10001 !important;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75) !important;
+    border-radius: 10px !important;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Tooltip */
+.tour-tooltip {
+    position: absolute;
+    z-index: 10002;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 10px;
+    padding: 0;
+    width: 340px;
+    max-width: calc(100vw - 20px);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    font-family: inherit;
+}
+
+.tour-tooltip.tour-tooltip-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Flecha del tooltip */
+.tour-tooltip::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    transform: rotate(45deg);
+}
+
+.tour-tooltip[data-position="bottom"]::before {
+    top: -7px;
+    left: 50%;
+    margin-left: -6px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.tour-tooltip[data-position="top"]::before {
+    bottom: -7px;
+    left: 50%;
+    margin-left: -6px;
+    border-left: none;
+    border-top: none;
+}
+
+.tour-tooltip[data-position="right"]::before {
+    left: -7px;
+    top: 50%;
+    margin-top: -6px;
+    border-right: none;
+    border-top: none;
+}
+
+.tour-tooltip[data-position="left"]::before {
+    right: -7px;
+    top: 50%;
+    margin-top: -6px;
+    border-left: none;
+    border-bottom: none;
+}
+
+/* Header del tooltip */
+.tour-tooltip-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 8px;
+}
+
+.tour-tooltip-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #a8d5ab;
+}
+
+.tour-tooltip-close {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.tour-tooltip-close:hover {
+    color: #fff;
+}
+
+/* Body del tooltip */
+.tour-tooltip-body {
+    padding: 0 16px 12px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #ccc;
+}
+
+/* Footer del tooltip */
+.tour-tooltip-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px 14px;
+    border-top: 1px solid #333;
+}
+
+.tour-tooltip-counter {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.tour-tooltip-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Botones del tour */
+.tour-btn-next {
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.tour-btn-next:hover {
+    background: #45a049;
+}
+
+.tour-btn-prev {
+    background: transparent;
+    color: #4caf50;
+    border: 1px solid #4caf50;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tour-btn-prev:hover {
+    background: rgba(76, 175, 80, 0.15);
+}
+
+.tour-btn-skip {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 4px 8px;
+    transition: color 0.2s;
+}
+
+.tour-btn-skip:hover {
+    color: #ccc;
+}
+
+/* Boton de ayuda "?" en el header */
+.tour-help-btn {
+    background: none;
+    border: 1.5px solid #555;
+    color: #aaa;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.tour-help-btn:hover {
+    border-color: #4caf50;
+    color: #4caf50;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tour-tooltip {
+        width: calc(100vw - 20px);
+        max-width: 100%;
+    }
+
+    .tour-btn-prev {
+        display: none;
+    }
+}

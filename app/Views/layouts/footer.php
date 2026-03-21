@@ -47,6 +47,7 @@
     </div>
 
     <script src="<?= $this->url('/public/js/task-sidebar.js') ?>?v=<?= filemtime(BASE_PATH . '/public/js/task-sidebar.js') ?>"></script>
+    <script src="<?= $this->url('/public/js/guided-tour.js') ?>?v=<?= filemtime(BASE_PATH . '/public/js/guided-tour.js') ?>"></script>
 
     <!-- Sistema de notificaciones (campanita) -->
     <script>

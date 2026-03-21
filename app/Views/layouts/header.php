@@ -44,6 +44,7 @@
             </div>
             <!-- Derecha: acciones -->
             <div class="user-info">
+                <button class="tour-help-btn" onclick="window.guidedTour && window.guidedTour.start('dashboard', true)" title="Tour guiado">?</button>
                 <span id="offline-queue-badge" class="offline-queue-badge" style="display:none" title="Formularios pendientes de enviar">0</span>
                 <!-- Campanita de notificaciones -->
                 <button id="notif-bell" class="notif-bell" onclick="toggleNotifPanel()" title="Notificaciones">

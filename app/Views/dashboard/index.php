@@ -741,6 +741,47 @@ $title = 'Datos - MartinCarmona.com';
         initMobileDayTap();
         initSwipeCalendar();
         await cargarPendientes();
+
+        // Registrar y lanzar tour guiado del dashboard
+        if (window.guidedTour) {
+            window.guidedTour.register({
+                id: 'dashboard',
+                steps: [
+                    {
+                        selector: '.quick-buttons',
+                        title: 'Acciones rapidas',
+                        description: 'Desde aqui accedes a buscar tareas, registrar gastos/ingresos o gestionar el riego.',
+                        position: 'bottom'
+                    },
+                    {
+                        selector: '.calendar-nueva-btn',
+                        title: 'Crear nueva tarea',
+                        description: 'Pulsa este boton "+" para crear una nueva tarea. Se abrira un panel lateral donde podras anadir todos los detalles: trabajadores, parcelas y tipo de trabajo.',
+                        position: 'right'
+                    },
+                    {
+                        selector: '#calendar',
+                        title: 'Calendario de tareas',
+                        description: 'Aqui ves tus tareas organizadas por dia. Puedes <strong>arrastrar y soltar</strong> tareas entre dias para cambiar su fecha.',
+                        position: 'top'
+                    },
+                    {
+                        selector: '#pending-panel',
+                        title: 'Tareas pendientes',
+                        description: 'Las tareas sin fecha aparecen aqui. Puedes arrastrarlas al calendario cuando quieras planificarlas, o crear nuevas directamente.',
+                        position: 'top'
+                    },
+                    {
+                        selector: '.actions-grid',
+                        title: 'Secciones principales',
+                        description: 'Accede a las <strong>Bases de datos</strong> (trabajadores, parcelas, vehiculos...), la <strong>Economia</strong> (gastos e ingresos) y los <strong>Reportes</strong> (estadisticas y analisis).',
+                        position: 'top'
+                    }
+                ]
+            });
+            // Auto-iniciar solo si no fue completado antes
+            window.guidedTour.start('dashboard');
+        }
     }
 
     if (document.readyState === 'loading') {
