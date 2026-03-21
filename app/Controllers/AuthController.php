@@ -31,6 +31,9 @@ class AuthController extends BaseController
                 $_SESSION['user_propietario_id'] = $user['propietario_id'] ?? null;
                 $_SESSION['user_trabajador_id']  = $user['trabajador_id'] ?? null;
 
+                // Registrar último login (fecha + IP)
+                $this->registrarLogin($user['id']);
+
                 // Solo guardar cookie si el usuario marcó "Recuérdame"
                 if (isset($_POST['remember']) && $_POST['remember'] === 'on') {
                     setcookie('user_id', $user['id'], time() + (30 * 24 * 60 * 60), "/");
@@ -87,6 +90,24 @@ class AuthController extends BaseController
         } catch (\Throwable $e) {
             \Core\Logger::security()->error("Error en autenticación: " . $e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Registrar fecha e IP del último login en la tabla usuarios
+     */
+    private function registrarLogin($userId)
+    {
+        try {
+            $db = \Database::connect();
+            $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+            $stmt = $db->prepare("UPDATE usuarios SET ultimo_login = NOW(), ultimo_login_ip = ? WHERE id = ?");
+            $stmt->bind_param("si", $ip, $userId);
+            $stmt->execute();
+            $stmt->close();
+        } catch (\Throwable $e) {
+            // No bloquear el login si falla el registro
+            \Core\Logger::app()->error("Error registrando login: " . $e->getMessage());
         }
     }
 }

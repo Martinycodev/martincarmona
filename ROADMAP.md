@@ -238,9 +238,9 @@ UX tablas (click → detalle/modal), vista detalle propietarios, widget meteo (O
 - [x] Sería interesante que debajo de la configuración de notificaciones, las que están con el swicht para activar o desactivar tengan un pequeño texto en pequeño que indiquen cuando te avisarán y porqué. para decidir si quiero que me avisen o nó.
 - [x] Al navergar por los apartados del menú lateral hay un pequeño parpadeo en el que se recargan varias veces la página. Por ejemplo pasar de reportes a tareas pendientes hace una acumulación de recargas de la web que puede ser muy incomodo de esperar. Por qué puede ser esto? Además se nota porque hay una animación de fadein que se repite muy rápido.
 - [ ] Los colores de los trabajos son muy chulos pero el de recolección es naranja y con el texto blanco por lo que cuesta leerlo, y el de mantenimiento es amarillo y has puesto el texto negro, me gustaría que mantuviesen unos colores oscuros para que faciliten la lectura del texto blanco, podemos añadir el color verde olivo para la recolección, el marron para el campo (laboreo), y un tono purpura o morado para el mantenimiento. Podemos poner un tono rosa oscuro para los tratamientos sulfatos ya que el azul es muy parecido al de riego.
-- [ ] Me he dado cuenta que puede ser confuso la selección del tipo de trabajo. Quiero que al seleccionar el trabajo se borre el campo de escribir y aparezca de nuevo el place-holder. que quiero que ponga - Buscar y seleccionar.
-- [ ] Añadir en crear recordatorio personalizado la opción de periodicidad, que llamaremos repetición. Y pondremos la opción de "cada mes", "Cada año", "Cada X días"
-
+- [x] Me he dado cuenta que puede ser confuso la selección del tipo de trabajo. Quiero que al seleccionar el trabajo se borre el campo de escribir y aparezca de nuevo el place-holder. que quiero que ponga - Buscar y seleccionar.
+- [x] Añadir en crear recordatorio personalizado la opción de periodicidad, que llamaremos repetición. Y pondremos la opción de "cada mes", "Cada año", "Cada X días"
+- [ ] cambiar los colores de la seleccion de categortías en el modal de trabajos.
 
 ### Infraestructura
 - [x] Backups automáticos de la base de datos

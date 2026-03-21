@@ -81,54 +81,73 @@ SET @TRAB6 = @TRAB1 + 5;
 -- =============================================================================
 -- 5. TRABAJOS (tipos de trabajo — replicados de producción)
 -- =============================================================================
-INSERT INTO trabajos (nombre, descripcion, precio_hora, id_user) VALUES
-('Abrir Riego',                       'Abrir hidrante para iniciar riego',           9.23, @DEMO_USER),
-('Cerrar Riego',                      'Cerrar hidrante tras riego',                  9.23, @DEMO_USER),
-('Echar a andar riego',               'Poner en marcha sistema de riego',            0,    @DEMO_USER),
-('Estirar gomas',                     'Extender mangueras de riego',                 0,    @DEMO_USER),
-('Quitar vareta',                     'Retirar varetas de riego',                    0,    @DEMO_USER),
-('Echar sulfato con atomizadora',     'Tratamiento con sulfato de cobre',            0,    @DEMO_USER),
-('Echar herbicida con tractor',       'Aplicar herbicida con tractor',               0,    @DEMO_USER),
-('Echar herbicida con mochila',       'Aplicar herbicida con mochila pulverizadora', 0,    @DEMO_USER),
-('Echar hoja con tractor',            'Tratamiento foliar con tractor',              0,    @DEMO_USER),
-('Echar abono con riego',             'Fertirrigación',                              0,    @DEMO_USER),
-('Echar abono con abonadora',         'Aplicar abono con maquinaria',                0,    @DEMO_USER),
-('Echar abono jarrillos',             'Aplicar abono manual con jarrillos',          0,    @DEMO_USER),
-('Echar estiercol',                   'Abonar con estiércol',                        0,    @DEMO_USER),
-('Desbrozar con tractor',             'Desbroce mecanizado',                         0,    @DEMO_USER),
-('Pasar grada pinches',               'Laboreo con grada de púas',                   0,    @DEMO_USER),
-('Pasar Rulo tractor',                'Pasar rulo con tractor',                      0,    @DEMO_USER),
-('Pasar Rastra Tractor',              'Laboreo con rastra',                          0,    @DEMO_USER),
-('Pasar Grada discos tractor',        'Laboreo con grada de discos',                 0,    @DEMO_USER),
-('Recoger aceituna',                  'Recolección de aceituna',                     0,    @DEMO_USER),
-('Recoger o acordonar desnate',       'Recoger restos de poda',                      0,    @DEMO_USER),
-('Cargar palos',                      'Carga de leña y ramas',                       0,    @DEMO_USER),
-('Llevar remolque palos',             'Transporte de leña con remolque',             0,    @DEMO_USER),
-('Arreglar Plantones',                'Mantenimiento de plantones jóvenes',          9.23, @DEMO_USER),
-('Arreglo tractor',                   'Reparación de tractor',                       0,    @DEMO_USER),
-('Arreglar Máquinas',                 'Reparación de maquinaria agrícola',           0,    @DEMO_USER),
-('Mantenimiento vehiculos',           'Mantenimiento general de vehículos',          0,    @DEMO_USER),
-('Preparar mochilas',                 'Preparar mochilas pulverizadoras',            0,    @DEMO_USER),
-('Limpiar cuadra',                    'Limpieza de instalaciones',                   0,    @DEMO_USER),
-('Regar plantones',                   'Riego manual de plantones',                   0,    @DEMO_USER),
-('Plantar plantones',                 'Plantación de olivos nuevos',                 0,    @DEMO_USER),
-('Corta plantones',                   'Poda de plantones',                           0,    @DEMO_USER),
-('Recoger raigones',                  'Recoger fragmentos de raíz',                  0,    @DEMO_USER),
-('Papeleo y burocracia',              'Gestión administrativa',                      0,    @DEMO_USER),
-('Formación',                         'Formación y capacitación',                    0,    @DEMO_USER),
-('Compras',                           'Compra de materiales y suministros',          0,    @DEMO_USER),
-('Quitar hierba con desbrozadora',    'Desbroce manual con desbrozadora',            0,    @DEMO_USER),
-('Cortar desnate',                    'Cortar restos de poda',                       0,    @DEMO_USER),
-('Picar desnate',                     'Triturar desnate',                            0,    @DEMO_USER),
-('Picar Ramón',                       'Triturar ramas gruesas',                      0,    @DEMO_USER),
-('Acordonar Ramón',                   'Amontonar ramas para recogida',               0,    @DEMO_USER),
-('Escamujar',                         'Poda de aclareo',                             0,    @DEMO_USER),
-('Soplar suelo sopladora',            'Limpiar suelo con sopladora',                 9.23, @DEMO_USER),
-('Soplar suelo tractor',              'Limpiar suelo con soplador de tractor',       0,    @DEMO_USER),
-('Preparar cuba',                     'Preparar depósito para tratamiento',          0,    @DEMO_USER),
-('Abrir zanja retro',                 'Apertura de zanjas con retroexcavadora',      0,    @DEMO_USER),
-('Hacer suelos con mano hierro',      'Laboreo manual del suelo',                    0,    @DEMO_USER),
-('Pasar itv maquinaria',              'Inspección técnica de maquinaria',            0,    @DEMO_USER);
+INSERT INTO trabajos (nombre, descripcion, precio_hora, categoria, id_user) VALUES
+-- 🔷 Riego
+('Abrir Riego',                       'Abrir hidrante para iniciar riego',           9.23, 'riego',        @DEMO_USER),
+('Cerrar Riego',                      'Cerrar hidrante tras riego',                  9.23, 'riego',        @DEMO_USER),
+('Echar a andar riego',               'Poner en marcha sistema de riego',            0,    'riego',        @DEMO_USER),
+('Estirar gomas',                     'Extender mangueras de riego',                 0,    'riego',        @DEMO_USER),
+('Quitar vareta',                     'Retirar varetas de riego',                    0,    'riego',        @DEMO_USER),
+-- 🔵 Tratamiento
+('Echar sulfato con atomizadora',     'Tratamiento con sulfato de cobre',            0,    'tratamiento',  @DEMO_USER),
+('Echar herbicida con tractor',       'Aplicar herbicida con tractor',               0,    'tratamiento',  @DEMO_USER),
+('Echar herbicida con mochila',       'Aplicar herbicida con mochila pulverizadora', 0,    'tratamiento',  @DEMO_USER),
+('Echar hoja con tractor',            'Tratamiento foliar con tractor',              0,    'tratamiento',  @DEMO_USER),
+('Echar abono con riego',             'Fertirrigación',                              0,    'tratamiento',  @DEMO_USER),
+('Echar abono con abonadora',         'Aplicar abono con maquinaria',                0,    'tratamiento',  @DEMO_USER),
+('Echar abono jarrillos',             'Aplicar abono manual con jarrillos',          0,    'tratamiento',  @DEMO_USER),
+('Echar estiercol',                   'Abonar con estiércol',                        0,    'tratamiento',  @DEMO_USER),
+-- 🟢 Campo
+('Desbrozar con tractor',             'Desbroce mecanizado',                         0,    'campo',        @DEMO_USER),
+('Pasar grada pinches',               'Laboreo con grada de púas',                   0,    'campo',        @DEMO_USER),
+('Pasar Rulo tractor',                'Pasar rulo con tractor',                      0,    'campo',        @DEMO_USER),
+('Pasar Rastra Tractor',              'Laboreo con rastra',                          0,    'campo',        @DEMO_USER),
+('Pasar Grada discos tractor',        'Laboreo con grada de discos',                 0,    'campo',        @DEMO_USER),
+-- 🟠 Recolección
+('Recoger aceituna',                  'Recolección de aceituna',                     0,    'recoleccion',  @DEMO_USER),
+('Recoger o acordonar desnate',       'Recoger restos de poda',                      0,    'recoleccion',  @DEMO_USER),
+('Cargar palos',                      'Carga de leña y ramas',                       0,    'recoleccion',  @DEMO_USER),
+('Llevar remolque palos',             'Transporte de leña con remolque',             0,    'recoleccion',  @DEMO_USER),
+-- 🟢 Campo
+('Arreglar Plantones',                'Mantenimiento de plantones jóvenes',          9.23, 'campo',        @DEMO_USER),
+-- 🟡 Mantenimiento
+('Arreglo tractor',                   'Reparación de tractor',                       0,    'mantenimiento',@DEMO_USER),
+('Arreglar Máquinas',                 'Reparación de maquinaria agrícola',           0,    'mantenimiento',@DEMO_USER),
+('Mantenimiento vehiculos',           'Mantenimiento general de vehículos',          0,    'mantenimiento',@DEMO_USER),
+-- 🔵 Tratamiento
+('Preparar mochilas',                 'Preparar mochilas pulverizadoras',            0,    'tratamiento',  @DEMO_USER),
+-- 🟡 Mantenimiento
+('Limpiar cuadra',                    'Limpieza de instalaciones',                   0,    'mantenimiento',@DEMO_USER),
+-- 🔷 Riego
+('Regar plantones',                   'Riego manual de plantones',                   0,    'riego',        @DEMO_USER),
+-- 🟢 Campo
+('Plantar plantones',                 'Plantación de olivos nuevos',                 0,    'campo',        @DEMO_USER),
+-- 🟣 Poda
+('Corta plantones',                   'Poda de plantones',                           0,    'poda',         @DEMO_USER),
+-- 🟠 Recolección
+('Recoger raigones',                  'Recoger fragmentos de raíz',                  0,    'recoleccion',  @DEMO_USER),
+-- ⚪ Otro
+('Papeleo y burocracia',              'Gestión administrativa',                      0,    'otro',         @DEMO_USER),
+('Formación',                         'Formación y capacitación',                    0,    'otro',         @DEMO_USER),
+('Compras',                           'Compra de materiales y suministros',          0,    'otro',         @DEMO_USER),
+-- 🟢 Campo
+('Quitar hierba con desbrozadora',    'Desbroce manual con desbrozadora',            0,    'campo',        @DEMO_USER),
+-- 🟣 Poda
+('Cortar desnate',                    'Cortar restos de poda',                       0,    'poda',         @DEMO_USER),
+('Picar desnate',                     'Triturar desnate',                            0,    'poda',         @DEMO_USER),
+('Picar Ramón',                       'Triturar ramas gruesas',                      0,    'poda',         @DEMO_USER),
+('Acordonar Ramón',                   'Amontonar ramas para recogida',               0,    'poda',         @DEMO_USER),
+('Escamujar',                         'Poda de aclareo',                             0,    'poda',         @DEMO_USER),
+-- 🟠 Recolección
+('Soplar suelo sopladora',            'Limpiar suelo con sopladora',                 9.23, 'recoleccion',  @DEMO_USER),
+('Soplar suelo tractor',              'Limpiar suelo con soplador de tractor',       0,    'recoleccion',  @DEMO_USER),
+-- 🔵 Tratamiento
+('Preparar cuba',                     'Preparar depósito para tratamiento',          0,    'tratamiento',  @DEMO_USER),
+-- 🟢 Campo
+('Abrir zanja retro',                 'Apertura de zanjas con retroexcavadora',      0,    'campo',        @DEMO_USER),
+('Hacer suelos con mano hierro',      'Laboreo manual del suelo',                    0,    'campo',        @DEMO_USER),
+-- 🟡 Mantenimiento
+('Pasar itv maquinaria',              'Inspección técnica de maquinaria',            0,    'mantenimiento',@DEMO_USER);
 
 SET @TRAB_ABRIR_RIEGO       = LAST_INSERT_ID();
 SET @TRAB_CERRAR_RIEGO      = @TRAB_ABRIR_RIEGO + 1;
