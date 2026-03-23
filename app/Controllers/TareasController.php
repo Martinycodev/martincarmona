@@ -1072,30 +1072,38 @@ class TareasController extends BaseController
     public function opcionesModal()
     {
         header('Content-Type: application/json');
+        $userId = $_SESSION['user_id'];
 
+        // Filtrar trabajadores, parcelas y trabajos por usuario (multi-tenancy)
         $trabajadores = [];
-        $res = $this->db->query("SELECT id, nombre FROM trabajadores ORDER BY nombre");
-        if ($res) {
-            while ($row = $res->fetch_assoc()) {
-                $trabajadores[] = $row;
-            }
+        $stmt = $this->db->prepare("SELECT id, nombre FROM trabajadores WHERE id_user = ? ORDER BY nombre");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        while ($row = $res->fetch_assoc()) {
+            $trabajadores[] = $row;
         }
+        $stmt->close();
 
         $parcelas = [];
-        $res = $this->db->query("SELECT id, nombre FROM parcelas ORDER BY nombre");
-        if ($res) {
-            while ($row = $res->fetch_assoc()) {
-                $parcelas[] = $row;
-            }
+        $stmt = $this->db->prepare("SELECT id, nombre FROM parcelas WHERE id_user = ? ORDER BY nombre");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        while ($row = $res->fetch_assoc()) {
+            $parcelas[] = $row;
         }
+        $stmt->close();
 
         $trabajos = [];
-        $res = $this->db->query("SELECT id, nombre, precio_hora FROM trabajos ORDER BY nombre");
-        if ($res) {
-            while ($row = $res->fetch_assoc()) {
-                $trabajos[] = $row;
-            }
+        $stmt = $this->db->prepare("SELECT id, nombre, precio_hora FROM trabajos WHERE id_user = ? ORDER BY nombre");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        while ($row = $res->fetch_assoc()) {
+            $trabajos[] = $row;
         }
+        $stmt->close();
 
         echo json_encode([
             'trabajadores' => $trabajadores,

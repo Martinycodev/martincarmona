@@ -499,6 +499,9 @@ $title = 'Datos - MartinCarmona.com';
         var swiping = false;
 
         calendar.addEventListener('touchstart', function(e) {
+            // No iniciar swipe si el toque empieza sobre una tarea arrastrable
+            var taskEl = e.target.closest('.task[draggable]');
+            if (taskEl) { swiping = false; return; }
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
             swiping = true;

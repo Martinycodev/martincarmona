@@ -637,6 +637,7 @@ body {
     overflow: hidden;
     line-height: 1.2;
     cursor: grab;
+    touch-action: none; /* Permite drag táctil en móvil sin que el navegador intercepte */
 }
 
 .task:hover {
@@ -5702,6 +5703,7 @@ a:focus-visible {
     cursor: grab;
     transition: all 0.15s ease;
     user-select: none;
+    touch-action: none; /* Evita que el navegador intercepte el gesto táctil al arrastrar */
 }
 
 .pending-chip:hover {
