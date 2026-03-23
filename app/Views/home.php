@@ -1020,6 +1020,8 @@
                                 Por favor, completa todos los campos
                             <?php elseif ($error === 'invalid_credentials'): ?>
                                 Email o contraseña incorrectos
+                            <?php elseif ($error === 'too_many_attempts'): ?>
+                                Demasiados intentos. Espera 15 minutos antes de volver a intentarlo
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>

@@ -9,6 +9,8 @@
 ## Pendientes
 
 
+_(ninguna pendiente)_
+
 ---
 
 ## En progreso

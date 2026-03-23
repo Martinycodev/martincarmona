@@ -55,6 +55,7 @@ Aplicacion **operativa en produccion** en martincarmona.com. Arquitectura MVC co
 | 9 | **Feedback visual** — Toast global (`showToast`), `showConfirm`, skeleton loaders, `setButtonLoading`, transiciones |
 | 10 | **Accesibilidad** — Skip-nav, ARIA, focus visible, contraste WCAG AA, cierre con Escape |
 | 11 | **PWA y offline** — Service worker, manifest, IndexedDB offline queue, pantalla sin conexion, banner instalacion |
+| 13 | **Seguridad avanzada** — Rate limiting login (5/15min), .htaccess uploads, ACL en obtener() |
 
 Ademas se completaron ~60 mejoras sueltas del backlog: formularios reactivos en sidebar, notificaciones/recordatorios, categorias de trabajos con colores, drag&drop de tareas, imagenes en parcelas y tareas, detalle vehiculos con seguro/ITV, seed de datos desde Notion, backups automaticos, multi-tenancy por id_user en economia, y muchas correcciones de UX.
 
@@ -83,13 +84,13 @@ Mejoras adicionales (marzo 2026): touch drag & drop en dashboard (chips pendient
 
 ---
 
-## FASE 13 — Seguridad avanzada
+## FASE 13 — Seguridad avanzada ✅
 
-> Mejoras de seguridad para uso en produccion. Independientes entre si.
+> Mejoras de seguridad para uso en produccion. Completada 24 marzo 2026.
 
-- [ ] **Rate limiting en login** — Tabla `login_attempts`, max 5 intentos/15min por IP, log en `security.log`, limpieza tras login exitoso. Esfuerzo: Bajo.
-- [ ] **`.htaccess` en uploads** — `php_flag engine off` + `Deny from all` para `.php` en `public/uploads/`. Evita ejecucion de archivos maliciosos. Esfuerzo: Bajo.
-- [ ] **Validacion ACL en `obtener()`** — `TrabajadoresController::obtener()` y `ParcelasController::obtener()` no validan `id_user`. Anadir `AND id_user = ?` en ambos. Esfuerzo: Bajo.
+- [x] **Rate limiting en login** — Tabla `login_attempts`, max 5 intentos/15min por IP, log en `security.log`, limpieza tras login exitoso.
+- [x] **`.htaccess` en uploads** — `php_flag engine off` + `Deny from all` para `.php/.phtml/.php5` en `public/uploads/`.
+- [x] **Validacion ACL en `obtener()`** — `ParcelasController::obtener()` ahora filtra por `id_user`. `TrabajadoresController` ya lo tenía.
 
 > Detalle completo en `docs/plans/2026-03-16-analisis-estrategico-saas.md` (secciones 1.1 y 1.2)
 
@@ -191,9 +192,9 @@ Mejoras adicionales (marzo 2026): touch drag & drop en dashboard (chips pendient
 | Autenticacion | ✅ | `password_hash()` + `password_verify()` + session regen |
 | Autorizacion | ✅ | Middleware por rol en `BaseController` |
 | Sesiones | ✅ | httponly, samesite, regeneracion 30 min, timeout 2h |
-| Uploads | ⚠️ | MIME validation OK, falta `.htaccess` anti-PHP (Fase 13) |
-| Rate Limiting | ❌ | Pendiente implementar (Fase 13) |
-| ACL en obtener() | ⚠️ | 2 endpoints sin validar id_user (Fase 13) |
+| Uploads | ✅ | MIME validation + `.htaccess` anti-PHP |
+| Rate Limiting | ✅ | 5 intentos/15min por IP, log en security.log |
+| ACL en obtener() | ✅ | Todos los endpoints filtran por id_user |
 
 ---
 

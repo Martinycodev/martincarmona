@@ -200,8 +200,9 @@ class ParcelasController extends BaseController
 
         try {
             $db = \Database::connect();
-            $stmt = $db->prepare("SELECT * FROM parcelas WHERE id = ?");
-            $stmt->bind_param("i", $id);
+            // ACL: filtrar por id_user para que un usuario no acceda a parcelas de otro
+            $stmt = $db->prepare("SELECT * FROM parcelas WHERE id = ? AND id_user = ?");
+            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
             $stmt->execute();
             $result = $stmt->get_result();
 
