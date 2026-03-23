@@ -33,17 +33,17 @@ class TrabajosController extends BaseController
             
             $stmt = $this->db->prepare("
                 SELECT id, nombre
-                FROM trabajos 
-                WHERE nombre LIKE ?
+                FROM trabajos
+                WHERE nombre LIKE ? AND id_user = ?
                 ORDER BY nombre
                 LIMIT 10
             ");
-            
+
             if (!$stmt) {
                 throw new \Exception("Error en la preparación de la consulta: " . $this->db->error);
             }
-            
-            $stmt->bind_param("s", $query);
+
+            $stmt->bind_param("si", $query, $_SESSION['user_id']);
             
             if (!$stmt->execute()) {
                 throw new \Exception("Error al ejecutar la consulta: " . $stmt->error);
@@ -313,8 +313,8 @@ class TrabajosController extends BaseController
             }
             $stmt->close();
             
-            $stmt = $db->prepare("DELETE FROM trabajos WHERE id = ?");
-            $stmt->bind_param("i", $id);
+            $stmt = $db->prepare("DELETE FROM trabajos WHERE id = ? AND id_user = ?");
+            $stmt->bind_param("ii", $id, $_SESSION['user_id']);
             
             if ($stmt->execute()) {
                 if ($stmt->affected_rows > 0) {

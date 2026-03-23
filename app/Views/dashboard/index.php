@@ -598,6 +598,9 @@ $title = 'Datos - MartinCarmona.com';
                     document.getElementById('calendar').classList.remove('receiving-pending');
                 });
 
+                // Touch drag para móvil (se inicializa en initTouchDragDrop)
+                if (window._setupPendingChipTouch) window._setupPendingChipTouch(chip);
+
                 list.appendChild(chip);
             });
         } catch (e) {
@@ -697,6 +700,235 @@ $title = 'Datos - MartinCarmona.com';
         });
     }
 
+    // ── Touch Drag & Drop para móvil ──────────────────────────────────────
+    // Los eventos HTML5 (dragstart/drop) no funcionan en pantallas táctiles.
+    // Usamos touchstart/touchmove/touchend con elementFromPoint para simular drag & drop.
+
+    function initTouchDragDrop() {
+        var ghost = null;
+        var THRESHOLD = 10; // px para distinguir tap de drag
+
+        function createGhost(el) {
+            var rect = el.getBoundingClientRect();
+            ghost = el.cloneNode(true);
+            ghost.style.cssText =
+                'position:fixed;left:' + rect.left + 'px;top:' + rect.top + 'px;' +
+                'width:' + rect.width + 'px;opacity:0.75;z-index:9999;pointer-events:none;' +
+                'box-shadow:0 6px 20px rgba(0,0,0,0.5);border-radius:8px;transform:scale(1.05);';
+            document.body.appendChild(ghost);
+        }
+
+        function moveGhost(x, y) {
+            if (!ghost) return;
+            ghost.style.left = (x - ghost.offsetWidth / 2) + 'px';
+            ghost.style.top  = (y - 24) + 'px';
+        }
+
+        function removeGhost() {
+            if (ghost) { ghost.remove(); ghost = null; }
+        }
+
+        // Oculta el ghost temporalmente para que elementFromPoint no lo detecte
+        function elFromPoint(x, y) {
+            if (ghost) ghost.style.display = 'none';
+            var el = document.elementFromPoint(x, y);
+            if (ghost) ghost.style.display = '';
+            return el;
+        }
+
+        // ── Chip pendiente → día del calendario ──────────────────────────
+        function setupPendingChipTouch(chip) {
+            var startX = 0, startY = 0, dragging = false;
+
+            chip.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                dragging = false;
+            }, { passive: true });
+
+            chip.addEventListener('touchmove', function(e) {
+                var dx = Math.abs(e.touches[0].clientX - startX);
+                var dy = Math.abs(e.touches[0].clientY - startY);
+
+                if (!dragging && (dx > THRESHOLD || dy > THRESHOLD)) {
+                    dragging = true;
+                    createGhost(chip);
+                    chip.style.opacity = '0.4';
+                    document.getElementById('calendar').classList.add('receiving-pending');
+                }
+
+                if (dragging) {
+                    e.preventDefault();
+                    moveGhost(e.touches[0].clientX, e.touches[0].clientY);
+
+                    var target = elFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+                    var dayEl  = target ? target.closest('.day:not(.other-month)') : null;
+                    document.getElementById('calendar').querySelectorAll('.day.drag-over')
+                        .forEach(function(d) { d.classList.remove('drag-over'); });
+                    if (dayEl) dayEl.classList.add('drag-over');
+                }
+            }, { passive: false });
+
+            chip.addEventListener('touchend', async function(e) {
+                chip.style.opacity = '';
+                document.getElementById('calendar').classList.remove('receiving-pending');
+                document.getElementById('calendar').querySelectorAll('.day.drag-over')
+                    .forEach(function(d) { d.classList.remove('drag-over'); });
+
+                if (!dragging) { removeGhost(); return; } // tap → el click handler lo gestiona
+                e.preventDefault();
+
+                var touch  = e.changedTouches[0];
+                var target = elFromPoint(touch.clientX, touch.clientY);
+                var dayEl  = target ? target.closest('.day:not(.other-month)') : null;
+
+                removeGhost();
+                dragging = false;
+
+                if (!dayEl) return;
+
+                var tareaId = chip.dataset.id;
+                var dateStr = dayEl.dataset.date;
+                if (!tareaId || !dateStr) return;
+
+                try {
+                    var res = await fetch('<?= $this->url("/tareas/fechar") ?>', {
+                        method:  'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                        body:    JSON.stringify({ id: parseInt(tareaId), fecha: dateStr })
+                    });
+                    var data = await res.json();
+                    if (data.success) {
+                        showToast('Tarea asignada al ' + dateStr, 'success');
+                        tareasCache.clear();
+                        await cargarYRenderizarCalendario();
+                        await cargarPendientes();
+                    } else {
+                        showToast(data.message || 'Error al asignar fecha', 'error');
+                    }
+                } catch (err) {
+                    showToast('Error de conexión', 'error');
+                }
+            });
+        }
+
+        // Exponer para que cargarPendientes() lo llame al crear cada chip
+        window._setupPendingChipTouch = setupPendingChipTouch;
+
+        // ── Tarea del calendario → sin fecha o a otro día ────────────────
+        var calDragId   = null;
+        var calDragDate = null;
+        var calDragging = false;
+        var calStartX   = 0, calStartY = 0;
+        var calTaskEl   = null;
+        var calendar    = document.getElementById('calendar');
+
+        calendar.addEventListener('touchstart', function(e) {
+            var taskEl = e.target.closest('.task[draggable]');
+            if (!taskEl) return;
+            calStartX   = e.touches[0].clientX;
+            calStartY   = e.touches[0].clientY;
+            calDragging = false;
+            calDragId   = taskEl.dataset.id;
+            calDragDate = taskEl.dataset.fecha;
+            calTaskEl   = taskEl;
+        }, { passive: true });
+
+        calendar.addEventListener('touchmove', function(e) {
+            if (!calDragId) return;
+            var dx = Math.abs(e.touches[0].clientX - calStartX);
+            var dy = Math.abs(e.touches[0].clientY - calStartY);
+
+            if (!calDragging && (dx > THRESHOLD || dy > THRESHOLD)) {
+                calDragging = true;
+                createGhost(calTaskEl);
+                calTaskEl.style.opacity = '0.4';
+                var dz = document.getElementById('dropzone-sin-fecha');
+                if (dz) dz.style.display = 'flex';
+            }
+
+            if (calDragging) {
+                e.preventDefault();
+                moveGhost(e.touches[0].clientX, e.touches[0].clientY);
+
+                var target = elFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+                var dayEl  = target ? target.closest('.day:not(.other-month)') : null;
+                var dz     = document.getElementById('dropzone-sin-fecha');
+                var dzEl   = target ? target.closest('#dropzone-sin-fecha') : null;
+
+                calendar.querySelectorAll('.day.drag-over').forEach(function(d) { d.classList.remove('drag-over'); });
+                if (dz) dz.classList.remove('drag-over');
+                if (dayEl) dayEl.classList.add('drag-over');
+                else if (dzEl) dzEl.classList.add('drag-over');
+            }
+        }, { passive: false });
+
+        calendar.addEventListener('touchend', async function(e) {
+            if (!calDragId) return;
+            var dz = document.getElementById('dropzone-sin-fecha');
+
+            if (!calDragging) {
+                // Fue un tap — initMobileDayTap se encarga del click
+                calDragId = null; calDragDate = null; calTaskEl = null;
+                return;
+            }
+            e.preventDefault();
+
+            var touch  = e.changedTouches[0];
+            var target = elFromPoint(touch.clientX, touch.clientY);
+            var dayEl  = target ? target.closest('.day:not(.other-month)') : null;
+            var dzEl   = target ? target.closest('#dropzone-sin-fecha') : null;
+
+            removeGhost();
+            if (calTaskEl) calTaskEl.style.opacity = '';
+            calendar.querySelectorAll('.day.drag-over').forEach(function(d) { d.classList.remove('drag-over'); });
+            if (dz) { dz.classList.remove('drag-over'); dz.style.display = 'none'; }
+
+            var tareaId = calDragId;
+            var oldDate = calDragDate;
+            calDragging = false; calDragId = null; calDragDate = null; calTaskEl = null;
+
+            if (dzEl) {
+                // Quitar fecha → mover a pendientes
+                try {
+                    var res = await fetch('<?= $this->url("/tareas/desfechar") ?>', {
+                        method:  'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                        body:    JSON.stringify({ id: parseInt(tareaId) })
+                    });
+                    var data = await res.json();
+                    if (data.success) {
+                        showToast('Tarea movida a pendientes', 'success');
+                        tareasCache.clear();
+                        await cargarYRenderizarCalendario();
+                        await cargarPendientes();
+                    }
+                } catch (err) {
+                    showToast('Error al quitar fecha', 'error');
+                }
+            } else if (dayEl) {
+                // Mover a otro día
+                var newDate = dayEl.dataset.date;
+                if (!newDate || newDate === oldDate) return;
+                try {
+                    var res = await fetch('<?= $this->url("/tareas/actualizarCampo") ?>', {
+                        method:  'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                        body:    JSON.stringify({ id: tareaId, campo: 'fecha', valor: newDate })
+                    });
+                    var data = await res.json();
+                    if (data.success) {
+                        tareasCache.delete(oldDate.substring(0, 7));
+                        tareasCache.delete(newDate.substring(0, 7));
+                        await cargarYRenderizarCalendario();
+                    }
+                } catch (err) {
+                    // silencioso
+                }
+            }
+        });
+    }
+
     // ── Crear tarea pendiente inline ────────────────────────────────────
     async function crearTareaPendiente() {
         var input = document.getElementById('pendingTaskTitle');
@@ -745,6 +977,7 @@ $title = 'Datos - MartinCarmona.com';
         initDragDrop();
         initPendingDrop();
         initDropzoneSinFecha();
+        initTouchDragDrop(); // touch drag para móvil (debe ir antes de cargarPendientes)
         initMobileDayModal();
         initMobileDayTap();
         initSwipeCalendar();
