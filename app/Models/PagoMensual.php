@@ -125,19 +125,23 @@ class PagoMensual
     }
 
     /**
-     * Calcular deuda acumulada por trabajador en un mes/año dado,
-     * basada en tareas (horas_asignadas × precio_hora del trabajo).
+     * Calcular deuda acumulada por trabajador en un mes/año dado.
+     * Si la tarea tiene precio_fijo (variable), se usa directamente.
+     * Si no, se calcula horas_asignadas × precio_hora (snapshot o actual).
      */
     public function calcularDeudaMes(int $month, int $year, int $userId): array
     {
-        // ttrab.precio_hora es el snapshot guardado al crear la tarea;
-        // trab.precio_hora es el precio actual del trabajo (fallback si no hay snapshot).
+        // ttrab.precio_fijo: precio variable de la tarea (si se definió)
+        // ttrab.precio_hora: snapshot del precio/hora al crear la tarea
+        // trab.precio_hora: precio actual del trabajo (fallback)
         $sql = "SELECT
                     t.id          AS trabajador_id,
                     t.nombre      AS trabajador_nombre,
                     t.apellidos   AS trabajador_apellidos,
                     ROUND(COALESCE(
-                        SUM(tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0)),
+                        SUM(
+                            COALESCE(ttrab.precio_fijo, tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0))
+                        ),
                         0
                     ), 2)         AS deuda_calculada
                 FROM trabajadores t

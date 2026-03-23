@@ -143,15 +143,16 @@ class Parcela
     }
 
     /**
-     * Coste acumulado de mano de obra para una parcela:
-     * SUM(horas_asignadas × precio_hora) de todas las tareas vinculadas.
-     * Usa el precio snapshot de tarea_trabajos con fallback al precio actual de trabajos.
+     * Coste acumulado de mano de obra para una parcela.
+     * Soporta precio por hora y precio variable (fijo por tarea).
      */
     public function getCostoAcumuladoPorParcela(int $parcelaId, int $userId): float
     {
         try {
             $sql = "SELECT COALESCE(
-                        SUM(tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0)),
+                        SUM(
+                            COALESCE(ttrab.precio_fijo, tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0))
+                        ),
                         0
                     ) AS coste
                     FROM tarea_parcelas tp

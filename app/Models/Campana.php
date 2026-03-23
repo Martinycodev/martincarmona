@@ -224,10 +224,12 @@ class Campana
         $beneficiosParcela = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
-        // Coste de producción por parcela en el periodo
+        // Coste de producción por parcela en el periodo (soporta precio/hora y precio variable)
         $stmt = $this->db->prepare("
             SELECT tp.parcela_id,
-                   COALESCE(SUM(tt.horas_trabajo * tt.precio_hora), 0) AS coste_produccion
+                   COALESCE(SUM(
+                       COALESCE(tt.precio_fijo, tt.horas_trabajo * tt.precio_hora)
+                   ), 0) AS coste_produccion
             FROM tarea_parcelas tp
             JOIN tareas t ON tp.tarea_id = t.id
             LEFT JOIN tarea_trabajos tt ON tt.tarea_id = t.id

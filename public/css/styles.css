@@ -4701,6 +4701,22 @@ textarea {
     margin-top: 6px;
     min-height: 1.2em;
 }
+/* Checkbox + input de precio variable en sidebar */
+.sidebar-precio-variable-wrap {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 6px;
+}
+.sidebar-check-label {
+    font-size: .8rem; color: #aaa; cursor: pointer; white-space: nowrap;
+    display: flex; align-items: center; gap: 4px;
+}
+.sidebar-check-label input[type="checkbox"] {
+    accent-color: #4caf50; width: 16px; height: 16px;
+}
+.sidebar-precio-variable-wrap input[type="number"] {
+    background: #2a2a2a; border: 1px solid #444; border-radius: 6px;
+    color: #fff; padding: 4px 8px; font-size: .85rem;
+}
 
 .sidebar-btn-add {
     background: #1a5c2d;
@@ -4745,6 +4761,9 @@ textarea {
     border-top: 1px solid #333;
     background: #1a1a1a;
     flex-shrink: 0;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
 }
 
 /* Galería de imágenes en el sidebar */

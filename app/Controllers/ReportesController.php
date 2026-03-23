@@ -84,11 +84,13 @@ class ReportesController extends BaseController {
         $r1 = $stmt->get_result()->fetch_assoc();
         $stmt->close();
 
-        // Query 2: eficiencia + costo (scan de tarea_trabajos)
+        // Query 2: eficiencia + costo (scan de tarea_trabajos, soporta precio/hora y precio variable)
         $stmt = $db->prepare("
             SELECT
                 COUNT(DISTINCT twj.tarea_id) AS tareas_con_trabajo,
-                COALESCE(SUM(twj.horas_trabajo * twj.precio_hora), 0) AS costo
+                COALESCE(SUM(
+                    COALESCE(twj.precio_fijo, twj.horas_trabajo * twj.precio_hora)
+                ), 0) AS costo
             FROM tarea_trabajos twj
             JOIN tareas t ON twj.tarea_id = t.id
             WHERE t.id_user = ? AND MONTH(t.fecha) = ? AND YEAR(t.fecha) = ?

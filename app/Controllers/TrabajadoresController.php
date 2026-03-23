@@ -697,11 +697,12 @@ class TrabajadoresController extends BaseController
             exit;
         }
 
-        // Historial de tareas (las últimas 50)
+        // Historial de tareas (las últimas 50) — soporta precio/hora y precio variable
         $stmt = $db->prepare("
             SELECT ta.id, ta.fecha, ta.titulo, tt.horas_asignadas,
                    COALESCE(ttrab.precio_hora, trab.precio_hora, 0) as precio_hora,
-                   tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0) as coste
+                   ttrab.precio_fijo,
+                   COALESCE(ttrab.precio_fijo, tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0)) as coste
             FROM tarea_trabajadores tt
             JOIN tareas ta ON tt.tarea_id = ta.id
             LEFT JOIN tarea_trabajos ttrab ON ta.id = ttrab.tarea_id
@@ -744,7 +745,7 @@ class TrabajadoresController extends BaseController
             // El mes no está cerrado → calcular deuda en tiempo real
             $stmt = $db->prepare("
                 SELECT ROUND(COALESCE(SUM(
-                    tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0)
+                    COALESCE(ttrab.precio_fijo, tt.horas_asignadas * COALESCE(ttrab.precio_hora, trab.precio_hora, 0))
                 ), 0), 2) AS deuda_mes
                 FROM tarea_trabajadores tt
                 JOIN tareas ta ON tt.tarea_id = ta.id

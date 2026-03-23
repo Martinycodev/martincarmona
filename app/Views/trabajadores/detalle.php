@@ -229,7 +229,16 @@ $title = 'Ficha de Trabajador — ' . htmlspecialchars($trabajador['nombre']);
                         <td><?= !empty($fila['fecha']) ? date('d-m-Y', strtotime($fila['fecha'])) : '—' ?></td>
                         <td><?= htmlspecialchars($fila['titulo'] ?? '—') ?></td>
                         <td style="text-align:right"><?= number_format($fila['horas_asignadas'] ?? 0, 2) ?></td>
-                        <td style="text-align:right"><?= number_format($fila['precio_hora'] ?? 0, 2) ?> €</td>
+                        <td style="text-align:right">
+                            <?php
+                            $precioFijo = $fila['precio_fijo'] ?? null;
+                            if ($precioFijo !== null && floatval($precioFijo) > 0) {
+                                echo number_format($precioFijo, 2) . " € <small style='color:#aaa;'>variable</small>";
+                            } else {
+                                echo number_format($fila['precio_hora'] ?? 0, 2) . " €/h";
+                            }
+                            ?>
+                        </td>
                         <td style="text-align:right"><?= number_format($fila['coste'] ?? 0, 2) ?> €</td>
                     </tr>
                     <?php endforeach; ?>

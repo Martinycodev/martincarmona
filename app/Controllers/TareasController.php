@@ -339,6 +339,135 @@ class TareasController extends BaseController
     }
 
     /**
+     * Duplicar una tarea existente con fecha +1 día.
+     * Copia: título, descripción, horas, trabajo (con precio_fijo), trabajadores y parcelas.
+     * Usa create() del modelo para que se generen movimientos económicos y hooks.
+     */
+    public function duplicar()
+    {
+        header('Content-Type: application/json');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+
+        $this->validateCsrf();
+
+        $userId = $_SESSION['user_id'];
+        $input = json_decode(file_get_contents('php://input'), true);
+        $taskId = intval($input['id'] ?? 0);
+
+        if ($taskId <= 0) {
+            echo json_encode(['success' => false, 'message' => 'ID no válido']);
+            return;
+        }
+
+        try {
+            // Leer tarea original (verificando que pertenece al usuario)
+            $stmt = $this->db->prepare("
+                SELECT fecha, titulo, descripcion, horas
+                FROM tareas WHERE id = ? AND id_user = ?
+            ");
+            $stmt->bind_param("ii", $taskId, $userId);
+            $stmt->execute();
+            $tarea = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            if (!$tarea) {
+                echo json_encode(['success' => false, 'message' => 'Tarea no encontrada']);
+                return;
+            }
+
+            // Calcular fecha: día siguiente a la tarea original
+            $fechaOriginal = $tarea['fecha'];
+            if ($fechaOriginal) {
+                $nuevaFecha = date('Y-m-d', strtotime($fechaOriginal . ' +1 day'));
+            } else {
+                // Si era pendiente (sin fecha), la copia también es pendiente
+                $nuevaFecha = null;
+            }
+
+            // Leer trabajadores asignados
+            $stmt = $this->db->prepare("
+                SELECT trabajador_id FROM tarea_trabajadores WHERE tarea_id = ?
+            ");
+            $stmt->bind_param("i", $taskId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $trabajadores = [];
+            while ($row = $result->fetch_assoc()) {
+                $trabajadores[] = (int) $row['trabajador_id'];
+            }
+            $stmt->close();
+
+            // Leer parcelas asignadas
+            $stmt = $this->db->prepare("
+                SELECT parcela_id FROM tarea_parcelas WHERE tarea_id = ?
+            ");
+            $stmt->bind_param("i", $taskId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $parcelas = [];
+            while ($row = $result->fetch_assoc()) {
+                $parcelas[] = (int) $row['parcela_id'];
+            }
+            $stmt->close();
+
+            // Leer trabajo asignado (con precio_fijo si existe)
+            $stmt = $this->db->prepare("
+                SELECT trabajo_id, precio_fijo FROM tarea_trabajos WHERE tarea_id = ? LIMIT 1
+            ");
+            $stmt->bind_param("i", $taskId);
+            $stmt->execute();
+            $trabajo = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            // Construir datos para create() — misma estructura que usa crear() AJAX
+            $tareaData = [
+                'fecha'       => $nuevaFecha,
+                'titulo'      => $tarea['titulo'],
+                'descripcion' => $tarea['descripcion'] ?? '',
+                'horas'       => (float) $tarea['horas'],
+                'estado'      => $nuevaFecha ? 'realizada' : 'pendiente',
+            ];
+
+            if (!empty($trabajadores)) {
+                $tareaData['trabajadores'] = $trabajadores;
+            }
+
+            if (!empty($parcelas)) {
+                $tareaData['parcelas'] = $parcelas;
+            }
+
+            if ($trabajo) {
+                $tareaData['trabajo'] = (int) $trabajo['trabajo_id'];
+                if ($trabajo['precio_fijo'] !== null) {
+                    $tareaData['precio_fijo'] = (float) $trabajo['precio_fijo'];
+                }
+            }
+
+            // Crear la tarea duplicada (genera movimientos, hooks, etc.)
+            $nuevoId = $this->tareaModel->create($tareaData, $userId);
+
+            if ($nuevoId) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Tarea duplicada correctamente',
+                    'id'      => $nuevoId,
+                    'fecha'   => $nuevaFecha
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Error al duplicar la tarea']);
+            }
+
+        } catch (\Exception $e) {
+            \Core\Logger::app()->error("Error duplicando tarea: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
+        }
+    }
+
+    /**
      * Obtener una tarea individual con todos sus detalles
      */
     public function obtener()
@@ -427,13 +556,14 @@ class TareasController extends BaseController
             }
             $stmt->close();
 
-            // Obtener trabajos asignados
+            // Obtener trabajos asignados (con precio_fijo para precio variable)
             $stmt = $this->db->prepare("
-                SELECT 
+                SELECT
                     tr.id,
                     tr.nombre,
                     tt.horas_trabajo,
-                    tt.precio_hora
+                    tt.precio_hora,
+                    tt.precio_fijo
                 FROM tarea_trabajos tt
                 JOIN trabajos tr ON tt.trabajo_id = tr.id
                 WHERE tt.tarea_id = ?
@@ -931,6 +1061,49 @@ class TareasController extends BaseController
         }
 
         echo json_encode(['success' => $result, 'message' => $result ? 'Trabajo actualizado' : 'Error al cambiar trabajo']);
+    }
+
+    /**
+     * Guardar el precio variable (fijo) de una tarea.
+     * Si precio_fijo es null o 0, se desactiva el precio variable y se usa precio/hora.
+     * Recibe: { tarea_id, precio_fijo }
+     */
+    public function guardarPrecioFijo()
+    {
+        header('Content-Type: application/json');
+        $this->validateCsrf();
+        $userId = $_SESSION['user_id'];
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $tareaId = intval($input['tarea_id'] ?? 0);
+        $precioFijo = isset($input['precio_fijo']) && $input['precio_fijo'] !== '' && $input['precio_fijo'] !== null
+            ? floatval($input['precio_fijo'])
+            : null;
+
+        if (!$tareaId) {
+            echo json_encode(['success' => false, 'message' => 'Datos incompletos']);
+            return;
+        }
+
+        // Verificar que la tarea pertenece al usuario
+        $stmt = $this->db->prepare("SELECT id FROM tareas WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $tareaId, $userId);
+        $stmt->execute();
+        $tarea = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$tarea) {
+            echo json_encode(['success' => false, 'message' => 'Tarea no encontrada']);
+            return;
+        }
+
+        // Actualizar precio_fijo en tarea_trabajos
+        $stmt = $this->db->prepare("UPDATE tarea_trabajos SET precio_fijo = ? WHERE tarea_id = ?");
+        $stmt->bind_param("di", $precioFijo, $tareaId);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        echo json_encode(['success' => $result]);
     }
 
     /**

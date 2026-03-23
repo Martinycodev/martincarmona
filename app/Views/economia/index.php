@@ -85,7 +85,7 @@
         <div class="eco-card deuda">
             <div class="label">Deuda trabajadores</div>
             <div class="valor neg"><?= number_format($deudaPendiente, 2, ',', '.') ?> €</div>
-            <div class="sub">Horas trabajadas × precio (mes actual)</div>
+            <div class="sub">Coste tareas del mes actual</div>
         </div>
     </div>
 

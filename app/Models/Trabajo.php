@@ -22,7 +22,7 @@ class Trabajo
                 INSERT INTO trabajos (nombre, descripcion, precio_hora, id_user)
                 VALUES (?, ?, ?, ?)
             ");
-            
+
             // Forzar precio_hora a 0 si viene null o vacío
             $precioHora = floatval($data['precio_hora'] ?? 0);
 
@@ -52,13 +52,13 @@ class Trabajo
     {
         try {
             $stmt = $this->db->prepare("
-                SELECT 
+                SELECT
                     id,
                     nombre,
                     descripcion,
                     precio_hora,
                     created_at
-                FROM trabajos 
+                FROM trabajos
                 WHERE id_user = ?
                 ORDER BY nombre ASC
             ");
@@ -112,12 +112,12 @@ class Trabajo
     {
         try {
             $stmt = $this->db->prepare("
-                UPDATE trabajos 
+                UPDATE trabajos
                 SET nombre = ?, descripcion = ?, precio_hora = ?
                 WHERE id = ? AND id_user = ?
             ");
-            
-            $stmt->bind_param("ssdii", 
+
+            $stmt->bind_param("ssdii",
                 $data['nombre'],
                 $data['descripcion'],
                 $data['precio_hora'],
@@ -166,8 +166,8 @@ class Trabajo
     {
         try {
             $stmt = $this->db->prepare("
-                SELECT id, nombre, precio_hora 
-                FROM trabajos 
+                SELECT id, nombre, precio_hora
+                FROM trabajos
                 WHERE id_user = ?
                 ORDER BY nombre ASC
             ");

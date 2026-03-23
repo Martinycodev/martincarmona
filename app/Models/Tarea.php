@@ -80,13 +80,13 @@ class Tarea
 
             // Insertar trabajo en la tabla de relaciones N:N (si existe)
             if (isset($data['trabajo']) && $data['trabajo'] > 0) {
-                $this->insertarTrabajos($tareaId, [$data['trabajo']], $data['horas']);
+                $this->insertarTrabajos($tareaId, [$data['trabajo']], $data['horas'], $data['precio_fijo'] ?? null);
             }
 
             // ===== NUEVA LÓGICA: ACTUALIZAR MOVIMIENTOS MENSUALES =====
             // Solo procesar si hay trabajadores y trabajo asignado
             if (!empty($trabajadores) && isset($data['trabajo']) && $data['trabajo'] > 0) {
-                $this->actualizarMovimientosMensuales($trabajadores, $data['trabajo'], $data['horas'], $data['fecha'], $userId);
+                $this->actualizarMovimientosMensuales($trabajadores, $data['trabajo'], $data['horas'], $data['fecha'], $userId, $data['precio_fijo'] ?? null);
             }
 
             // ===== HOOK FITOSANITARIOS =====
@@ -151,18 +151,18 @@ class Tarea
      * Insertar trabajos en la tabla de relaciones.
      * Almacena precio_hora como snapshot para preservar el histórico.
      */
-    private function insertarTrabajos($tareaId, $trabajos, $horasDefault = 0)
+    private function insertarTrabajos($tareaId, $trabajos, $horasDefault = 0, $precioFijo = null)
     {
         $stmt = $this->db->prepare("
-            INSERT INTO tarea_trabajos (tarea_id, trabajo_id, horas_trabajo, precio_hora)
-            VALUES (?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE horas_trabajo = VALUES(horas_trabajo), precio_hora = VALUES(precio_hora)
+            INSERT INTO tarea_trabajos (tarea_id, trabajo_id, horas_trabajo, precio_hora, precio_fijo)
+            VALUES (?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE horas_trabajo = VALUES(horas_trabajo), precio_hora = VALUES(precio_hora), precio_fijo = VALUES(precio_fijo)
         ");
 
         foreach ($trabajos as $trabajoId) {
             if ($trabajoId > 0) {
                 $precioHora = $this->getPrecioHoraTrabajo($trabajoId);
-                $stmt->bind_param("iidd", $tareaId, $trabajoId, $horasDefault, $precioHora);
+                $stmt->bind_param("iiddd", $tareaId, $trabajoId, $horasDefault, $precioHora, $precioFijo);
                 $stmt->execute();
             }
         }
@@ -237,18 +237,27 @@ class Tarea
     {
         $this->db->begin_transaction();
         try {
+            // Conservar precio_fijo del trabajo anterior (si existía)
+            $stmt = $this->db->prepare("SELECT precio_fijo FROM tarea_trabajos WHERE tarea_id = ? LIMIT 1");
+            $stmt->bind_param("i", $tareaId);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            $precioFijoAnterior = $row ? $row['precio_fijo'] : null;
+            $stmt->close();
+
             // Eliminar el trabajo anterior
             $stmt = $this->db->prepare("DELETE FROM tarea_trabajos WHERE tarea_id = ?");
             $stmt->bind_param("i", $tareaId);
             $stmt->execute();
             $stmt->close();
 
-            // Insertar el nuevo trabajo
+            // Insertar el nuevo trabajo con snapshot de precio_hora
+            $precioHora = $this->getPrecioHoraTrabajo($trabajoId);
             $stmt = $this->db->prepare("
-                INSERT INTO tarea_trabajos (tarea_id, trabajo_id, horas_trabajo)
-                VALUES (?, ?, ?)
+                INSERT INTO tarea_trabajos (tarea_id, trabajo_id, horas_trabajo, precio_hora, precio_fijo)
+                VALUES (?, ?, ?, ?, ?)
             ");
-            $stmt->bind_param("iid", $tareaId, $trabajoId, $horas);
+            $stmt->bind_param("iiddd", $tareaId, $trabajoId, $horas, $precioHora, $precioFijoAnterior);
             $stmt->execute();
             $stmt->close();
 
@@ -1232,10 +1241,9 @@ class Tarea
     private function getPrecioHoraTrabajo($trabajoId)
     {
         try {
-            // Obtener precio_hora del trabajo desde la tabla trabajos
             $stmt = $this->db->prepare("
-                SELECT precio_hora 
-                FROM trabajos 
+                SELECT precio_hora
+                FROM trabajos
                 WHERE id = ?
             ");
             $stmt->bind_param("i", $trabajoId);
@@ -1248,45 +1256,53 @@ class Tarea
                 return (float) $row['precio_hora'];
             }
 
-            // Si no hay precio_hora en la tabla trabajos, usar precio por defecto
             return 15.0; // Precio por defecto de 15€/hora
 
         } catch (\Exception $e) {
             \Core\Logger::app()->error("Error obteniendo precio del trabajo: " . $e->getMessage());
-            return 15.0; // Precio por defecto en caso de error
+            return 15.0;
         }
     }
 
     /**
-     * Calcular el total de una tarea
+     * Calcular el total de una tarea.
+     * Si hay precio_fijo (variable), se usa directamente ignorando horas.
+     * Si no, se calcula precio_hora × horas.
      * @param int $trabajoId ID del trabajo
      * @param float $horas Horas trabajadas
-     * @return float Total calculado (precio * horas)
+     * @param float|null $precioFijo Precio variable/fijo de la tarea (null = usar precio/hora)
+     * @return float Total calculado
      */
-    private function calcularTotalTarea($trabajoId, $horas)
+    private function calcularTotalTarea($trabajoId, $horas, $precioFijo = null)
     {
+        if ($precioFijo !== null && $precioFijo > 0) {
+            return (float) $precioFijo;
+        }
         $precioHora = $this->getPrecioHoraTrabajo($trabajoId);
         return $precioHora * $horas;
     }
 
     /**
-     * Actualizar movimientos mensuales para todos los trabajadores de una tarea
+     * Actualizar movimientos mensuales para todos los trabajadores de una tarea.
+     * Si hay precio_fijo se usa directamente; si no, precio_hora × horas.
      * @param array $trabajadores Array de IDs de trabajadores
      * @param int $trabajoId ID del trabajo
      * @param float $horas Horas trabajadas
      * @param string $fecha Fecha de la tarea
+     * @param int|null $userId ID del usuario
+     * @param float|null $precioFijo Precio variable de la tarea (null = usar precio/hora)
      * @return bool True si se actualizaron correctamente todos los movimientos
      */
-    private function actualizarMovimientosMensuales($trabajadores, $trabajoId, $horas, $fecha, $userId = null)
+    private function actualizarMovimientosMensuales($trabajadores, $trabajoId, $horas, $fecha, $userId = null, $precioFijo = null)
     {
         try {
             // Calcular el total de la tarea (mismo para todos los trabajadores)
-            $totalTarea = $this->calcularTotalTarea($trabajoId, $horas);
+            $totalTarea = $this->calcularTotalTarea($trabajoId, $horas, $precioFijo);
 
             // Si el importe es 0, no crear/actualizar movimientos
             if ($totalTarea <= 0) {
                 $precioHora = $this->getPrecioHoraTrabajo($trabajoId);
-                \Core\Logger::app()->error("Importe 0 para trabajo ID: $trabajoId, precio_hora: $precioHora, horas: $horas - No se crearán movimientos");
+                \Core\Logger::app()->error("Importe 0 para trabajo ID: $trabajoId, precio_hora: $precioHora, horas: $horas, precio_fijo: " . ($precioFijo ?? 'null') . " - No se crearán movimientos");
                 return true; // No es un error, simplemente no hay nada que procesar
             }
 

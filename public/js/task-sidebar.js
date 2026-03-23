@@ -136,7 +136,10 @@ class TaskSidebar {
         body.appendChild(document.createElement('hr')).className = 'sidebar-divider';
         body.appendChild(this._buildImagenesSection(tarea));
 
-        // ── Footer: eliminar ─────────────────────────────────────────────────
+        // ── Footer: duplicar y eliminar ─────────────────────────────────────
+        const dupBtn = document.getElementById('sidebar-duplicate-btn');
+        dupBtn.onclick = () => this._duplicarTarea();
+
         const deleteBtn = document.getElementById('sidebar-delete-btn');
         deleteBtn.onclick = () => this._eliminarTarea();
 
@@ -297,21 +300,83 @@ class TaskSidebar {
             cbWrap.dataset.currentTrabajo = currentTrabajo.id;
         }
 
+        // Checkbox "Precio variable" + input de importe
+        const precioVarWrap = document.createElement('div');
+        precioVarWrap.className = 'sidebar-precio-variable-wrap';
+        precioVarWrap.id = `sidebar-precio-var-wrap-${this.taskId}`;
+
+        const checkLabel = document.createElement('label');
+        checkLabel.className = 'sidebar-check-label';
+
+        const checkBox = document.createElement('input');
+        checkBox.type = 'checkbox';
+        checkBox.id = `sidebar-precio-variable-${this.taskId}`;
+
+        const checkText = document.createTextNode(' Precio variable');
+        checkLabel.appendChild(checkBox);
+        checkLabel.appendChild(checkText);
+
+        const precioFijoInput = document.createElement('input');
+        precioFijoInput.type = 'number';
+        precioFijoInput.id = `sidebar-precio-fijo-${this.taskId}`;
+        precioFijoInput.className = 'sidebar-inline-input';
+        precioFijoInput.step = '0.01';
+        precioFijoInput.min = '0';
+        precioFijoInput.placeholder = 'Importe (€)';
+        precioFijoInput.style.display = 'none';
+        precioFijoInput.style.width = '120px';
+
+        precioVarWrap.appendChild(checkLabel);
+        precioVarWrap.appendChild(precioFijoInput);
+
+        // Inicializar con precio_fijo si la tarea lo tiene
+        const tienePrecioFijo = currentTrabajo && currentTrabajo.precio_fijo != null && parseFloat(currentTrabajo.precio_fijo) > 0;
+        if (tienePrecioFijo) {
+            checkBox.checked = true;
+            precioFijoInput.style.display = '';
+            precioFijoInput.value = parseFloat(currentTrabajo.precio_fijo);
+        }
+
+        // Toggle checkbox: mostrar/ocultar input y guardar
+        checkBox.addEventListener('change', () => {
+            if (checkBox.checked) {
+                precioFijoInput.style.display = '';
+                precioFijoInput.focus();
+            } else {
+                precioFijoInput.style.display = 'none';
+                precioFijoInput.value = '';
+                // Al desmarcar, quitar precio_fijo (volver a precio/hora)
+                this._guardarPrecioFijo(null);
+            }
+            this._actualizarCoste();
+        });
+
+        // Guardar precio fijo al cambiar el input
+        precioFijoInput.addEventListener('change', () => {
+            this._guardarPrecioFijo(precioFijoInput.value);
+            this._actualizarCoste();
+        });
+
         // Coste estimado
         const costeEl = document.createElement('div');
         costeEl.id        = `sidebar-coste-${this.taskId}`;
         costeEl.className = 'sidebar-coste-label';
 
+        // Mostrar coste inicial
         if (currentTrabajo && currentTrabajo.precio_hora) {
             const horas  = parseFloat(tarea.horas || 0);
             const precio = parseFloat(currentTrabajo.precio_hora);
-            if (horas > 0 && precio > 0) {
+
+            if (tienePrecioFijo) {
+                costeEl.textContent = `💶 Precio variable: ${parseFloat(currentTrabajo.precio_fijo).toFixed(2)} €`;
+            } else if (horas > 0 && precio > 0) {
                 costeEl.textContent = `💶 ${precio.toFixed(2)} €/h × ${horas} h = ${(precio * horas).toFixed(2)} €`;
             }
         }
 
         wrap.appendChild(tagContainer);
         wrap.appendChild(cbWrap);
+        wrap.appendChild(precioVarWrap);
         wrap.appendChild(costeEl);
         return wrap;
     }
@@ -334,18 +399,33 @@ class TaskSidebar {
         const { id: trabajoId } = _getComboboxSel(`cb-sidebar-work-${this.taskId}`);
         const horas = parseFloat(horasInput.value || 0);
 
-        if (!trabajoId || horas <= 0) { costeEl.textContent = ''; return; }
+        if (!trabajoId) { costeEl.textContent = ''; return; }
 
-        const trabajos = this._opcionesCache?.trabajos || [];
-        const trabajo  = trabajos.find(t => String(t.id) === String(trabajoId));
-        const precio   = parseFloat(trabajo?.precio_hora ?? 0);
+        // Comprobar si hay precio variable activo
+        const checkBox = document.getElementById(`sidebar-precio-variable-${this.taskId}`);
+        const precioFijoInput = document.getElementById(`sidebar-precio-fijo-${this.taskId}`);
+        const precioFijo = checkBox?.checked ? parseFloat(precioFijoInput?.value || 0) : 0;
 
-        // Contar trabajadores asignados (tags visibles en la sección)
+        // Contar trabajadores asignados
         const tagsContainer = document.getElementById(`sidebar-tags-trabajadores-${this.taskId}`);
         const numTrabajadores = tagsContainer ? tagsContainer.querySelectorAll('.sidebar-tag').length : 1;
-        const efectivos = Math.max(numTrabajadores, 1); // mínimo 1
+        const efectivos = Math.max(numTrabajadores, 1);
 
-        if (precio > 0) {
+        if (checkBox?.checked && precioFijo > 0) {
+            // Precio variable: importe fijo × trabajadores
+            const costeTotal = precioFijo * efectivos;
+            if (efectivos > 1) {
+                costeEl.textContent = `💶 Variable: ${precioFijo.toFixed(2)} € × ${efectivos} trab. = ${costeTotal.toFixed(2)} €`;
+            } else {
+                costeEl.textContent = `💶 Precio variable: ${precioFijo.toFixed(2)} €`;
+            }
+        } else if (!checkBox?.checked) {
+            // Precio por hora (comportamiento original)
+            const trabajos = this._opcionesCache?.trabajos || [];
+            const trabajo  = trabajos.find(t => String(t.id) === String(trabajoId));
+            const precio   = parseFloat(trabajo?.precio_hora ?? 0);
+
+            if (precio <= 0 || horas <= 0) { costeEl.textContent = ''; return; }
             const costePorTrabajador = precio * horas;
             const costeTotal = costePorTrabajador * efectivos;
             if (efectivos > 1) {
@@ -355,6 +435,30 @@ class TaskSidebar {
             }
         } else {
             costeEl.textContent = '';
+        }
+    }
+
+    /**
+     * Guardar precio variable (fijo) en el backend.
+     * Si valor es null, se desactiva el precio variable.
+     */
+    async _guardarPrecioFijo(valor) {
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+            await fetch(buildUrl('tareas/guardarPrecioFijo'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    tarea_id: this.taskId,
+                    precio_fijo: valor !== null && valor !== '' ? parseFloat(valor) : null
+                })
+            });
+        } catch (e) {
+            console.error('Error guardando precio variable:', e);
         }
     }
 
@@ -920,6 +1024,48 @@ class TaskSidebar {
             showToast(`Trabajo "${nombre}" creado y asignado`, 'success');
         } catch (e) {
             showToast('Error de conexión', 'error');
+        }
+    }
+
+    // ─── Duplicar tarea ───────────────────────────────────────────────────────
+
+    async _duplicarTarea() {
+        const btn = document.getElementById('sidebar-duplicate-btn');
+        setButtonLoading(btn, true);
+
+        try {
+            const res = await fetch(buildUrl('/tareas/duplicar'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ id: this.taskId })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                const fechaMsg = data.fecha
+                    ? `Duplicada para el ${new Date(data.fecha + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}`
+                    : 'Duplicada como pendiente';
+                showToast(fechaMsg, 'success');
+
+                // Recargar calendario y abrir la nueva tarea en el sidebar
+                window.needsReload = true;
+                this.close();
+                // Abrir la tarea duplicada tras un breve delay para que el calendario recargue
+                setTimeout(() => {
+                    if (window.taskSidebar) {
+                        window.taskSidebar.open(data.id);
+                    }
+                }, 600);
+            } else {
+                showToast(data.message || 'Error al duplicar', 'error');
+            }
+        } catch (e) {
+            showToast('Error de conexión', 'error');
+        } finally {
+            setButtonLoading(btn, false);
         }
     }
 

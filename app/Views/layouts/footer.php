@@ -43,6 +43,9 @@
 
         <!-- Footer con acciones secundarias -->
         <div class="sidebar-footer">
+            <button id="sidebar-duplicate-btn" class="btn btn-secondary btn-sm">
+                📋 Duplicar tarea
+            </button>
             <button id="sidebar-delete-btn" class="btn btn-danger btn-sm">
                 🗑 Eliminar tarea
             </button>

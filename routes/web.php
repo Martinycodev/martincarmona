@@ -76,6 +76,8 @@ $router->post('/tareas/asignarCuadrilla', 'TareasController@asignarCuadrilla');
 $router->post('/tareas/agregarParcela', 'TareasController@agregarParcela');
 $router->post('/tareas/quitarParcela', 'TareasController@quitarParcela');
 $router->post('/tareas/cambiarTrabajo', 'TareasController@cambiarTrabajo');
+$router->post('/tareas/guardarPrecioFijo', 'TareasController@guardarPrecioFijo');
+$router->post('/tareas/duplicar', 'TareasController@duplicar');
 
 // Trabajadores
 $router->get('/datos/trabajadores', 'TrabajadoresController@index');
