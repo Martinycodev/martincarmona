@@ -20,27 +20,17 @@ class VehiculosController extends BaseController
     }
 
     /**
-     * GET /vehiculos/detalle?id=X — Vista detalle de un vehículo
+     * GET /vehiculos/{id} — Vista detalle de un vehículo
      */
     public function detalle()
     {
         $this->requireEmpresa();
         $id = intval($_GET['id'] ?? 0);
-        $userId = intval($_SESSION['user_id']);
-        if (!$id) {
-            header('Location: ' . $this->url('/datos/vehiculos'));
-            return;
-        }
 
-        $db = \Database::connect();
-        $stmt = $db->prepare("SELECT * FROM vehiculos WHERE id = ? AND id_user = ?");
-        $stmt->bind_param("ii", $id, $userId);
-        $stmt->execute();
-        $vehiculo = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
-
+        // Validación ACL centralizada
+        $vehiculo = $this->validateAndGetResource($id, 'vehiculos');
         if (!$vehiculo) {
-            header('Location: ' . $this->url('/datos/vehiculos'));
+            $this->redirect('/datos/vehiculos');
             return;
         }
 

@@ -20,7 +20,7 @@
             </thead>
             <tbody>
                 <?php foreach ($vehiculos as $v): ?>
-                <tr onclick="window.location.href='<?= $this->url('/vehiculos/detalle?id=' . intval($v['id'])) ?>'" style="cursor:pointer;">
+                <tr onclick="window.location.href='<?= $this->url('/vehiculos/' . intval($v['id'])) ?>'" style="cursor:pointer;">
                     <td><?= htmlspecialchars($v['nombre'] ?? '—') ?></td>
                     <td><?= htmlspecialchars($v['matricula'] ?? '—') ?></td>
                     <td>
@@ -38,7 +38,7 @@
                         <?php endif; ?>
                     </td>
                     <td>
-                        <a href="<?= $this->url('/vehiculos/detalle?id=' . intval($v['id'])) ?>" class="btn btn-secondary btn-sm">Ver →</a>
+                        <a href="<?= $this->url('/vehiculos/' . intval($v['id'])) ?>" class="btn btn-secondary btn-sm">Ver →</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -118,7 +118,7 @@ document.getElementById('crearVehiculoForm').addEventListener('submit', function
     .then(function(r) { return r.json(); })
     .then(function(res) {
         if (res.success) {
-            window.location.href = basePath + '/vehiculos/detalle?id=' + res.id;
+            window.location.href = basePath + '/vehiculos/' + res.id;
         } else {
             if (typeof showToast === 'function') showToast(res.message || 'Error al crear', 'error');
         }

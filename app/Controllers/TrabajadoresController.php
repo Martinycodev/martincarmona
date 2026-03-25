@@ -679,23 +679,18 @@ class TrabajadoresController extends BaseController
     {
         $id = intval($_GET['id'] ?? 0);
         if ($id <= 0) {
-            header('Location: /datos/trabajadores');
-            exit;
+            $this->redirect('/datos/trabajadores');
+            return;
+        }
+
+        // Validar que el trabajador existe y pertenece al usuario
+        $trabajador = $this->validateAndGetResource($id, 'trabajadores');
+        if (!$trabajador) {
+            $this->redirect('/datos/trabajadores');
+            return;
         }
 
         $db = \Database::connect();
-
-        // Cargar trabajador
-        $stmt = $db->prepare("SELECT * FROM trabajadores WHERE id = ? AND id_user = ?");
-        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
-        $stmt->execute();
-        $trabajador = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
-
-        if (!$trabajador) {
-            header('Location: /datos/trabajadores');
-            exit;
-        }
 
         // Historial de tareas (las últimas 50) — soporta precio/hora y precio variable
         $stmt = $db->prepare("

@@ -125,6 +125,26 @@ class BaseController
         $this->redirect($map[$rol] ?? '/');
     }
 
+    /**
+     * Valida que un recurso existe y pertenece al usuario actual (ACL por id_user).
+     * Útil para métodos detalle() donde se necesita verificar propiedad antes de mostrar.
+     *
+     * @param int    $id    ID del recurso a buscar
+     * @param string $table Nombre de la tabla (debe tener columnas 'id' e 'id_user')
+     * @return array|null   Fila completa del recurso, o null si no existe / no le pertenece
+     */
+    protected function validateAndGetResource(int $id, string $table): ?array
+    {
+        $db = \Database::connect();
+        $stmt = $db->prepare("SELECT * FROM {$table} WHERE id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->execute();
+        $resource = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        return $resource ?: null;
+    }
+
     protected function isAjaxRequest()
     {
         return (

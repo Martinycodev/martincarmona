@@ -393,13 +393,18 @@ class ParcelasController extends BaseController
     {
         $id = intval($_GET['id'] ?? 0);
         if ($id <= 0) {
-            header('Location: /datos/parcelas');
-            exit;
+            $this->redirect('/datos/parcelas');
+            return;
         }
 
-        $db = \Database::connect();
+        // Validar propiedad antes de cargar datos completos
+        if (!$this->validateAndGetResource($id, 'parcelas')) {
+            $this->redirect('/datos/parcelas');
+            return;
+        }
 
-        // Cargar parcela con propietario
+        // Cargar parcela con datos del propietario (JOIN)
+        $db = \Database::connect();
         $stmt = $db->prepare("
             SELECT p.*, pr.nombre as propietario_nombre, pr.apellidos as propietario_apellidos,
                    pr.telefono as propietario_telefono, pr.email as propietario_email
@@ -411,11 +416,6 @@ class ParcelasController extends BaseController
         $stmt->execute();
         $parcela = $stmt->get_result()->fetch_assoc();
         $stmt->close();
-
-        if (!$parcela) {
-            header('Location: /datos/parcelas');
-            exit;
-        }
 
         // Cargar documentos
         $stmt = $db->prepare("SELECT * FROM documentos_parcelas WHERE parcela_id = ? AND id_user = ? ORDER BY created_at DESC");

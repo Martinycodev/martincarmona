@@ -71,7 +71,7 @@ $title = 'Gestión de Propietarios';
                 <?php foreach ($propietarios as $propietario): ?>
                 <tr data-id="<?= $propietario['id'] ?>"
                     class="clickable-row"
-                    onclick="window.location.href='<?= $this->url('/propietarios/detalle?id=' . $propietario['id']) ?>'">
+                    onclick="window.location.href='<?= $this->url('/propietarios/' . $propietario['id']) ?>'">
                     <td><?= htmlspecialchars($propietario['nombre'] ?? '-') ?></td>
                     <td><?= htmlspecialchars($propietario['apellidos'] ?? '—') ?></td>
                     <td><?= htmlspecialchars($propietario['dni'] ?? '—') ?></td>

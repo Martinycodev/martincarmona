@@ -107,7 +107,7 @@ $title = 'Gestión de Trabajadores';
                     $esCuadrilla = !empty($trabajador['cuadrilla']);
                 ?>
                 <tr data-id="<?= $trabajador['id'] ?>"
-                    onclick="window.location.href='<?= $this->url('/trabajadores/detalle?id=' . $trabajador['id']) ?>'"
+                    onclick="window.location.href='<?= $this->url('/trabajadores/' . $trabajador['id']) ?>'"
                     class="clickable-row">
                     <td>
                         <?php if ($fotoSrc): ?>
@@ -162,7 +162,7 @@ $title = 'Gestión de Trabajadores';
                         $estaDeBaja = !empty($trabajador['fecha_baja']);
                     ?>
                     <tr data-id="<?= $trabajador['id'] ?>"
-                        onclick="window.location.href='<?= $this->url('/trabajadores/detalle?id=' . $trabajador['id']) ?>'"
+                        onclick="window.location.href='<?= $this->url('/trabajadores/' . $trabajador['id']) ?>'"
                         class="clickable-row<?= $estaDeBaja ? ' row-baja' : '' ?>">
                         <td>
                             <?php if ($fotoSrc): ?>

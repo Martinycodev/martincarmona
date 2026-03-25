@@ -81,26 +81,20 @@ class PropietariosController extends BaseController
             return;
         }
 
-        $db = \Database::connect();
-
-        $stmt = $db->prepare("SELECT * FROM propietarios WHERE id = ? AND id_user = ?");
-        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
-        $stmt->execute();
-        $propietario = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
-
+        // Validar que el propietario existe y pertenece al usuario
+        $propietario = $this->validateAndGetResource($id, 'propietarios');
         if (!$propietario) {
             $this->redirect('/datos/propietarios');
             return;
         }
 
         // Parcelas asignadas a este propietario
-        $stmt2 = $db->prepare("SELECT id, nombre, ubicacion, olivos FROM parcelas WHERE propietario_id = ? AND id_user = ? ORDER BY nombre");
-        $stmt2->bind_param("ii", $id, $_SESSION['user_id']);
-        $stmt2->execute();
-        $parcelas = $stmt2->get_result()->fetch_all(MYSQLI_ASSOC);
-        $stmt2->close();
-
+        $db = \Database::connect();
+        $stmt = $db->prepare("SELECT id, nombre, ubicacion, olivos FROM parcelas WHERE propietario_id = ? AND id_user = ? ORDER BY nombre");
+        $stmt->bind_param("ii", $id, $_SESSION['user_id']);
+        $stmt->execute();
+        $parcelas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
         $db->close();
 
         $this->render('propietarios/detalle', [

@@ -89,7 +89,7 @@ $router->post('/trabajadores/eliminar', 'TrabajadoresController@eliminar');
 $router->post('/trabajadores/reactivar', 'TrabajadoresController@reactivar');
 $router->post('/trabajadores/subirFoto', 'TrabajadoresController@subirFoto');
 $router->get('/trabajadores/cuadrilla', 'TrabajadoresController@obtenerCuadrilla');
-$router->get('/trabajadores/detalle', 'TrabajadoresController@detalle');
+$router->get('/trabajadores/{id}', 'TrabajadoresController@detalle');
 $router->post('/trabajadores/subirDocumento', 'TrabajadoresController@subirDocumento');
 
 // Trabajos
@@ -110,7 +110,7 @@ $router->post('/parcelas/crear', 'ParcelasController@crear');
 $router->get('/parcelas/obtener', 'ParcelasController@obtener');
 $router->post('/parcelas/actualizar', 'ParcelasController@actualizar');
 $router->post('/parcelas/eliminar', 'ParcelasController@eliminar');
-$router->get('/parcelas/detalle', 'ParcelasController@detalle');
+$router->get('/parcelas/{id}', 'ParcelasController@detalle');
 $router->post('/parcelas/subirDocumento', 'ParcelasController@subirDocumento');
 $router->post('/parcelas/eliminarDocumento', 'ParcelasController@eliminarDocumento');
 $router->post('/parcelas/subirImagen', 'ParcelasController@subirImagen');
@@ -119,7 +119,7 @@ $router->post('/parcelas/eliminarImagen', 'ParcelasController@eliminarImagen');
 // Propietarios
 $router->get('/propietarios/buscar', 'PropietariosController@buscar');
 $router->get('/datos/propietarios', 'PropietariosController@index');
-$router->get('/propietarios/detalle', 'PropietariosController@detalle');
+$router->get('/propietarios/{id}', 'PropietariosController@detalle');
 $router->post('/propietarios/crear', 'PropietariosController@crear');
 $router->get('/propietarios/obtener', 'PropietariosController@obtener');
 $router->post('/propietarios/actualizar', 'PropietariosController@actualizar');
@@ -128,7 +128,7 @@ $router->post('/propietarios/subirImagenDni', 'PropietariosController@subirImage
 
 // Vehículos
 $router->get('/datos/vehiculos', 'VehiculosController@index');
-$router->get('/vehiculos/detalle', 'VehiculosController@detalle');
+$router->get('/vehiculos/{id}', 'VehiculosController@detalle');
 $router->post('/vehiculos/actualizar', 'VehiculosController@actualizar');
 $router->post('/vehiculos/crear', 'VehiculosController@crear');
 $router->post('/vehiculos/eliminar', 'VehiculosController@eliminar');
@@ -169,7 +169,7 @@ $router->post('/economia/registrarPago', 'EconomiaController@registrar_pago');
 
 // Campaña
 $router->get('/campana', 'CampanaController@index');
-$router->get('/campana/detalle', 'CampanaController@detalle');
+$router->get('/campana/{id}', 'CampanaController@detalle');
 $router->post('/campana/crear', 'CampanaController@crear');
 $router->post('/campana/actualizar', 'CampanaController@actualizar');
 $router->post('/campana/eliminar', 'CampanaController@eliminar');
@@ -194,7 +194,7 @@ $router->post('/admin/eliminarUsuario', 'AdminController@eliminarUsuario');
 
 // Vistas de rol
 $router->get('/propietario', 'PropietarioDashboardController@index');
-$router->get('/propietario/parcela', 'PropietarioDashboardController@parcelaDetalle');
+$router->get('/propietario/parcela/{id}', 'PropietarioDashboardController@parcelaDetalle');
 $router->get('/trabajador', 'TrabajadorDashboardController@index');
 
 // Página 404

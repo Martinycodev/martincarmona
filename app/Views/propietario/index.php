@@ -26,7 +26,7 @@
             </thead>
             <tbody>
                 <?php foreach ($parcelas as $p): ?>
-                <tr onclick="window.location.href='<?= $this->url('/propietario/parcela?id=' . $p['id']) ?>'"
+                <tr onclick="window.location.href='<?= $this->url('/propietario/parcela/' . $p['id']) ?>'"
                     style="cursor:pointer;">
                     <td><strong><?= htmlspecialchars($p['nombre']) ?></strong></td>
                     <td><?= htmlspecialchars($p['ubicacion'] ?? '—') ?></td>

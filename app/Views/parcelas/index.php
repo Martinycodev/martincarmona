@@ -140,7 +140,7 @@ $title = 'Gestión de Parcelas';
                 <?php else: ?>
                     <?php foreach ($parcelas as $parcela): ?>
                         <tr data-id="<?= $parcela['id'] ?>"
-                            onclick="window.location.href='<?= $this->url('/parcelas/detalle?id=' . $parcela['id']) ?>'"
+                            onclick="window.location.href='<?= $this->url('/parcelas/' . $parcela['id']) ?>'"
                             class="clickable-row">
                             <td><?= htmlspecialchars($parcela['nombre'] ?? '-') ?></td>
                             <td><?= htmlspecialchars(

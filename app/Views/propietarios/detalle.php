@@ -75,7 +75,7 @@ $title = 'Ficha de Propietario — ' . htmlspecialchars($propietario['nombre'] .
                     <td><?= htmlspecialchars($p['ubicacion'] ?? '—') ?></td>
                     <td><?= intval($p['olivos']) ?></td>
                     <td>
-                        <a href="<?= $this->url('/parcelas/detalle?id=' . $p['id']) ?>"
+                        <a href="<?= $this->url('/parcelas/' . $p['id']) ?>"
                            class="btn btn-secondary btn-sm">Ver →</a>
                     </td>
                 </tr>

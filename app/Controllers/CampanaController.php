@@ -48,15 +48,11 @@ class CampanaController extends BaseController
         $campanaId = intval($_GET['id'] ?? 0);
         if (!$campanaId) { $this->redirect('/campana'); return; }
 
-        $db = \Database::connect();
-
-        // Datos de la campaña
-        $stmt = $db->prepare("SELECT * FROM campanas WHERE id = ? AND id_user = ?");
-        $stmt->bind_param("ii", $campanaId, $userId);
-        $stmt->execute();
-        $campana = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
+        // Validar que la campaña existe y pertenece al usuario
+        $campana = $this->validateAndGetResource($campanaId, 'campanas');
         if (!$campana) { $this->redirect('/campana'); return; }
+
+        $db = \Database::connect();
 
         // Registros de la campaña con nombre de parcela
         $stmt = $db->prepare("

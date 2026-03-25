@@ -76,12 +76,6 @@ Mejoras adicionales (marzo 2026): touch drag & drop en dashboard (chips pendient
 - [ ] El concepto de una deuda mensual y que tenga que cerrar el mes manualmente me preocupa, lo suyo es que sea automático.
 - [ ] Plantear la posibilidad de hacer pagos mensuales recurrentes que se añaden solos por ejemplo, gestoría, autónomo, seguros, etc.
 
-## FASE 12 — Pulido visual y UX pendiente
-
-> Ajustes menores que quedaron del sprint anterior.
-
-- [ ] **Colores de categorias de trabajos:** recoleccion → verde olivo, campo (laboreo) → marron, mantenimiento → purpura/violeta con buen contraste, tratamientos (sulfatos) → rosa oscuro (distinto del azul de riego). Todos con fondo oscuro para que el texto blanco se lea bien.
-
 ---
 
 ## FASE 13 — Seguridad avanzada ✅

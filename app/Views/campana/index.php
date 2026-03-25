@@ -20,7 +20,7 @@
             </thead>
             <tbody>
                 <?php foreach ($campanas as $c): ?>
-                <tr class="clickable-row" onclick="window.location.href='<?= $this->url('/campana/detalle?id=' . intval($c['id'])) ?>'">
+                <tr class="clickable-row" onclick="window.location.href='<?= $this->url('/campana/' . intval($c['id'])) ?>'">
                     <td><strong><?= htmlspecialchars($c['nombre']) ?></strong></td>
                     <td><?= htmlspecialchars($c['fecha_inicio']) ?></td>
                     <td><?= $c['fecha_fin'] ? htmlspecialchars($c['fecha_fin']) : '—' ?></td>
@@ -104,7 +104,7 @@ document.getElementById('formNuevaCampana').addEventListener('submit', function(
     .then(function(res) {
         btn.disabled = false;
         if (res.success) {
-            window.location = basePath + '/campana/detalle?id=' + res.id;
+            window.location = basePath + '/campana/' + res.id;
         } else {
             showToast(res.message, 'error');
         }
