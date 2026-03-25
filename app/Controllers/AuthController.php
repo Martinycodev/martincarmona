@@ -19,7 +19,7 @@ class AuthController extends BaseController
             $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
             if (empty($email) || empty($password)) {
-                $this->redirect('/?error=missing_fields');
+                $this->redirect('/login?error=missing_fields');
                 return;
             }
 
@@ -29,7 +29,7 @@ class AuthController extends BaseController
                     'ip' => $ip,
                     'email' => $email
                 ]);
-                $this->redirect('/?error=too_many_attempts');
+                $this->redirect('/login?error=too_many_attempts');
                 return;
             }
 
@@ -67,11 +67,11 @@ class AuthController extends BaseController
             } else {
                 // Login fallido: registrar intento
                 $this->recordLoginAttempt($ip, $email);
-                $this->redirect('/?error=invalid_credentials');
+                $this->redirect('/login?error=invalid_credentials');
             }
         } else {
-            // Si no es POST, redirigir al inicio
-            $this->redirect('/');
+            // Si no es POST, redirigir al formulario de login
+            $this->redirect('/login');
         }
     }
     

@@ -24,8 +24,9 @@ class BaseController
             $useLayout = false;
         }
 
-        // No envolver vistas del propio layout ni la pantalla de login
-        if ($view === 'home' || substr($view, 0, 8) === 'layouts/') {
+        // No envolver vistas publicas (landing, login, contacto, legales...) ni layouts
+        $publicViews = ['home', 'login', 'contacto', 'sobre-nosotros', 'privacidad', 'aviso-legal', 'cookies'];
+        if (in_array($view, $publicViews) || substr($view, 0, 8) === 'layouts/') {
             $useLayout = false;
         }
 

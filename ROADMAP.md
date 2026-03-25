@@ -76,6 +76,12 @@ Mejoras adicionales (marzo 2026): touch drag & drop en dashboard (chips pendient
 - [ ] El concepto de una deuda mensual y que tenga que cerrar el mes manualmente me preocupa, lo suyo es que sea automático.
 - [ ] Plantear la posibilidad de hacer pagos mensuales recurrentes que se añaden solos por ejemplo, gestoría, autónomo, seguros, etc.
 
+- [ ] Comprobar la subida de archivos de parcelas, trabajadores, vehículos, trabajos.
+
+- [ ] Crear vista general campaña, días trabajados, y lluvias. como en mi excel.
+
+- [ ] Al crear una tarea con abrir riego, se crea un registro automáticamente en la bbdd de riego. Lo malo es que al borrar la tarea no se elimina el registro. por lo que tenemos dos opciones, que se borre por cascade, o que tengamos la opcion de borrar el registro en la tabla riego.
+-
 ---
 
 ## FASE 13 — Seguridad avanzada ✅
@@ -97,12 +103,12 @@ Mejoras adicionales (marzo 2026): touch drag & drop en dashboard (chips pendient
 **Objetivo:** Cambiar `/propietarios/detalle?id=123` → `/propietarios/123` en los 5 modelos con vista detalle.
 
 **Incluye:**
-- [ ] Crear helper `validateAndGetResource($id, $table)` en `BaseController`
-- [ ] Registrar rutas dinamicas: `/propietarios/{id}`, `/trabajadores/{id}`, `/parcelas/{id}`, `/campana/{id}`, `/propietario/parcela/{id}`
-- [ ] Actualizar metodos `detalle()` en los 5 controladores
-- [ ] Actualizar links en vistas (index.php de cada modulo)
-- [ ] Actualizar URLs en JavaScript (grep `detalle?id=`)
-- [ ] Eliminar rutas antiguas `/detalle?id=`
+- [x] Crear helper `validateAndGetResource($id, $table)` en `BaseController`
+- [x] Registrar rutas dinamicas: `/propietarios/{id}`, `/trabajadores/{id}`, `/parcelas/{id}`, `/campana/{id}`, `/propietario/parcela/{id}`
+- [x] Actualizar metodos `detalle()` en los 5 controladores
+- [x] Actualizar links en vistas (index.php de cada modulo)
+- [x] Actualizar URLs en JavaScript (grep `detalle?id=`)
+- [x] Eliminar rutas antiguas `/detalle?id=`
 
 > Detalle completo en `docs/plans/refactorizar-urls-rest.md`
 

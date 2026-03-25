@@ -1,0 +1,436 @@
+/* ===================================================================
+   LANDING.CSS — Estilos compartidos para todas las paginas publicas
+   (home, contacto, login, sobre nosotros, legales)
+   =================================================================== */
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg:           #0c160c;
+    --surface:      #131f13;
+    --surface-2:    #1a2a1a;
+    --border:       rgba(76, 175, 80, 0.14);
+    --border-hover: rgba(76, 175, 80, 0.38);
+    --green:        #4CAF50;
+    --green-light:  #81c784;
+    --green-dim:    rgba(76, 175, 80, 0.10);
+    --text:         #e8f5e9;
+    --text-muted:   #9ab89a;
+    --text-dim:     #3d5c3d;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+a { color: var(--green-light); text-decoration: none; transition: color 0.2s; }
+a:hover { color: var(--green); }
+
+/* ===== NAV ===== */
+.lp-nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(12, 22, 12, 0.82);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+}
+
+.lp-nav-logo {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    text-decoration: none;
+}
+.lp-nav-logo span { color: var(--green); }
+
+/* Links de navegacion del header */
+.lp-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+.lp-nav-links a {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+    position: relative;
+}
+.lp-nav-links a:hover,
+.lp-nav-links a.active {
+    color: var(--text);
+}
+.lp-nav-links a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--green);
+    border-radius: 1px;
+}
+
+.lp-nav-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 22px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(76,175,80,0.4);
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.lp-nav-cta:hover {
+    background: var(--green);
+    color: #0c160c;
+}
+
+/* Hamburguesa movil */
+.lp-nav-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Menu movil */
+.lp-nav-mobile {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(12, 22, 12, 0.96);
+    backdrop-filter: blur(20px);
+    z-index: 150;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+}
+.lp-nav-mobile.active { display: flex; }
+.lp-nav-mobile a {
+    font-size: 1.3rem;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 12px 24px;
+}
+.lp-nav-mobile a:hover { color: var(--green); }
+.lp-nav-mobile-close {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.8rem;
+    cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== SECCIONES ===== */
+.lp-section {
+    padding: 100px 24px;
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+.lp-section-header {
+    text-align: center;
+    margin-bottom: 64px;
+}
+.lp-label {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    display: block;
+    margin-bottom: 14px;
+}
+.lp-title {
+    font-size: clamp(1.9rem, 3.5vw, 2.9rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+.lp-sub {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-top: 16px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ===== BOTONES ===== */
+.lp-btn-primary {
+    padding: 14px 34px;
+    background: var(--green);
+    color: #0c160c;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-block;
+}
+.lp-btn-primary:hover {
+    background: var(--green-light);
+    color: #0c160c;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(76, 175, 80, 0.28);
+}
+
+.lp-btn-ghost {
+    padding: 14px 34px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+}
+.lp-btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: var(--green);
+    color: #0c160c;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+.btn:hover {
+    background: var(--green-light);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(76, 175, 80, 0.28);
+}
+
+/* ===== FORMULARIOS ===== */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: var(--bg);
+    color: var(--text);
+    transition: all 0.2s;
+}
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.12);
+    background: var(--surface-2);
+}
+.form-group textarea {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+    transition: all 0.2s;
+}
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.12);
+    background: var(--surface-2);
+}
+
+.form-group-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+.form-group-check input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--green);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.form-group-check label {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+/* Card de formulario (contacto, login) */
+.lp-form-card {
+    background: var(--surface);
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 50px rgba(0, 0, 0, 0.45);
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.error-message {
+    background: rgba(107, 27, 27, 0.35);
+    color: #ffcdd2;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(141, 47, 47, 0.45);
+    font-size: 0.88rem;
+}
+
+.lp-contact-success {
+    display: none;
+    text-align: center;
+    padding: 24px;
+    color: var(--green-light);
+    font-size: 0.95rem;
+}
+.lp-contact-success.active { display: block; }
+
+/* ===== FOOTER ===== */
+.lp-footer {
+    padding: 32px 24px 28px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.82rem;
+}
+.lp-footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+.lp-footer-links a {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.lp-footer-links a:hover { color: var(--text); }
+
+/* ===== CONTENIDO DE PAGINAS INTERNAS ===== */
+.lp-page-content {
+    padding-top: 100px;
+    min-height: calc(100vh - 120px);
+}
+
+/* Paginas legales */
+.lp-legal {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+}
+.lp-legal h1 {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+}
+.lp-legal .lp-legal-updated {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+}
+.lp-legal h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 36px;
+    margin-bottom: 12px;
+    color: var(--green-light);
+}
+.lp-legal p {
+    margin-bottom: 14px;
+    color: var(--text-muted);
+    line-height: 1.75;
+}
+.lp-legal ul {
+    margin-bottom: 14px;
+    padding-left: 24px;
+    color: var(--text-muted);
+}
+.lp-legal li {
+    margin-bottom: 6px;
+    line-height: 1.65;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .lp-nav { padding: 16px 20px; }
+
+    .lp-nav-links { display: none; }
+    .lp-nav-hamburger { display: flex; }
+
+    .lp-section { padding: 60px 20px; }
+    .lp-section-header { margin-bottom: 40px; }
+
+    .lp-form-card { padding: 28px 20px; }
+
+    .lp-legal { padding: 40px 20px 60px; }
+}

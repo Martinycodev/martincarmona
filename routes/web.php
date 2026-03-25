@@ -9,18 +9,26 @@
 
 // General
 $router->get('/', 'HomeController@index');
+$router->get('/sobre-nosotros', 'HomeController@sobreNosotros');
 $router->get('/enlaces', 'EnlacesController@index');
 
 // PWA: manifest y service worker (servidos por el router para evitar bloqueo .htaccess)
 $router->get('/manifest.json', 'PwaController@manifest');
 $router->get('/sw.js', 'PwaController@sw');
 
-// Contacto (landing page)
-$router->post('/contacto', 'ContactoController@enviar');
+// Contacto (pagina independiente)
+$router->get('/contacto', 'HomeController@contacto');
+$router->post('/contacto/enviar', 'ContactoController@enviar');
 
-// Autenticación
+// Autenticacion (pagina independiente de login)
+$router->get('/login', 'HomeController@loginForm');
 $router->post('/login', 'AuthController@login');
 $router->get('/logout', 'AuthController@logout');
+
+// Paginas legales
+$router->get('/privacidad', 'HomeController@privacidad');
+$router->get('/aviso-legal', 'HomeController@avisoLegal');
+$router->get('/cookies', 'HomeController@cookies');
 
 // Perfil
 $router->get('/perfil', 'PerfilController@index');

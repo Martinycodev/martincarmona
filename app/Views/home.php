@@ -48,76 +48,9 @@
     <!-- PWA -->
     <link rel="manifest" href="<?= $this->url('/manifest.json') ?>">
     <meta name="theme-color" content="#4caf50">
+    <!-- Estilos compartidos de paginas publicas -->
+    <link rel="stylesheet" href="<?= $this->url('/public/css/landing.css') ?>">
     <style>
-        /* ===== RESET & BASE ===== */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --bg:           #0c160c;
-            --surface:      #131f13;
-            --surface-2:    #1a2a1a;
-            --border:       rgba(76, 175, 80, 0.14);
-            --border-hover: rgba(76, 175, 80, 0.38);
-            --green:        #4CAF50;
-            --green-light:  #81c784;
-            --green-dim:    rgba(76, 175, 80, 0.10);
-            --text:         #e8f5e9;
-            --text-muted:   #9ab89a;
-            --text-dim:     #3d5c3d;
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        /* ===== NAV ===== */
-        .lp-nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 100;
-            padding: 18px 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(12, 22, 12, 0.82);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .lp-nav-logo {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text);
-            letter-spacing: 0.02em;
-            text-decoration: none;
-        }
-        .lp-nav-logo span { color: var(--green); }
-
-        .lp-nav-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 22px;
-            background: var(--green-dim);
-            color: var(--green);
-            border: 1px solid rgba(76,175,80,0.4);
-            border-radius: 8px;
-            font-size: 0.88rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        .lp-nav-cta:hover {
-            background: var(--green);
-            color: #0c160c;
-        }
-
         /* ===== HERO ===== */
         .lp-hero {
             min-height: 100vh;
@@ -231,39 +164,6 @@
             justify-content: center;
         }
 
-        .lp-btn-primary {
-            padding: 14px 34px;
-            background: var(--green);
-            color: #0c160c;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .lp-btn-primary:hover {
-            background: var(--green-light);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(76, 175, 80, 0.28);
-        }
-
-        .lp-btn-ghost {
-            padding: 14px 34px;
-            background: transparent;
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            font-size: 1rem;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        .lp-btn-ghost:hover {
-            color: var(--text);
-            border-color: var(--text-muted);
-        }
-
         /* ===== STATS BAR ===== */
         .lp-stats {
             display: flex;
@@ -293,39 +193,6 @@
         }
 
         /* ===== FEATURES ===== */
-        .lp-section {
-            padding: 100px 24px;
-            max-width: 1080px;
-            margin: 0 auto;
-        }
-
-        .lp-section-header {
-            text-align: center;
-            margin-bottom: 64px;
-        }
-        .lp-label {
-            font-size: 0.76rem;
-            font-weight: 600;
-            color: var(--green);
-            text-transform: uppercase;
-            letter-spacing: 0.14em;
-            display: block;
-            margin-bottom: 14px;
-        }
-        .lp-title {
-            font-size: clamp(1.9rem, 3.5vw, 2.9rem);
-            font-weight: 700;
-            letter-spacing: -0.025em;
-        }
-        .lp-sub {
-            font-size: 1rem;
-            color: var(--text-muted);
-            margin-top: 16px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
         .lp-features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -577,173 +444,13 @@
             border-radius: 4px;
         }
 
-        /* ===== CONTACT + LOGIN — 2 COLUMNS ===== */
-        .lp-access-section {
-            padding: 100px 24px 80px;
-            max-width: 1080px;
-            margin: 0 auto;
-        }
-        .lp-access-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 48px;
-            align-items: start;
-        }
-        .lp-contact-col, .lp-login-col {
-            width: 100%;
-        }
-        .lp-contact-col .lp-section-header,
-        .lp-login-col .lp-section-header {
-            margin-bottom: 32px;
-        }
-        .lp-contact-form {
-            background: var(--surface);
-            padding: 40px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 50px rgba(0, 0, 0, 0.45);
-        }
-        .lp-contact-form textarea {
-            width: 100%;
-            padding: 13px 16px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            background: var(--bg);
-            color: var(--text);
-            font-family: inherit;
-            resize: vertical;
-            min-height: 100px;
-            transition: all 0.2s;
-        }
-        .lp-contact-form textarea:focus {
-            outline: none;
-            border-color: var(--green);
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.12);
-            background: var(--surface-2);
-        }
-        .lp-contact-success {
-            display: none;
-            text-align: center;
-            padding: 24px;
-            color: var(--green-light);
-            font-size: 0.95rem;
-        }
-        .lp-contact-success.active { display: block; }
-
-        @media (max-width: 768px) {
-            .lp-access-grid {
-                grid-template-columns: 1fr;
-                gap: 60px;
-            }
-        }
-
-        .login-form {
-            background: var(--surface);
-            padding: 40px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 50px rgba(0, 0, 0, 0.45);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.88rem;
-            font-weight: 500;
-            color: var(--text-muted);
-        }
-        .form-group input[type="email"],
-        .form-group input[type="password"] {
-            width: 100%;
-            padding: 13px 16px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            background: var(--bg);
-            color: var(--text);
-            transition: all 0.2s;
-        }
-        .form-group input[type="email"]:focus,
-        .form-group input[type="password"]:focus {
-            outline: none;
-            border-color: var(--green);
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.12);
-            background: var(--surface-2);
-        }
-
-        .form-group-check {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 24px;
-        }
-        .form-group-check input[type="checkbox"] {
-            width: 15px;
-            height: 15px;
-            accent-color: var(--green);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .form-group-check label {
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            background: var(--green);
-            color: #0c160c;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-        }
-        .btn:hover {
-            background: var(--green-light);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 22px rgba(76, 175, 80, 0.28);
-        }
-
-        .error-message {
-            background: rgba(107, 27, 27, 0.35);
-            color: #ffcdd2;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(141, 47, 47, 0.45);
-            font-size: 0.88rem;
-        }
-
-        /* ===== FOOTER ===== */
-        .lp-footer {
-            padding: 28px 24px;
-            text-align: center;
-            border-top: 1px solid var(--border);
-            color: var(--text-dim);
-            font-size: 0.82rem;
-        }
-
-        /* ===== RESPONSIVE ===== */
+        /* ===== RESPONSIVE (home-specific) ===== */
         @media (max-width: 680px) {
-            .lp-nav { padding: 16px 20px; }
             .lp-stat { padding: 28px 24px; border-right: none; border-bottom: 1px solid var(--border); }
             .lp-stat:last-child { border-bottom: none; }
             .lp-stats { flex-direction: column; align-items: center; }
             .lp-steps-grid { grid-template-columns: 1fr; }
             .lp-steps-grid::before { display: none; }
-            .login-form { padding: 28px 20px; }
-            .lp-contact-form { padding: 28px 20px; }
             .lp-role-tabs { flex-wrap: wrap; gap: 8px; }
             .lp-role-tab { padding: 8px 18px; font-size: 0.84rem; }
             .lp-modal { padding: 32px 24px; }
@@ -752,12 +459,7 @@
 </head>
 <body>
 
-    <!-- NAV -->
-    <nav class="lp-nav">
-        <a href="#" class="lp-nav-logo">🌳 Martin<span>Carmona</span>.com</a>
-        <a href="#acceso" class="lp-nav-cta">Contacto →</a>
-    </nav>
-
+    <?php $activePage = 'home'; include __DIR__ . '/public/_nav.php'; ?>
 
     <main>
     <!-- HERO -->
@@ -775,7 +477,7 @@
             Sin papeles, sin hojas de cálculo.
         </p>
         <div class="lp-hero-actions">
-            <a href="#acceso" class="lp-btn-primary">Iniciar sesión</a>
+            <a href="<?= $this->url('/login') ?>" class="lp-btn-primary">Iniciar sesion</a>
             <a href="#funciones" class="lp-btn-ghost">Ver funciones ↓</a>
         </div>
     </section>
@@ -957,108 +659,22 @@
     </div>
 
 
-    <!-- CONTACTO + LOGIN -->
-    <section class="lp-access-section" id="acceso">
-        <div class="lp-section-header" style="margin-bottom: 56px;">
-            <span class="lp-label">Contacto y acceso</span>
-            <h2 class="lp-title">Hablemos o entra directamente</h2>
+    <!-- CTA final antes del footer -->
+    <section class="lp-section" style="text-align: center; padding-bottom: 60px;">
+        <div class="lp-section-header" style="margin-bottom: 32px;">
+            <span class="lp-label">Empieza hoy</span>
+            <h2 class="lp-title">Tu finca merece estar organizada</h2>
+            <p class="lp-sub">Digitaliza tu explotacion y olvidate del papel. Contactanos o accede directamente.</p>
         </div>
-
-        <div class="lp-access-grid">
-            <!-- Columna izquierda: Contacto -->
-            <div class="lp-contact-col" id="contacto">
-                <div class="lp-section-header" style="text-align: left;">
-                    <h3 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;">Contacto</h3>
-                    <p style="font-size: 0.92rem; color: var(--text-muted);">Tienes preguntas o quieres una demo? Escríbenos y te respondemos en menos de 24h.</p>
-                </div>
-
-                <form class="lp-contact-form" id="contactForm" method="POST" action="<?= $this->url('/contacto') ?>">
-                    <?= \Core\CsrfMiddleware::getTokenField() ?>
-
-                    <!-- Honeypot: campo invisible para humanos, los bots lo rellenan -->
-                    <div style="position:absolute; left:-9999px; opacity:0; height:0; overflow:hidden;" aria-hidden="true">
-                        <label for="website">No rellenar este campo</label>
-                        <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
-                    </div>
-
-                    <!-- Timestamp de carga del formulario -->
-                    <input type="hidden" name="_t" id="contact_timestamp" value="">
-
-                    <div class="form-group">
-                        <label for="contact_name">Nombre</label>
-                        <input type="text" id="contact_name" name="nombre" placeholder="Tu nombre" required
-                               style="width:100%; padding:13px 16px; border:1px solid var(--border); border-radius:8px; font-size:0.95rem; background:var(--bg); color:var(--text); transition:all 0.2s;">
-                    </div>
-                    <div class="form-group">
-                        <label for="contact_email">Email</label>
-                        <input type="email" id="contact_email" name="email" placeholder="tu@email.com" required
-                               style="width:100%; padding:13px 16px; border:1px solid var(--border); border-radius:8px; font-size:0.95rem; background:var(--bg); color:var(--text); transition:all 0.2s;">
-                    </div>
-                    <div class="form-group">
-                        <label for="contact_message">Mensaje</label>
-                        <textarea id="contact_message" name="mensaje" placeholder="Cuéntanos qué necesitas..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn" id="contactSubmitBtn">Enviar mensaje →</button>
-                </form>
-                <div class="lp-contact-success" id="contactSuccess">
-                    Mensaje enviado correctamente. Te responderemos pronto.
-                </div>
-            </div>
-
-            <!-- Columna derecha: Login -->
-            <div class="lp-login-col" id="login">
-                <div class="lp-section-header" style="text-align: left;">
-                    <h3 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;">Acceso privado</h3>
-                    <p style="font-size: 0.92rem; color: var(--text-muted);">Introduce tus credenciales para acceder a tu panel de gestión.</p>
-                </div>
-
-                <div class="login-form">
-
-                    <?php if (isset($error)): ?>
-                        <div class="error-message">
-                            <?php if ($error === 'missing_fields'): ?>
-                                Por favor, completa todos los campos
-                            <?php elseif ($error === 'invalid_credentials'): ?>
-                                Email o contraseña incorrectos
-                            <?php elseif ($error === 'too_many_attempts'): ?>
-                                Demasiados intentos. Espera 15 minutos antes de volver a intentarlo
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <form method="POST" action="<?= $this->url('/login') ?>">
-                        <?= \Core\CsrfMiddleware::getTokenField() ?>
-
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" placeholder="tu@email.com" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">Contraseña</label>
-                            <input type="password" id="password" name="password" placeholder="••••••••" required>
-                        </div>
-
-                        <div class="form-group-check">
-                            <input type="checkbox" id="remember" name="remember">
-                            <label for="remember">Mantener sesión iniciada</label>
-                        </div>
-
-                        <button type="submit" class="btn">Iniciar sesión →</button>
-                    </form>
-
-                </div>
-            </div>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="<?= $this->url('/contacto') ?>" class="lp-btn-ghost">Contacto</a>
+            <a href="<?= $this->url('/login') ?>" class="lp-btn-primary">Ingresar →</a>
         </div>
     </section>
 
-
     </main>
 
-    <!-- FOOTER -->
-    <footer class="lp-footer">
-        &copy; <?= date('Y') ?> MartinCarmona.com — Sistema de Gestión de Olivar
-    </footer>
+    <?php include __DIR__ . '/public/_footer.php'; ?>
 
     <script>
         // === Elimina el video en conexiones lentas ===
@@ -1229,71 +845,6 @@
             startAuto();
         })();
 
-        // === FORMULARIO DE CONTACTO (envío real con protección anti-spam) ===
-        (function () {
-            var form = document.getElementById('contactForm');
-            var success = document.getElementById('contactSuccess');
-            var tsField = document.getElementById('contact_timestamp');
-            if (!form) return;
-
-            // Guardar timestamp de carga para detección de bots
-            tsField.value = Math.floor(Date.now() / 1000);
-
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                var btn = document.getElementById('contactSubmitBtn');
-                var nombre = document.getElementById('contact_name').value.trim();
-                var email = document.getElementById('contact_email').value.trim();
-                var mensaje = document.getElementById('contact_message').value.trim();
-
-                if (!nombre || !email || !mensaje) {
-                    alert('Por favor, completa todos los campos.');
-                    return;
-                }
-
-                // Deshabilitar botón mientras se envía
-                btn.disabled = true;
-                btn.textContent = 'Enviando...';
-
-                var formData = new FormData(form);
-
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(function (res) { return res.json(); })
-                .then(function (data) {
-                    if (data.success) {
-                        form.style.display = 'none';
-                        success.classList.add('active');
-                    } else {
-                        alert(data.error || 'Error al enviar el mensaje. Inténtalo de nuevo.');
-                        btn.disabled = false;
-                        btn.textContent = 'Enviar mensaje →';
-                    }
-                })
-                .catch(function () {
-                    alert('Error de conexión. Inténtalo de nuevo.');
-                    btn.disabled = false;
-                    btn.textContent = 'Enviar mensaje →';
-                });
-            });
-        })();
-
-        // === AUTO-SCROLL A LOGIN CUANDO HAY ERROR ===
-        (function () {
-            var params = new URLSearchParams(window.location.search);
-            if (params.has('error')) {
-                // Esperamos a que la página se renderice completamente
-                setTimeout(function () {
-                    var loginSection = document.getElementById('acceso');
-                    if (loginSection) {
-                        loginSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }, 100);
-            }
-        })();
     </script>
 </body>
 </html>
