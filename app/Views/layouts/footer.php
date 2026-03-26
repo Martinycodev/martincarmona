@@ -2,7 +2,7 @@
 
     <footer class="site-footer">
         <div class="footer-content">
-            &copy; <?= date('Y') ?> MartinCarmona.com 
+            &copy; <?= date('Y') ?> MiOlivar.es
             <span class="footer-sep">·</span>
             <a href="#" class="tour-help-link" onclick="event.preventDefault(); window.guidedTour && window.guidedTour.start('dashboard', true)">Ayuda</a>
             <span class="footer-sep">·</span><a href="https://auth-db699.hstgr.io/" target="_blank" style="color: #2a2a2a">bbdd</a>
@@ -195,7 +195,7 @@
             var banner = document.createElement('div');
             banner.id = 'pwa-install-banner';
             banner.innerHTML =
-                '<span class="pwa-install-text">Instala MartinCarmona como app</span>' +
+                '<span class="pwa-install-text">Instala MiOlivar como app</span>' +
                 '<button id="pwa-install-btn" class="pwa-install-accept">Instalar</button>' +
                 '<button id="pwa-install-dismiss" class="pwa-install-close" title="Cerrar">✕</button>';
 

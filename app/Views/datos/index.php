@@ -1,5 +1,5 @@
 <?php 
-$title = 'Datos - MartinCarmona.com';
+$title = 'Datos - MiOlivar.es';
 ?>
 <div class="container">
         <h2 style="text-align:center; margin:1.5rem 0;">📊 Bases de Datos</h2>

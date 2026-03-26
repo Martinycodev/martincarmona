@@ -1,5 +1,5 @@
 /**
- * Sistema de navegación AJAX para MartinCarmona.com
+ * Sistema de navegación AJAX para MiOlivar.es
  * Evita recargas de página manteniendo el Dashboard y cambiando solo el contenido
  */
 

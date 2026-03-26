@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'MartinCarmona.com' ?></title>
+    <title><?= $title ?? 'MiOlivar.es' ?></title>
     <!-- Favicons -->
     <link rel="icon" href="<?= $this->url('/public/img/favicon.svg') ?>" type="image/svg+xml">
     <link rel="apple-touch-icon" sizes="152x152" href="<?= $this->url('/public/img/icons/icon-152x152.png') ?>">
@@ -19,7 +19,7 @@
     <!-- iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="MartinCarmona">
+    <meta name="apple-mobile-web-app-title" content="MiOlivar">
     <link rel="apple-touch-icon" href="<?= $this->url('/public/img/icons/icon-152x152.png') ?>">
     <!-- Estilos -->
     <link rel="stylesheet" href="<?= $this->url('/public/css/styles.css') ?>">

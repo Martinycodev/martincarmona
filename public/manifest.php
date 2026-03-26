@@ -50,8 +50,8 @@ foreach ([192, 384, 512] as $s) {
 }
 
 $manifest = [
-    'name'             => 'MartinCarmona — Gestión Agrícola',
-    'short_name'       => 'MartinCarmona',
+    'name'             => 'MiOlivar — Gestión Agrícola',
+    'short_name'       => 'MiOlivar',
     'description'      => 'Sistema de gestión integral para explotaciones agrícolas de olivar',
     'start_url'        => $base . '/dashboard',
     'scope'            => $base . '/',

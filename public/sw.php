@@ -1,6 +1,6 @@
 <?php
 /**
- * Service Worker — MartinCarmona PWA (generado dinámicamente).
+ * Service Worker — MiOlivar PWA (generado dinámicamente).
  *
  * Inyecta APP_BASE_PATH y genera un hash de versión automático
  * basado en la fecha de modificación de los archivos del shell.
@@ -36,14 +36,14 @@ foreach ($shellFiles as $file) {
         if ($mtime > $maxMtime) $maxMtime = $mtime;
     }
 }
-$cacheVersion = 'martincarmona-v' . $maxMtime;
+$cacheVersion = 'miolivar-v' . $maxMtime;
 
 // Servir como JavaScript
 header('Content-Type: application/javascript');
 header('Service-Worker-Allowed: ' . $base . '/');
 ?>
 /**
- * Service Worker — MartinCarmona PWA
+ * Service Worker — MiOlivar PWA
  * Cachea el shell de la app (CSS, JS, fuentes) para carga rápida.
  * Muestra pantalla offline si no hay conexión.
  *

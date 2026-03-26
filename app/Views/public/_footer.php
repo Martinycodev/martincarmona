@@ -12,5 +12,5 @@ $base = defined('APP_BASE_PATH') ? APP_BASE_PATH : '';
         <a href="<?= $base ?>/aviso-legal">Aviso legal</a>
         <a href="<?= $base ?>/cookies">Politica de cookies</a>
     </div>
-    <p>&copy; <?= date('Y') ?> MartinCarmona.com — Sistema de Gestion de Olivar</p>
+    <p>&copy; <?= date('Y') ?> MiOlivar.es — Sistema de Gestión de Olivar</p>
 </footer>

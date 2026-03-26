@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contacto — MartinCarmona.com</title>
-    <meta name="description" content="Contacta con MartinCarmona.com. Resolvemos tus dudas sobre nuestra app de gestion agricola para olivar en menos de 24 horas.">
+    <title>Contacto — MiOlivar.es</title>
+    <meta name="description" content="Contacta con MiOlivar.es. Resolvemos tus dudas sobre nuestra app de gestion agricola para olivar en menos de 24 horas.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://martincarmona.com/contacto">
+    <link rel="canonical" href="https://miolivar.es/contacto">
     <link rel="icon" href="<?= $this->url('/public/img/favicon.svg') ?>" type="image/svg+xml">
     <link rel="stylesheet" href="<?= $this->url('/public/css/landing.css') ?>">
 </head>
@@ -57,7 +57,7 @@
 
             <!-- Info adicional de contacto -->
             <div style="text-align: center; margin-top: 48px; color: var(--text-muted); font-size: 0.9rem;">
-                <p>Tambien puedes escribirnos a <a href="mailto:info@martincarmona.com" style="color: var(--green-light);">info@martincarmona.com</a></p>
+                <p>Tambien puedes escribirnos a <a href="mailto:info@miolivar.es" style="color: var(--green-light);">info@miolivar.es</a></p>
             </div>
         </section>
     </main>

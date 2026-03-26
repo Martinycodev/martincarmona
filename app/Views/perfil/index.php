@@ -1,5 +1,5 @@
 <?php 
-$title = 'Mi Perfil - MartinCarmona.com';
+$title = 'Mi Perfil - MiOlivar.es';
 ?>
 <div class="container">
     <h2 style="text-align:center; margin:1.5rem 0;">👤 Mi Perfil</h2>

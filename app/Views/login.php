@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar sesion — MartinCarmona.com</title>
+    <title>Iniciar sesion — MiOlivar.es</title>
     <meta name="description" content="Accede a tu panel de gestion agricola. Inicia sesion con tus credenciales.">
     <meta name="robots" content="noindex, nofollow">
-    <link rel="canonical" href="https://martincarmona.com/login">
+    <link rel="canonical" href="https://miolivar.es/login">
     <link rel="icon" href="<?= $this->url('/public/img/favicon.svg') ?>" type="image/svg+xml">
     <link rel="stylesheet" href="<?= $this->url('/public/css/landing.css') ?>">
 </head>

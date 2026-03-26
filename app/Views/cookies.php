@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Politica de cookies — MartinCarmona.com</title>
-    <meta name="description" content="Politica de cookies de MartinCarmona.com. Informacion sobre las cookies que utilizamos y como gestionarlas.">
+    <title>Politica de cookies — MiOlivar.es</title>
+    <meta name="description" content="Politica de cookies de MiOlivar.es. Informacion sobre las cookies que utilizamos y como gestionarlas.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://martincarmona.com/cookies">
+    <link rel="canonical" href="https://miolivar.es/cookies">
     <link rel="icon" href="<?= $this->url('/public/img/favicon.svg') ?>" type="image/svg+xml">
     <link rel="stylesheet" href="<?= $this->url('/public/css/landing.css') ?>">
 </head>
@@ -24,7 +24,7 @@
             <p>Las cookies son pequenos archivos de texto que los sitios web almacenan en tu navegador. Se utilizan para recordar preferencias, mantener sesiones activas y mejorar la experiencia de navegacion.</p>
 
             <h2>2. Cookies que utilizamos</h2>
-            <p>MartinCarmona.com utiliza exclusivamente cookies tecnicas y de sesion, necesarias para el funcionamiento de la plataforma:</p>
+            <p>MiOlivar.es utiliza exclusivamente cookies tecnicas y de sesion, necesarias para el funcionamiento de la plataforma:</p>
             <ul>
                 <li><strong>PHPSESSID:</strong> cookie de sesion de PHP. Mantiene tu sesion activa mientras navegas por la aplicacion. Se elimina al cerrar el navegador.</li>
                 <li><strong>user_id:</strong> cookie opcional que se activa solo si marcas "Mantener sesion iniciada" al iniciar sesion. Caduca a los 30 dias.</li>

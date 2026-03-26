@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sobre Mi Olivar — MartinCarmona.com</title>
+    <title>Sobre Mi Olivar — MiOlivar.es</title>
     <meta name="description" content="Mi Olivar nace en Arjonilla (Jaén) de la mano de Martín Carmona, agricultor y desarrollador. Tradición y tecnología para gestionar tu olivar de forma integral.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://martincarmona.com/sobre-nosotros">
+    <link rel="canonical" href="https://miolivar.es/sobre-nosotros">
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://martincarmona.com/sobre-nosotros">
-    <meta property="og:title" content="Sobre Mi Olivar — MartinCarmona.com">
+    <meta property="og:url" content="https://miolivar.es/sobre-nosotros">
+    <meta property="og:title" content="Sobre Mi Olivar — MiOlivar.es">
     <meta property="og:description" content="Mi Olivar nace en Arjonilla (Jaén). Tradición y tecnología para gestionar tu olivar de forma integral.">
-    <meta property="og:image" content="https://martincarmona.com/public/img/og-cover.jpg">
+    <meta property="og:image" content="https://miolivar.es/public/img/og-cover.jpg">
     <meta property="og:locale" content="es_ES">
     <link rel="icon" href="<?= $this->url('/public/img/favicon.svg') ?>" type="image/svg+xml">
     <link rel="stylesheet" href="<?= $this->url('/public/css/landing.css') ?>">

@@ -1,6 +1,6 @@
 {
-    "name": "MartinCarmona — Gestión Agrícola",
-    "short_name": "MartinCarmona",
+    "name": "MiOlivar — Gestión Agrícola",
+    "short_name": "MiOlivar",
     "description": "Sistema de gestión integral para explotaciones agrícolas de olivar",
     "start_url": "/martincarmona/dashboard",
     "display": "standalone",

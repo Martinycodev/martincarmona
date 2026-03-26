@@ -3,33 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Martin Carmona - App de gestión para olivar y fincas agrícolas</title>
+    <title>MiOlivar.es - App de gestión para olivar y fincas agrícolas</title>
     <meta name="description" content="Aplicación agrícola para organizar tu olivar: controla parcelas, trabajadores, tareas, economía y campañas de aceituna desde una sola plataforma. Sin papeles, sin hojas de cálculo.">
-    <meta name="keywords" content="app gestión olivar, aplicación agrícola, gestión de fincas, control de parcelas, olivar Jaén, MartinCarmona, tareas agrícolas, campañas aceituna">
-    <link rel="canonical" href="https://martincarmona.com/">
-    <meta name="author" content="Martín Carmona">
+    <meta name="keywords" content="app gestión olivar, aplicación agrícola, gestión de fincas, control de parcelas, olivar Jaén, MiOlivar, tareas agrícolas, campañas aceituna">
+    <link rel="canonical" href="https://miolivar.es/">
+    <meta name="author" content="MiOlivar.es">
     <meta name="robots" content="index, follow">
     <!-- Open Graph (Facebook, WhatsApp, Telegram) -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://martincarmona.com/">
-    <meta property="og:title" content="Martin Carmona - App de gestión para olivar y fincas agrícolas">
+    <meta property="og:url" content="https://miolivar.es/">
+    <meta property="og:title" content="MiOlivar.es - App de gestión para olivar y fincas agrícolas">
     <meta property="og:description" content="Aplicación agrícola para organizar tu olivar: controla parcelas, trabajadores, tareas, economía y campañas de aceituna desde una sola plataforma. Sin papeles, sin hojas de cálculo.">
-    <meta property="og:image" content="https://martincarmona.com/public/img/og-cover.jpg">
+    <meta property="og:image" content="https://miolivar.es/public/img/og-cover.jpg">
     <meta property="og:locale" content="es_ES">
-    <meta property="og:site_name" content="MartinCarmona.com">
+    <meta property="og:site_name" content="MiOlivar.es">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Martin Carmona - App de gestión para olivar y fincas agrícolas">
+    <meta name="twitter:title" content="MiOlivar.es - App de gestión para olivar y fincas agrícolas">
     <meta name="twitter:description" content="Aplicación agrícola para organizar tu olivar: controla parcelas, trabajadores, tareas, economía y campañas de aceituna desde una sola plataforma. Sin papeles, sin hojas de cálculo.">
-    <meta name="twitter:image" content="https://martincarmona.com/public/img/og-cover.jpg">
+    <meta name="twitter:image" content="https://miolivar.es/public/img/og-cover.jpg">
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "MartinCarmona.com",
+        "name": "MiOlivar.es",
         "description": "Aplicación web de gestión integral de olivar y fincas agrícolas",
-        "url": "https://martincarmona.com",
+        "url": "https://miolivar.es",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Web",
         "author": {

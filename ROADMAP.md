@@ -79,9 +79,14 @@ Mejoras adicionales (marzo 2026): touch drag & drop en dashboard (chips pendient
 
 - [ ] Crear vista general campaña, días trabajados, y lluvias. como en mi excel. (buscar referencia)
 
+- [ ] El logo de campaña de las aceitunas, que es un emogi, en chrome de w10 no se ve. Puede ser un problema de la tipografía o del diseño por lo que podemos planear cambiar todos los iconos por imagenes svg o iconos que se guarden en local. Para que en todos los navegadores se vea igual.
+
 - [x] Al crear una tarea con abrir riego, se crea un registro automáticamente en la bbdd de riego. Lo malo es que al borrar la tarea no se elimina el registro. por lo que tenemos dos opciones, que se borre por cascade, o que tengamos la opcion de borrar el registro en la tabla riego.
 
 - [x] El usuario con rol de empresa es el responsable de crear los usuarios de los trabajadores y propietarios. Por lo que en la vista mi perfil tiene que poder crear usuarios y contraseñas para sus trabajadores y propietarios creando la conexion de su trabajador con el nickname y el password correspondiente. Me gustaría que los trabajadores o propietarios que tengan un usuario tengan por defecto @miolivar.es como prefijo. Podríamos poner su DNI por defecto o dejar que la empresa elija el nombre y comprobar que no hay ningún usuario con el mismo nickname.
+- [ ] En la vista de propietario y de trabajador, quiero que se vean las tareas de 15 en 15 con paginación. Incluso podríamos filtrar por año. Para que vea solo las de este año y en caso de querer buscar vea las de años anteriores.
+- [ ] 
+
 
 -
 ---

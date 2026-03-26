@@ -1,10 +1,10 @@
 /**
- * Service Worker — MartinCarmona PWA
+ * Service Worker — MiOlivar PWA
  * Cachea el shell de la app (CSS, JS, fuentes) para carga rápida.
  * Muestra pantalla offline si no hay conexión.
  */
 
-const CACHE_NAME = 'martincarmona-v2';
+const CACHE_NAME = 'miolivar-v2';
 const BASE = '/martincarmona';
 
 // Archivos del shell de la aplicación que se cachean al instalar

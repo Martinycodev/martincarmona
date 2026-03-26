@@ -26,4 +26,4 @@ Disallow: /login
 Disallow: /logout
 Disallow: /public/uploads/
 
-Sitemap: https://martincarmona.com/sitemap.xml
+Sitemap: https://miolivar.es/sitemap.xml

@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aviso legal — MartinCarmona.com</title>
-    <meta name="description" content="Aviso legal de MartinCarmona.com. Informacion sobre el titular del sitio web y condiciones de uso.">
+    <title>Aviso legal — MiOlivar.es</title>
+    <meta name="description" content="Aviso legal de MiOlivar.es. Informacion sobre el titular del sitio web y condiciones de uso.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://martincarmona.com/aviso-legal">
+    <link rel="canonical" href="https://miolivar.es/aviso-legal">
     <link rel="icon" href="<?= $this->url('/public/img/favicon.svg') ?>" type="image/svg+xml">
     <link rel="stylesheet" href="<?= $this->url('/public/css/landing.css') ?>">
 </head>
@@ -25,12 +25,12 @@
             <ul>
                 <li><strong>Titular:</strong> Martin Carmona</li>
                 <li><strong>Domicilio:</strong> Arjonilla, Jaen (Espana)</li>
-                <li><strong>Email:</strong> <a href="mailto:info@martincarmona.com">info@martincarmona.com</a></li>
-                <li><strong>Sitio web:</strong> <a href="https://martincarmona.com">https://martincarmona.com</a></li>
+                <li><strong>Email:</strong> <a href="mailto:info@miolivar.es">info@miolivar.es</a></li>
+                <li><strong>Sitio web:</strong> <a href="https://miolivar.es">https://miolivar.es</a></li>
             </ul>
 
             <h2>2. Objeto del sitio web</h2>
-            <p>MartinCarmona.com es una plataforma web de gestion integral de explotaciones agricolas de olivar. Permite organizar parcelas, trabajadores, tareas, economia, campanas de aceituna y otros aspectos de la actividad agricola.</p>
+            <p>MiOlivar.es es una plataforma web de gestion integral de explotaciones agricolas de olivar. Permite organizar parcelas, trabajadores, tareas, economia, campanas de aceituna y otros aspectos de la actividad agricola.</p>
 
             <h2>3. Condiciones de uso</h2>
             <p>El acceso y uso de este sitio web atribuye la condicion de usuario e implica la aceptacion de las presentes condiciones. El usuario se compromete a:</p>

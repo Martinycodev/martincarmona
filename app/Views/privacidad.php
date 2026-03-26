@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Politica de privacidad — MartinCarmona.com</title>
-    <meta name="description" content="Politica de privacidad de MartinCarmona.com. Informacion sobre el tratamiento de datos personales conforme al RGPD.">
+    <title>Politica de privacidad — MiOlivar.es</title>
+    <meta name="description" content="Politica de privacidad de MiOlivar.es. Informacion sobre el tratamiento de datos personales conforme al RGPD.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://martincarmona.com/privacidad">
+    <link rel="canonical" href="https://miolivar.es/privacidad">
     <link rel="icon" href="<?= $this->url('/public/img/favicon.svg') ?>" type="image/svg+xml">
     <link rel="stylesheet" href="<?= $this->url('/public/css/landing.css') ?>">
 </head>
@@ -21,7 +21,7 @@
             <p class="lp-legal-updated">Ultima actualizacion: marzo 2026</p>
 
             <h2>1. Responsable del tratamiento</h2>
-            <p>El responsable del tratamiento de tus datos personales es el titular de MartinCarmona.com, con domicilio en Arjonilla, Jaen (Espana). Puedes contactar con nosotros a traves del correo electronico: <a href="mailto:info@martincarmona.com">info@martincarmona.com</a>.</p>
+            <p>El responsable del tratamiento de tus datos personales es el titular de MiOlivar.es, con domicilio en Arjonilla, Jaen (Espana). Puedes contactar con nosotros a traves del correo electronico: <a href="mailto:info@miolivar.es">info@miolivar.es</a>.</p>
 
             <h2>2. Datos que recopilamos</h2>
             <p>Recopilamos los siguientes datos personales:</p>
@@ -64,7 +64,7 @@
                 <li>Oponerte al tratamiento o solicitar su limitacion.</li>
                 <li>Portabilidad de los datos.</li>
             </ul>
-            <p>Para ejercer estos derechos, contacta con nosotros en <a href="mailto:info@martincarmona.com">info@martincarmona.com</a>.</p>
+            <p>Para ejercer estos derechos, contacta con nosotros en <a href="mailto:info@miolivar.es">info@miolivar.es</a>.</p>
 
             <h2>8. Seguridad</h2>
             <p>Aplicamos medidas de seguridad tecnicas y organizativas para proteger tus datos: contrasenas cifradas con bcrypt, proteccion CSRF, rate limiting, logs de seguridad y conexiones cifradas (HTTPS).</p>
