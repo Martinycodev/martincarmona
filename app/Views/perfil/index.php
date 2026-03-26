@@ -107,6 +107,105 @@ $title = 'Mi Perfil - MartinCarmona.com';
             </form>
         </div>
 
+        <!-- Sección de gestión de usuarios (solo para rol empresa) -->
+        <?php if (($user['rol'] ?? '') === 'empresa'): ?>
+        <div class="profile-card" id="gestion-usuarios">
+            <div class="profile-header">
+                <h2>👥 Gestión de Usuarios</h2>
+            </div>
+            <p style="color:#aaa; font-size:0.85rem; margin-bottom:16px;">
+                Crea cuentas de acceso para tus trabajadores y propietarios. El usuario tendrá el formato <strong style="color:#a8d5ab;">nombre@miolivar.es</strong>
+            </p>
+
+            <!-- Combobox para añadir nuevo usuario -->
+            <h3 style="color:#ccc; font-size:0.95rem; margin:0 0 10px;">Crear cuenta de acceso</h3>
+            <div class="combobox-usuarios-wrapper" style="position:relative; margin-bottom:20px;">
+                <input type="text" id="buscar-persona-sin-cuenta" placeholder="Buscar trabajador o propietario..."
+                    autocomplete="off"
+                    style="width:100%; padding:12px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff; font-size:16px; box-sizing:border-box;">
+                <div id="combobox-personas-dropdown" class="combobox-dropdown" style="display:none;"></div>
+            </div>
+
+            <!-- Usuarios con cuenta creada -->
+            <h3 style="color:#ccc; font-size:0.95rem; margin:20px 0 10px;">Usuarios activos</h3>
+            <div id="lista-usuarios-activos">
+                <div class="notif-empty" style="color:#888; text-align:center; padding:12px;">Cargando...</div>
+            </div>
+        </div>
+
+        <!-- Modal: Crear usuario vinculado -->
+        <div class="modal" id="modalCrearUsuario" style="display:none;">
+            <div class="modal-content" style="max-width:480px;">
+                <div class="modal-header">
+                    <h3 id="modalCrearUsuarioTitulo">Crear usuario</h3>
+                    <button class="modal-close" onclick="cerrarModalCrearUsuario()" aria-label="Cerrar">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="crear-usuario-tipo">
+                    <input type="hidden" id="crear-usuario-vinculado-id">
+
+                    <div class="form-group" style="margin-bottom:14px;">
+                        <label style="color:#ccc; font-size:0.85rem; display:block; margin-bottom:6px;">Nombre de usuario:</label>
+                        <div style="display:flex; align-items:center; gap:0;">
+                            <input type="text" id="crear-usuario-nickname" placeholder="nombre.usuario"
+                                style="flex:1; padding:12px; border-radius:8px 0 0 8px; border:1px solid #404040; border-right:none; background:#333; color:#fff; font-size:16px;"
+                                pattern="[a-zA-Z0-9._-]+" title="Solo letras, números, puntos, guiones y guiones bajos">
+                            <span style="padding:12px 14px; background:#404040; color:#a8d5ab; border-radius:0 8px 8px 0; border:1px solid #404040; font-size:14px; white-space:nowrap;">@miolivar.es</span>
+                        </div>
+                        <small id="crear-usuario-dni-hint" style="color:#888; font-size:0.78rem; margin-top:4px; display:block;"></small>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:14px;">
+                        <label style="color:#ccc; font-size:0.85rem; display:block; margin-bottom:6px;">Contraseña:</label>
+                        <input type="password" id="crear-usuario-password" placeholder="Mínimo 6 caracteres" minlength="6"
+                            style="width:100%; padding:12px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff; font-size:16px; box-sizing:border-box;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:14px;">
+                        <label style="color:#ccc; font-size:0.85rem; display:block; margin-bottom:6px;">Confirmar contraseña:</label>
+                        <input type="password" id="crear-usuario-password-confirm" placeholder="Repite la contraseña" minlength="6"
+                            style="width:100%; padding:12px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff; font-size:16px; box-sizing:border-box;">
+                    </div>
+                    <div id="crear-usuario-msg" class="modal-msg" style="display:none;"></div>
+                </div>
+                <div class="modal-footer" style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="cerrarModalCrearUsuario()">Cancelar</button>
+                    <button class="btn btn-primary" id="btnConfirmarCrearUsuario" onclick="confirmarCrearUsuario()">Crear usuario</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Cambiar contraseña de usuario vinculado -->
+        <div class="modal" id="modalCambiarPassUsuario" style="display:none;">
+            <div class="modal-content" style="max-width:440px;">
+                <div class="modal-header">
+                    <h3 id="modalCambiarPassTitulo">Cambiar contraseña</h3>
+                    <button class="modal-close" onclick="cerrarModalCambiarPass()" aria-label="Cerrar">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="cambiar-pass-usuario-id">
+
+                    <div class="form-group" style="margin-bottom:14px;">
+                        <label style="color:#ccc; font-size:0.85rem; display:block; margin-bottom:6px;">Nueva contraseña:</label>
+                        <input type="password" id="cambiar-pass-nueva" placeholder="Mínimo 6 caracteres" minlength="6"
+                            style="width:100%; padding:12px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff; font-size:16px; box-sizing:border-box;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:14px;">
+                        <label style="color:#ccc; font-size:0.85rem; display:block; margin-bottom:6px;">Confirmar contraseña:</label>
+                        <input type="password" id="cambiar-pass-confirmar" placeholder="Repite la contraseña" minlength="6"
+                            style="width:100%; padding:12px; border-radius:8px; border:1px solid #404040; background:#333; color:#fff; font-size:16px; box-sizing:border-box;">
+                    </div>
+                    <div id="cambiar-pass-msg" class="modal-msg" style="display:none;"></div>
+                </div>
+                <div class="modal-footer" style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="cerrarModalCambiarPass()">Cancelar</button>
+                    <button class="btn btn-primary" id="btnConfirmarCambiarPass" onclick="confirmarCambiarPassword()">Cambiar contraseña</button>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <!-- Sección de notificaciones -->
         <div class="profile-card" id="notificaciones">
             <div class="profile-header">
@@ -308,10 +407,172 @@ $title = 'Mi Perfil - MartinCarmona.com';
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+/* Gestión de usuarios vinculados */
+.usuario-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #333;
+    border-radius: 8px;
+    margin-bottom: 6px;
+}
+
+.usuario-item .usuario-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.usuario-item .usuario-nombre {
+    color: #ddd;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.usuario-item .usuario-email {
+    color: #a8d5ab;
+    font-size: 0.78rem;
+    margin-top: 2px;
+}
+
+.usuario-item .usuario-sin-cuenta {
+    color: #888;
+    font-size: 0.78rem;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+.usuario-item .usuario-acciones {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.usuario-item .usuario-acciones button {
+    background: none;
+    border: 1px solid #555;
+    color: #ccc;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.usuario-item .usuario-acciones button:hover {
+    background: #444;
+    border-color: #666;
+}
+
+.usuario-item .usuario-acciones .btn-crear-usuario {
+    border-color: #4caf50;
+    color: #a8d5ab;
+}
+
+.usuario-item .usuario-acciones .btn-crear-usuario:hover {
+    background: rgba(76, 175, 80, 0.15);
+}
+
+.usuario-item .usuario-acciones .btn-eliminar-usuario {
+    border-color: #f44336;
+    color: #ef9a9a;
+}
+
+.usuario-item .usuario-acciones .btn-eliminar-usuario:hover {
+    background: rgba(244, 67, 54, 0.15);
+}
+
+/* Mensaje inline dentro de modales */
+.modal-msg {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.modal-msg.msg-error {
+    background: rgba(244, 67, 54, 0.15);
+    color: #ef9a9a;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.modal-msg.msg-success {
+    background: rgba(76, 175, 80, 0.15);
+    color: #a8d5ab;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* Combobox dropdown para buscar personas sin cuenta */
+.combobox-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #333;
+    border: 1px solid #555;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.combobox-dropdown .combobox-option {
+    padding: 10px 14px;
+    cursor: pointer;
+    color: #ddd;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s;
+}
+
+.combobox-dropdown .combobox-option:hover {
+    background: #444;
+}
+
+.combobox-dropdown .combobox-option .combobox-tipo {
+    font-size: 0.72rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.combobox-dropdown .combobox-option .combobox-tipo.tipo-trabajador {
+    background: rgba(76, 175, 80, 0.15);
+    color: #a8d5ab;
+}
+
+.combobox-dropdown .combobox-option .combobox-tipo.tipo-propietario {
+    background: rgba(33, 150, 243, 0.15);
+    color: #90caf9;
+}
+
+.combobox-dropdown .combobox-empty {
+    padding: 12px 14px;
+    color: #888;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .usuario-item {
+        flex-wrap: wrap;
+    }
+    .usuario-item .usuario-acciones {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 6px;
+    }
+}
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+function initPerfil() {
     const form = document.getElementById('updateNameForm');
     const messageDiv = document.getElementById('updateMessage');
     const updateBtn = document.getElementById('updateNameBtn');
@@ -578,6 +839,419 @@ document.addEventListener('DOMContentLoaded', function() {
 
     cargarNotifConfig();
     cargarRecordatoriosPerfil();
+
+    <?php if (($user['rol'] ?? '') === 'empresa'): ?>
+    // ── Gestión de usuarios vinculados ─────────────────────────────────
+    cargarUsuariosVinculados();
+    <?php endif; ?>
+}
+
+// Patrón AJAX-safe: funciona tanto en carga normal como en navegación AJAX
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPerfil);
+} else {
+    initPerfil();
+}
+
+<?php if (($user['rol'] ?? '') === 'empresa'): ?>
+// Almacén de datos: personas sin cuenta (para el combobox) y con cuenta (para la lista)
+var _personasSinCuenta = [];
+var _personasConCuenta = [];
+
+/**
+ * Carga la lista de trabajadores y propietarios con info de sus cuentas de usuario.
+ */
+async function cargarUsuariosVinculados() {
+    var basePath = window._APP_BASE_PATH || '';
+    try {
+        var res = await fetch(basePath + '/perfil/usuarios', {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        var data = await res.json();
+        if (!data.success) return;
+
+        // Separar: con cuenta y sin cuenta
+        _personasConCuenta = [];
+        _personasSinCuenta = [];
+
+        var todas = (data.trabajadores || []).concat(data.propietarios || []);
+        todas.forEach(function(p) {
+            p._nombreCompleto = p.nombre + (p.apellidos ? ' ' + p.apellidos : '');
+            if (p.usuario_id) {
+                _personasConCuenta.push(p);
+            } else {
+                _personasSinCuenta.push(p);
+            }
+        });
+
+        renderUsuariosActivos();
+        initComboboxPersonas();
+    } catch (e) {
+        console.error('Error cargando usuarios vinculados:', e);
+    }
+}
+
+/**
+ * Renderiza solo los usuarios que ya tienen cuenta.
+ */
+function renderUsuariosActivos() {
+    var container = document.getElementById('lista-usuarios-activos');
+
+    if (_personasConCuenta.length === 0) {
+        container.innerHTML = '<div style="color:#888; text-align:center; padding:12px; font-size:0.85rem;">No hay usuarios creados todavía</div>';
+        return;
+    }
+
+    var html = '';
+    _personasConCuenta.forEach(function(p) {
+        var tipoLabel = p.tipo === 'trabajador' ? '🧑‍🌾' : '🏠';
+        html += '<div class="usuario-item">';
+        html += '<div class="usuario-info">';
+        html += '<div class="usuario-nombre">' + tipoLabel + ' ' + escapeHtml(p._nombreCompleto) + '</div>';
+        html += '<div class="usuario-email">✓ ' + escapeHtml(p.usuario_email) + '</div>';
+        html += '</div>';
+        html += '<div class="usuario-acciones">';
+        html += '<button onclick="abrirModalCambiarPass(' + p.usuario_id + ', \'' + escapeHtml(p._nombreCompleto).replace(/'/g, "\\'") + '\')" title="Cambiar contraseña">🔑</button>';
+        html += '<button class="btn-eliminar-usuario" onclick="eliminarUsuarioVinculado(' + p.usuario_id + ', \'' + escapeHtml(p._nombreCompleto).replace(/'/g, "\\'") + '\')" title="Eliminar usuario">🗑</button>';
+        html += '</div></div>';
+    });
+
+    container.innerHTML = html;
+}
+
+/**
+ * Escapa HTML para evitar XSS.
+ */
+function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
+}
+
+// ── Combobox: buscar persona sin cuenta ────────────────────────────────
+
+function initComboboxPersonas() {
+    var input = document.getElementById('buscar-persona-sin-cuenta');
+    var dropdown = document.getElementById('combobox-personas-dropdown');
+
+    // Limpiar listeners previos clonando el input
+    var nuevoInput = input.cloneNode(true);
+    input.parentNode.replaceChild(nuevoInput, input);
+    input = nuevoInput;
+
+    input.addEventListener('input', function() {
+        var texto = this.value.trim().toLowerCase();
+        if (texto.length === 0) {
+            dropdown.style.display = 'none';
+            return;
+        }
+
+        var filtradas = _personasSinCuenta.filter(function(p) {
+            return p._nombreCompleto.toLowerCase().indexOf(texto) !== -1 ||
+                   (p.dni && p.dni.toLowerCase().indexOf(texto) !== -1);
+        });
+
+        if (filtradas.length === 0) {
+            dropdown.innerHTML = '<div class="combobox-empty">No se encontraron resultados</div>';
+            dropdown.style.display = 'block';
+            return;
+        }
+
+        var html = '';
+        filtradas.forEach(function(p) {
+            var tipoClase = 'tipo-' + p.tipo;
+            var tipoTexto = p.tipo === 'trabajador' ? 'Trabajador' : 'Propietario';
+            html += '<div class="combobox-option" data-tipo="' + p.tipo + '" data-id="' + p.id + '" data-nombre="' + escapeHtml(p._nombreCompleto) + '" data-dni="' + escapeHtml(p.dni || '') + '">';
+            html += '<span class="combobox-tipo ' + tipoClase + '">' + tipoTexto + '</span>';
+            html += '<span>' + escapeHtml(p._nombreCompleto) + '</span>';
+            html += '</div>';
+        });
+        dropdown.innerHTML = html;
+        dropdown.style.display = 'block';
+
+        // Añadir listeners a cada opción
+        dropdown.querySelectorAll('.combobox-option').forEach(function(opt) {
+            opt.addEventListener('click', function() {
+                var tipo = this.getAttribute('data-tipo');
+                var id = this.getAttribute('data-id');
+                var nombre = this.getAttribute('data-nombre');
+                var dni = this.getAttribute('data-dni');
+                dropdown.style.display = 'none';
+                input.value = '';
+                abrirModalCrearUsuario(tipo, id, nombre, dni);
+            });
+        });
+    });
+
+    // Cerrar dropdown al hacer click fuera
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.combobox-usuarios-wrapper')) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Al enfocar sin texto, mostrar todas las opciones disponibles
+    input.addEventListener('focus', function() {
+        if (this.value.trim().length === 0 && _personasSinCuenta.length > 0) {
+            var html = '';
+            _personasSinCuenta.forEach(function(p) {
+                var tipoClase = 'tipo-' + p.tipo;
+                var tipoTexto = p.tipo === 'trabajador' ? 'Trabajador' : 'Propietario';
+                html += '<div class="combobox-option" data-tipo="' + p.tipo + '" data-id="' + p.id + '" data-nombre="' + escapeHtml(p._nombreCompleto) + '" data-dni="' + escapeHtml(p.dni || '') + '">';
+                html += '<span class="combobox-tipo ' + tipoClase + '">' + tipoTexto + '</span>';
+                html += '<span>' + escapeHtml(p._nombreCompleto) + '</span>';
+                html += '</div>';
+            });
+            dropdown.innerHTML = html;
+            dropdown.style.display = 'block';
+
+            dropdown.querySelectorAll('.combobox-option').forEach(function(opt) {
+                opt.addEventListener('click', function() {
+                    var tipo = this.getAttribute('data-tipo');
+                    var id = this.getAttribute('data-id');
+                    var nombre = this.getAttribute('data-nombre');
+                    var dni = this.getAttribute('data-dni');
+                    dropdown.style.display = 'none';
+                    input.value = '';
+                    abrirModalCrearUsuario(tipo, id, nombre, dni);
+                });
+            });
+        }
+    });
+}
+
+// ── Modal: Crear usuario ───────────────────────────────────────────────
+
+/**
+ * Muestra un mensaje inline dentro de un modal.
+ */
+function showModalMsg(elementId, text, type) {
+    var el = document.getElementById(elementId);
+    el.textContent = text;
+    el.className = 'modal-msg msg-' + type;
+    el.style.display = 'block';
+}
+
+function hideModalMsg(elementId) {
+    var el = document.getElementById(elementId);
+    el.style.display = 'none';
+    el.textContent = '';
+}
+
+function abrirModalCrearUsuario(tipo, vinculadoId, nombre, dni) {
+    document.getElementById('crear-usuario-tipo').value = tipo;
+    document.getElementById('crear-usuario-vinculado-id').value = vinculadoId;
+    document.getElementById('crear-usuario-nickname').value = '';
+    document.getElementById('crear-usuario-password').value = '';
+    document.getElementById('crear-usuario-password-confirm').value = '';
+    document.getElementById('modalCrearUsuarioTitulo').textContent = 'Crear usuario para ' + nombre;
+    hideModalMsg('crear-usuario-msg');
+
+    // Sugerir el DNI como nombre de usuario si existe
+    var hintEl = document.getElementById('crear-usuario-dni-hint');
+    if (dni) {
+        var dniLimpio = dni.replace(/[\s-]/g, '').toLowerCase();
+        hintEl.textContent = 'Sugerencia: ' + dniLimpio + '@miolivar.es (basado en DNI)';
+        hintEl.style.cursor = 'pointer';
+        hintEl.onclick = function() {
+            document.getElementById('crear-usuario-nickname').value = dniLimpio;
+            hintEl.textContent = '✓ DNI aplicado como nombre de usuario';
+            hintEl.onclick = null;
+        };
+    } else {
+        hintEl.textContent = '';
+        hintEl.onclick = null;
+    }
+
+    document.getElementById('modalCrearUsuario').style.display = 'flex';
+}
+
+function cerrarModalCrearUsuario() {
+    document.getElementById('modalCrearUsuario').style.display = 'none';
+    hideModalMsg('crear-usuario-msg');
+}
+
+async function confirmarCrearUsuario() {
+    var msgId = 'crear-usuario-msg';
+    hideModalMsg(msgId);
+
+    var tipo = document.getElementById('crear-usuario-tipo').value;
+    var vinculadoId = document.getElementById('crear-usuario-vinculado-id').value;
+    var nickname = document.getElementById('crear-usuario-nickname').value.trim();
+    var password = document.getElementById('crear-usuario-password').value;
+    var passwordConfirm = document.getElementById('crear-usuario-password-confirm').value;
+
+    if (!nickname) {
+        showModalMsg(msgId, 'El nombre de usuario es obligatorio', 'error');
+        return;
+    }
+
+    if (!/^[a-zA-Z0-9._-]+$/.test(nickname)) {
+        showModalMsg(msgId, 'El nombre de usuario solo puede contener letras, números, puntos, guiones y guiones bajos', 'error');
+        return;
+    }
+
+    if (!password || password.length < 6) {
+        showModalMsg(msgId, 'La contraseña debe tener al menos 6 caracteres', 'error');
+        return;
+    }
+
+    if (password !== passwordConfirm) {
+        showModalMsg(msgId, 'Las contraseñas no coinciden', 'error');
+        return;
+    }
+
+    var btn = document.getElementById('btnConfirmarCrearUsuario');
+    if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
+
+    var basePath = window._APP_BASE_PATH || '';
+    var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+
+    try {
+        var res = await fetch(basePath + '/perfil/usuarios/crear', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                tipo: tipo,
+                vinculado_id: vinculadoId,
+                nickname: nickname,
+                password: password
+            })
+        });
+        var data = await res.json();
+
+        if (data.success) {
+            cerrarModalCrearUsuario();
+            if (typeof showToast === 'function') showToast(data.message || 'Usuario creado', 'success');
+            cargarUsuariosVinculados();
+        } else {
+            showModalMsg(msgId, data.message || 'Error al crear usuario', 'error');
+        }
+    } catch (e) {
+        showModalMsg(msgId, 'Error de conexión', 'error');
+    } finally {
+        if (typeof setButtonLoading === 'function') setButtonLoading(btn, false);
+    }
+}
+
+// ── Modal: Cambiar contraseña ──────────────────────────────────────────
+
+function abrirModalCambiarPass(usuarioId, nombre) {
+    document.getElementById('cambiar-pass-usuario-id').value = usuarioId;
+    document.getElementById('cambiar-pass-nueva').value = '';
+    document.getElementById('cambiar-pass-confirmar').value = '';
+    document.getElementById('modalCambiarPassTitulo').textContent = 'Cambiar contraseña de ' + nombre;
+    hideModalMsg('cambiar-pass-msg');
+    document.getElementById('modalCambiarPassUsuario').style.display = 'flex';
+}
+
+function cerrarModalCambiarPass() {
+    document.getElementById('modalCambiarPassUsuario').style.display = 'none';
+    hideModalMsg('cambiar-pass-msg');
+}
+
+async function confirmarCambiarPassword() {
+    var msgId = 'cambiar-pass-msg';
+    hideModalMsg(msgId);
+
+    var usuarioId = document.getElementById('cambiar-pass-usuario-id').value;
+    var nueva = document.getElementById('cambiar-pass-nueva').value;
+    var confirmar = document.getElementById('cambiar-pass-confirmar').value;
+
+    if (!nueva || nueva.length < 6) {
+        showModalMsg(msgId, 'La contraseña debe tener al menos 6 caracteres', 'error');
+        return;
+    }
+
+    if (nueva !== confirmar) {
+        showModalMsg(msgId, 'Las contraseñas no coinciden', 'error');
+        return;
+    }
+
+    var btn = document.getElementById('btnConfirmarCambiarPass');
+    if (typeof setButtonLoading === 'function') setButtonLoading(btn, true);
+
+    var basePath = window._APP_BASE_PATH || '';
+    var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+
+    try {
+        var res = await fetch(basePath + '/perfil/usuarios/cambiarPassword', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+                usuario_id: usuarioId,
+                password: nueva
+            })
+        });
+        var data = await res.json();
+
+        if (data.success) {
+            cerrarModalCambiarPass();
+            if (typeof showToast === 'function') showToast(data.message || 'Contraseña cambiada', 'success');
+        } else {
+            showModalMsg(msgId, data.message || 'Error al cambiar la contraseña', 'error');
+        }
+    } catch (e) {
+        showModalMsg(msgId, 'Error de conexión', 'error');
+    } finally {
+        if (typeof setButtonLoading === 'function') setButtonLoading(btn, false);
+    }
+}
+
+// ── Eliminar usuario vinculado ─────────────────────────────────────────
+
+async function eliminarUsuarioVinculado(usuarioId, nombre) {
+    // Usar showConfirm global en vez de confirm() nativo
+    if (typeof showConfirm === 'function') {
+        var confirmado = await showConfirm('¿Eliminar la cuenta de usuario de ' + nombre + '? Ya no podrá acceder a la aplicación.');
+        if (!confirmado) return;
+    }
+
+    var basePath = window._APP_BASE_PATH || '';
+    var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+
+    try {
+        var res = await fetch(basePath + '/perfil/usuarios/eliminar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({ usuario_id: usuarioId })
+        });
+        var data = await res.json();
+
+        if (data.success) {
+            if (typeof showToast === 'function') showToast(data.message || 'Usuario eliminado', 'success');
+            cargarUsuariosVinculados();
+        } else {
+            if (typeof showToast === 'function') showToast(data.message || 'Error al eliminar', 'error');
+        }
+    } catch (e) {
+        if (typeof showToast === 'function') showToast('Error de conexión', 'error');
+    }
+}
+
+// Cerrar modales con Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        if (document.getElementById('modalCrearUsuario').style.display !== 'none') {
+            cerrarModalCrearUsuario();
+        }
+        if (document.getElementById('modalCambiarPassUsuario').style.display !== 'none') {
+            cerrarModalCambiarPass();
+        }
+    }
 });
+<?php endif; ?>
 </script>
 

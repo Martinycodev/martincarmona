@@ -924,6 +924,31 @@ class Tarea
     }
 
     /**
+     * Eliminar registros reactivos vinculados a una tarea (riegos, campaña, fitosanitarios).
+     * Se llama al borrar una tarea para no dejar registros huérfanos.
+     */
+    private function eliminarRegistrosReactivos($tareaId, $userId)
+    {
+        // Riegos vinculados
+        $stmt = $this->db->prepare("DELETE FROM riegos WHERE tarea_id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $tareaId, $userId);
+        $stmt->execute();
+        $stmt->close();
+
+        // Registros de campaña vinculados
+        $stmt = $this->db->prepare("DELETE FROM campana_registros WHERE tarea_id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $tareaId, $userId);
+        $stmt->execute();
+        $stmt->close();
+
+        // Aplicaciones fitosanitarias vinculadas
+        $stmt = $this->db->prepare("DELETE FROM fitosanitarios_aplicaciones WHERE tarea_id = ? AND id_user = ?");
+        $stmt->bind_param("ii", $tareaId, $userId);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    /**
      * Agregar una imagen a la tarea
      */
     public function addImage($tareaId, $data)
@@ -1051,6 +1076,9 @@ class Tarea
             $this->eliminarRelacionesTarea($taskId, 'trabajadores');
             $this->eliminarRelacionesTarea($taskId, 'parcelas');
             $this->eliminarRelacionesTarea($taskId, 'trabajos');
+
+            // Eliminar registros reactivos vinculados (riego, campaña, fitosanitarios)
+            $this->eliminarRegistrosReactivos($taskId, $userId);
 
             // Eliminar la tarea principal
             $stmt = $this->db->prepare("DELETE FROM tareas WHERE id = ? AND id_user = ?");

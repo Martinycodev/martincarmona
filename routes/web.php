@@ -35,6 +35,12 @@ $router->get('/perfil', 'PerfilController@index');
 $router->post('/perfil/actualizarNombre', 'PerfilController@actualizarNombre');
 $router->post('/perfil/cambiarPassword', 'PerfilController@cambiarPassword');
 
+// Gestión de usuarios vinculados (empresa crea usuarios para sus trabajadores/propietarios)
+$router->get('/perfil/usuarios', 'PerfilController@usuariosVinculados');
+$router->post('/perfil/usuarios/crear', 'PerfilController@crearUsuarioVinculado');
+$router->post('/perfil/usuarios/cambiarPassword', 'PerfilController@cambiarPasswordUsuario');
+$router->post('/perfil/usuarios/eliminar', 'PerfilController@eliminarUsuarioVinculado');
+
 // Notificaciones / Recordatorios
 $router->get('/notificaciones/pendientes', 'NotificacionesController@pendientes');
 $router->post('/notificaciones/crear', 'NotificacionesController@crear');

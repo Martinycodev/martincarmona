@@ -64,7 +64,10 @@
       "Read(//c/Users/Martin/AppData/Roaming/npm/**)",
       "Bash(powershell -Command \"Get-Command claude | Select-Object Source\")",
       "Bash(npm list:*)",
-      "Bash(npx --yes @anthropic-ai/claude-code --version)"
+      "Bash(npx --yes @anthropic-ai/claude-code --version)",
+      "Bash(php -l app/Controllers/PerfilController.php)",
+      "Bash(php -l app/Views/perfil/index.php)",
+      "Bash(php -l routes/web.php)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Martin\\Desktop"

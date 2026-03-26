@@ -71,16 +71,18 @@ Mejoras adicionales (marzo 2026): touch drag & drop en dashboard (chips pendient
 
 - [ ] Hay que terminar de entender cómo funciona el cobro de la liquidación de la campaña porque hay que añadir variables como Rendimiento industrial, Rendimiento de laboratorio, prima por vuelo de cada mes, precio de venta del aceite (que pueden ser en varias veces) y cómo se cobra que también se hace en varios pagos.
 
-- [ ] La economía aún está valorando solo los costes de tareas por hora y por trabajador, pero hay planteamientos que haya que valorar por ejemplo que el trabajo "acarrear aceituna" se cobra con un precio por kilos de aceituna acarreados por lo que cada día es diferente. 
 - [ ] Pagar a trabajadores que no tenemos contratados se paga con el dinero efectivo. Por lo que los pagos hay que seleccionar con qué dinero se paga.
 - [ ] El concepto de una deuda mensual y que tenga que cerrar el mes manualmente me preocupa, lo suyo es que sea automático.
 - [ ] Plantear la posibilidad de hacer pagos mensuales recurrentes que se añaden solos por ejemplo, gestoría, autónomo, seguros, etc.
 
 - [ ] Comprobar la subida de archivos de parcelas, trabajadores, vehículos, trabajos.
 
-- [ ] Crear vista general campaña, días trabajados, y lluvias. como en mi excel.
+- [ ] Crear vista general campaña, días trabajados, y lluvias. como en mi excel. (buscar referencia)
 
-- [ ] Al crear una tarea con abrir riego, se crea un registro automáticamente en la bbdd de riego. Lo malo es que al borrar la tarea no se elimina el registro. por lo que tenemos dos opciones, que se borre por cascade, o que tengamos la opcion de borrar el registro en la tabla riego.
+- [x] Al crear una tarea con abrir riego, se crea un registro automáticamente en la bbdd de riego. Lo malo es que al borrar la tarea no se elimina el registro. por lo que tenemos dos opciones, que se borre por cascade, o que tengamos la opcion de borrar el registro en la tabla riego.
+
+- [x] El usuario con rol de empresa es el responsable de crear los usuarios de los trabajadores y propietarios. Por lo que en la vista mi perfil tiene que poder crear usuarios y contraseñas para sus trabajadores y propietarios creando la conexion de su trabajador con el nickname y el password correspondiente. Me gustaría que los trabajadores o propietarios que tengan un usuario tengan por defecto @miolivar.es como prefijo. Podríamos poner su DNI por defecto o dejar que la empresa elija el nombre y comprobar que no hay ningún usuario con el mismo nickname.
+
 -
 ---
 
