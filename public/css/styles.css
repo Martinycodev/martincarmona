@@ -5111,7 +5111,8 @@ textarea {
         border-bottom: 1px solid #444;
     }
 
-    .modal-footer {
+    .modal-footer,
+    .modal-buttons {
         position: sticky;
         bottom: 0;
         background: #2a2a2a;
