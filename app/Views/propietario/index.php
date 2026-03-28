@@ -1,7 +1,7 @@
 <?php $title = 'Mis Parcelas'; ?>
 <div class="container">
     <div class="page-header">
-        <h2>🌳 Mis parcelas</h2>
+        <h2><?= emoji('tree', '1.2rem') ?> Mis parcelas</h2>
         <p style="color:#6b7280; margin-top:.25rem;">
             <?= htmlspecialchars($propietario['nombre']) ?>
             <?= $propietario['apellidos'] ? htmlspecialchars($propietario['apellidos']) : '' ?>
@@ -45,7 +45,7 @@
 
     <!-- Tareas realizadas -->
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; flex-wrap:wrap; gap:.5rem;">
-        <h3 style="margin:0; font-size:1rem; color:#374151;">📋 Trabajos realizados</h3>
+        <h3 style="margin:0; font-size:1rem; color:#374151;"><?= emoji('clipboard') ?> Trabajos realizados</h3>
         <?php if (!empty($anosDisponibles)): ?>
         <div style="display:flex; align-items:center; gap:.5rem;">
             <label for="year-filter" style="font-size:.85rem; color:#6b7280;">Año:</label>

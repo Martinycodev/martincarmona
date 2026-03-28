@@ -58,7 +58,7 @@ async function editWorker(id, buttonElement = null) {
             if (worker.foto) {
                 preview.innerHTML = `<img src="${buildUrl(worker.foto.replace(/^\//, ''))}" alt="Foto">`;
             } else {
-                preview.innerHTML = '<span>👤</span>';
+                preview.innerHTML = '<span>' + emojiSvg('person') + '</span>';
             }
 
             openEditModal(buttonElement);

@@ -2,11 +2,11 @@
 $title = 'Datos - MiOlivar.es';
 ?>
 <div class="container">
-        <h2 style="text-align:center; margin:1.5rem 0;">📊 Bases de Datos</h2>
+        <h2 style="text-align:center; margin:1.5rem 0;"><?= emoji('chart', '1.2rem') ?> Bases de Datos</h2>
 
         <div class="actions-grid">
             <a href="<?= $this->url('/datos/trabajadores') ?>" class="action-card">
-                <span class="action-icon">👷‍♂️</span>
+                <span class="action-icon"><?= emoji('worker') ?></span>
                 <div class="action-title">Trabajadores</div>
                 <div class="action-desc">Listado de todos los trabajadores</div>
             </a>
@@ -16,7 +16,7 @@ $title = 'Datos - MiOlivar.es';
                 <div class="action-desc">Listado de todos los trabajos</div>
             </a>
             <a href="<?= $this->url('/datos/vehiculos') ?>" class="action-card">
-                <span class="action-icon">🚗</span>
+                <span class="action-icon"><?= emoji('car') ?></span>
                 <div class="action-title">Vehículos</div>
                 <div class="action-desc">Listado de todos los vehículos</div>
             </a>
@@ -56,7 +56,7 @@ $title = 'Datos - MiOlivar.es';
                 <div class="action-desc">Inventario y registro de tratamientos</div>
             </a>
             <a href="<?= $this->url('/campana') ?>" class="action-card">
-                <span class="action-icon">🫒</span>
+                <span class="action-icon"><?= emoji('olive') ?></span>
                 <div class="action-title">Campaña</div>
                 <div class="action-desc">Registro de recolección y rentabilidad</div>
             </a>

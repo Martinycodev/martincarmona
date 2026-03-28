@@ -10,7 +10,7 @@ $base = defined('APP_BASE_PATH') ? APP_BASE_PATH : '';
 ?>
 <!-- NAV -->
 <nav class="lp-nav" role="navigation" aria-label="Navegacion principal">
-    <a href="<?= $base ?>/" class="lp-nav-logo">🌳 Mi<span>Olivar</span>.es</a>
+    <a href="<?= $base ?>/" class="lp-nav-logo"><?= emoji('tree', '1.4rem') ?> Mi<span>Olivar</span>.es</a>
 
     <div class="lp-nav-links">
         <a href="<?= $base ?>/"<?= $activePage === 'home' ? ' class="active"' : '' ?>>Inicio</a>

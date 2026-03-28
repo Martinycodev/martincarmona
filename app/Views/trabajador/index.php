@@ -1,7 +1,7 @@
 <?php $title = 'Mi cuenta'; ?>
 <div class="container">
     <div class="page-header">
-        <h2>👷 Mi cuenta</h2>
+        <h2><?= emoji('worker', '1.2rem') ?> Mi cuenta</h2>
         <p style="color:#6b7280; margin-top:.25rem;"><?= htmlspecialchars($trabajador['nombre']) ?></p>
         <?php if (!empty($nombreEmpresa)): ?>
         <p style="color:#9ca3af; margin-top:.25rem; font-size:.85rem;">Empresa: <strong style="color:#ccc;"><?= htmlspecialchars($nombreEmpresa) ?></strong></p>
@@ -75,7 +75,7 @@
 
     <!-- Historial -->
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; flex-wrap:wrap; gap:.5rem;">
-        <h3 style="margin:0; font-size:1rem; color:#374151;">📋 Trabajos realizados</h3>
+        <h3 style="margin:0; font-size:1rem; color:#374151;"><?= emoji('clipboard') ?> Trabajos realizados</h3>
         <?php if (!empty($anosDisponibles)): ?>
         <div style="display:flex; align-items:center; gap:.5rem;">
             <label for="year-filter" style="font-size:.85rem; color:#6b7280;">Año:</label>

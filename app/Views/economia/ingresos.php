@@ -90,7 +90,7 @@
             <td>
                 <div class="actions">
                     <button class="btn-icon" onclick="editarIngreso(<?= $i['id'] ?>)" title="Editar">✏️</button>
-                    <button class="btn-icon danger" onclick="eliminarIngreso(<?= $i['id'] ?>)" title="Eliminar">🗑</button>
+                    <button class="btn-icon danger" onclick="eliminarIngreso(<?= $i['id'] ?>)" title="Eliminar"><?= emoji('trash') ?></button>
                 </div>
             </td>
         </tr>

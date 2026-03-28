@@ -107,7 +107,7 @@
             <td>
                 <div class="actions">
                     <button class="btn-icon" onclick="editarGasto(<?= $g['id'] ?>)" title="Editar">✏️</button>
-                    <button class="btn-icon danger" onclick="eliminarGasto(<?= $g['id'] ?>)" title="Eliminar">🗑</button>
+                    <button class="btn-icon danger" onclick="eliminarGasto(<?= $g['id'] ?>)" title="Eliminar"><?= emoji('trash') ?></button>
                 </div>
             </td>
         </tr>

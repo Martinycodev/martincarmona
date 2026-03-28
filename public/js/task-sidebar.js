@@ -186,7 +186,7 @@ class TaskSidebar {
     }
 
     _buildTrabajadoresSection(tarea) {
-        const wrap  = this._makeSectionEl('👷 Trabajadores', 'trabajadores');
+        const wrap  = this._makeSectionEl(emojiSvg('worker') + ' Trabajadores', 'trabajadores');
         const tags  = document.createElement('div');
         tags.className = 'sidebar-tags';
         tags.id        = `sidebar-tags-trabajadores-${this.taskId}`;
@@ -202,7 +202,7 @@ class TaskSidebar {
         cuadrillaBtn.type      = 'button';
         cuadrillaBtn.className = 'sidebar-cuadrilla-btn';
         cuadrillaBtn.title     = 'Añadir toda la cuadrilla a esta tarea';
-        cuadrillaBtn.innerHTML = '👷 Añadir cuadrilla';
+        cuadrillaBtn.innerHTML = emojiSvg('worker') + ' Añadir cuadrilla';
         cuadrillaBtn.addEventListener('click', () => this._asignarCuadrilla(tags));
 
         wrap.appendChild(tags);
@@ -368,9 +368,9 @@ class TaskSidebar {
             const precio = parseFloat(currentTrabajo.precio_hora);
 
             if (tienePrecioFijo) {
-                costeEl.textContent = `💶 Precio variable: ${parseFloat(currentTrabajo.precio_fijo).toFixed(2)} €`;
+                costeEl.innerHTML = `${emojiSvg('euro')} Precio variable: ${parseFloat(currentTrabajo.precio_fijo).toFixed(2)} €`;
             } else if (horas > 0 && precio > 0) {
-                costeEl.textContent = `💶 ${precio.toFixed(2)} €/h × ${horas} h = ${(precio * horas).toFixed(2)} €`;
+                costeEl.innerHTML = `${emojiSvg('euro')} ${precio.toFixed(2)} €/h × ${horas} h = ${(precio * horas).toFixed(2)} €`;
             }
         }
 
@@ -415,9 +415,9 @@ class TaskSidebar {
             // Precio variable: importe fijo × trabajadores
             const costeTotal = precioFijo * efectivos;
             if (efectivos > 1) {
-                costeEl.textContent = `💶 Variable: ${precioFijo.toFixed(2)} € × ${efectivos} trab. = ${costeTotal.toFixed(2)} €`;
+                costeEl.innerHTML = `${emojiSvg('euro')} Variable: ${precioFijo.toFixed(2)} € × ${efectivos} trab. = ${costeTotal.toFixed(2)} €`;
             } else {
-                costeEl.textContent = `💶 Precio variable: ${precioFijo.toFixed(2)} €`;
+                costeEl.innerHTML = `${emojiSvg('euro')} Precio variable: ${precioFijo.toFixed(2)} €`;
             }
         } else if (!checkBox?.checked) {
             // Precio por hora (comportamiento original)
@@ -429,9 +429,9 @@ class TaskSidebar {
             const costePorTrabajador = precio * horas;
             const costeTotal = costePorTrabajador * efectivos;
             if (efectivos > 1) {
-                costeEl.textContent = `💶 ${precio.toFixed(2)} €/h × ${horas} h × ${efectivos} trab. = ${costeTotal.toFixed(2)} €`;
+                costeEl.innerHTML = `${emojiSvg('euro')} ${precio.toFixed(2)} €/h × ${horas} h × ${efectivos} trab. = ${costeTotal.toFixed(2)} €`;
             } else {
-                costeEl.textContent = `💶 ${precio.toFixed(2)} €/h × ${horas} h = ${costeTotal.toFixed(2)} €`;
+                costeEl.innerHTML = `${emojiSvg('euro')} ${precio.toFixed(2)} €/h × ${horas} h = ${costeTotal.toFixed(2)} €`;
             }
         } else {
             costeEl.textContent = '';

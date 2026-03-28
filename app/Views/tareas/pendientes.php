@@ -2,7 +2,7 @@
 
 <div class="container">
     <div class="page-header">
-        <h2>📋 Tareas Pendientes</h2>
+        <h2><?= emoji('clipboard', '1.2rem') ?> Tareas Pendientes</h2>
         <div class="header-actions">
             <button class="btn btn-primary" onclick="abrirFormNueva()">+ Nueva tarea pendiente</button>
             <a href="<?= $this->url('/tareas') ?>" class="btn btn-secondary">📅 Ver calendario</a>

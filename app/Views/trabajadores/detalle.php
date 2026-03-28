@@ -7,15 +7,15 @@ $title = 'Ficha de Trabajador — ' . htmlspecialchars($trabajador['nombre']);
             <?php if (!empty($trabajador['foto'])): ?>
                 <img src="<?= $this->url($trabajador['foto']) ?>" alt="Foto" class="worker-avatar-lg">
             <?php else: ?>
-                <div class="worker-avatar-lg worker-avatar-lg--empty">👤</div>
+                <div class="worker-avatar-lg worker-avatar-lg--empty"><?= emoji('person') ?></div>
             <?php endif; ?>
-            <h2>👷 <?= htmlspecialchars($trabajador['nombre']) ?></h2>
+            <h2><?= emoji('worker', '1.2rem') ?> <?= htmlspecialchars($trabajador['nombre']) ?></h2>
         </div>
         <div class="header-actions">
             <button class="btn btn-primary" onclick="openEditModal()">✏️ Editar</button>
             <?php if (!empty($trabajador['fecha_baja'])): ?>
                 <button class="btn btn-success" onclick="reactivarTrabajador()">✅ Reactivar</button>
-                <button class="btn btn-danger" onclick="eliminarDefinitivo()">🗑️ Eliminar definitivo</button>
+                <button class="btn btn-danger" onclick="eliminarDefinitivo()"><?= emoji('trash') ?> Eliminar definitivo</button>
             <?php else: ?>
                 <button class="btn btn-danger" onclick="darDeBaja()">🚫 Dar de baja</button>
             <?php endif; ?>
@@ -75,7 +75,7 @@ $title = 'Ficha de Trabajador — ' . htmlspecialchars($trabajador['nombre']);
                     <div class="form-group form-group--checkbox">
                         <label class="checkbox-label">
                             <input type="checkbox" name="cuadrilla" value="1" <?= !empty($trabajador['cuadrilla']) ? 'checked' : '' ?>>
-                            <span>👷 Parte de la cuadrilla</span>
+                            <span><?= emoji('worker') ?> Parte de la cuadrilla</span>
                         </label>
                     </div>
                 </div>

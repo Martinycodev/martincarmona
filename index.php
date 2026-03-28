@@ -23,6 +23,9 @@ Core\ErrorHandler::register();
 $config = require_once BASE_PATH . '/config/config.php';
 define('APP_BASE_PATH', $config['base_path']);
 
+// Helper de iconos emoji (Noto Color Emoji SVGs)
+require_once BASE_PATH . '/helpers/emoji.php';
+
 // Sesión segura
 require_once BASE_PATH . '/config/session.php';
 SessionConfig::configure();

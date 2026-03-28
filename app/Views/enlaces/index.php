@@ -102,7 +102,7 @@
 
 <div class="container">
     <div class="page-header">
-        <h1>🔗 Enlaces de interés</h1>
+        <h1><?= emoji('link', '1.2rem') ?> Enlaces de interés</h1>
         <div class="header-actions">
             <a href="<?= $this->url('/dashboard') ?>" class="btn btn-secondary">← Volver</a>
         </div>
@@ -140,7 +140,7 @@
 
         <!-- Explotación y Documentación -->
         <div class="enlaces-card">
-            <div class="enlaces-card-header">📋 Explotación y Documentación</div>
+            <div class="enlaces-card-header"><?= emoji('clipboard') ?> Explotación y Documentación</div>
             <ul class="enlaces-list">
                 <li>
                     <a href="https://www.canva.com/design/DAGiWj92eLc/BJKWAyfSiL45JpJ_EVrgCQ/view?utm_content=DAGiWj92eLc&utm_campaign=designshare&utm_medium=link&utm_source=viewer" target="_blank" rel="noopener">
@@ -259,7 +259,7 @@
 
         <!-- Subvenciones y Hacienda -->
         <div class="enlaces-card">
-            <div class="enlaces-card-header">💶 PAC, Subvenciones y Hacienda</div>
+            <div class="enlaces-card-header"><?= emoji('euro') ?> PAC, Subvenciones y Hacienda</div>
             <ul class="enlaces-list">
                 <li>
                     <a href="https://www.juntadeandalucia.es/haciendayadministracionpublica/apl/tesoreria/inicio" target="_blank" rel="noopener">
@@ -294,7 +294,7 @@
 
         <!-- Vehículos -->
         <div class="enlaces-card">
-            <div class="enlaces-card-header">🚗 Vehículos y Maquinaria</div>
+            <div class="enlaces-card-header"><?= emoji('car') ?> Vehículos y Maquinaria</div>
             <ul class="enlaces-list">
                 <li>
                     <a href="https://www.veiasa.es/itv/estaciones-itv/estaciones-moviles/-/categories/44165" target="_blank" rel="noopener">
@@ -315,7 +315,7 @@
 
         <!-- Laboral y REASS -->
         <div class="enlaces-card">
-            <div class="enlaces-card-header">👷 Laboral y REASS</div>
+            <div class="enlaces-card-header"><?= emoji('worker') ?> Laboral y REASS</div>
             <ul class="enlaces-list">
                 <li>
                     <a href="https://sede.seg-social.gob.es/" target="_blank" rel="noopener">

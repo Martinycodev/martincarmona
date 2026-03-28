@@ -21,6 +21,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="MiOlivar">
     <link rel="apple-touch-icon" href="<?= $this->url('/public/img/icons/icon-152x152.png') ?>">
+    <!-- Helper emoji SVG (Noto Color Emoji) -->
+    <script src="<?= $this->url('/public/js/emoji-helper.js') ?>"></script>
     <!-- Estilos -->
     <link rel="stylesheet" href="<?= $this->url('/public/css/styles.css') ?>">
     <link rel="stylesheet" href="<?= $this->url('/public/css/autocomplete.css') ?>">
@@ -40,14 +42,14 @@
             </div>
             <!-- Centro: logo árbol -->
             <div class="header-center">
-                <a href="<?= $this->url('/') ?>" style="text-decoration:none;color:white;font-size:1.4rem;">🌳</a>
+                <a href="<?= $this->url('/') ?>" style="text-decoration:none;color:white;font-size:1.4rem;"><?= emoji('tree', '1.4rem') ?></a>
             </div>
             <!-- Derecha: acciones -->
             <div class="user-info">
                 <span id="offline-queue-badge" class="offline-queue-badge" style="display:none" title="Formularios pendientes de enviar">0</span>
                 <!-- Campanita de notificaciones -->
                 <button id="notif-bell" class="notif-bell" onclick="toggleNotifPanel()" title="Notificaciones">
-                    🔔 <span id="notif-badge" class="notif-badge" style="display:none">0</span>
+                    <?= emoji('bell') ?> <span id="notif-badge" class="notif-badge" style="display:none">0</span>
                 </button>
                 <div id="notif-panel" class="notif-panel">
                     <div class="notif-panel-header">
@@ -72,20 +74,20 @@
     <nav class="nav-menu" id="navMenu" role="navigation" aria-label="Menú principal">
         <br>
         <?php if ($rolActual === 'empresa'): ?>
-        <a href="<?= $this->url('/datos') ?>">📚 Bases de datos</a>
-        <a href="<?= $this->url('/tareas/pendientes') ?>">📋 Tareas Pendientes</a>
-        <a href="<?= $this->url('/economia') ?>">💶 Economía</a>
-        <a href="<?= $this->url('/reportes') ?>">📊 Reportes</a>
-        <a href="<?= $this->url('/enlaces') ?>">🔗 Enlaces de interés</a>
-        <a href="<?= $this->url('/perfil') ?>">👤 Mi Perfil</a>
+        <a href="<?= $this->url('/datos') ?>"><?= emoji('books') ?> Bases de datos</a>
+        <a href="<?= $this->url('/tareas/pendientes') ?>"><?= emoji('clipboard') ?> Tareas Pendientes</a>
+        <a href="<?= $this->url('/economia') ?>"><?= emoji('euro') ?> Economía</a>
+        <a href="<?= $this->url('/reportes') ?>"><?= emoji('chart') ?> Reportes</a>
+        <a href="<?= $this->url('/enlaces') ?>"><?= emoji('link') ?> Enlaces de interés</a>
+        <a href="<?= $this->url('/perfil') ?>"><?= emoji('person') ?> Mi Perfil</a>
         <?php elseif ($rolActual === 'admin'): ?>
-        <a href="<?= $this->url('/admin/usuarios') ?>">👥 Gestión de Usuarios</a>
+        <a href="<?= $this->url('/admin/usuarios') ?>"><?= emoji('people') ?> Gestión de Usuarios</a>
         <?php elseif ($rolActual === 'propietario'): ?>
-        <a href="<?= $this->url('/propietario') ?>">🌳 Mis Parcelas</a>
+        <a href="<?= $this->url('/propietario') ?>"><?= emoji('tree') ?> Mis Parcelas</a>
         <?php elseif ($rolActual === 'trabajador'): ?>
-        <a href="<?= $this->url('/trabajador') ?>">👷 Mi Cuenta</a>
+        <a href="<?= $this->url('/trabajador') ?>"><?= emoji('worker') ?> Mi Cuenta</a>
         <?php endif; ?>
-        <a href="<?= $this->url('/logout') ?>" style="color: #ff4444;">🚪 Cerrar Sesión</a>
+        <a href="<?= $this->url('/logout') ?>" style="color: #ff4444;"><?= emoji('door') ?> Cerrar Sesión</a>
     </nav>
 
     <!-- Overlay para cerrar el menú -->

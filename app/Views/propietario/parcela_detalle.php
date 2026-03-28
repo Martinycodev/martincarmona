@@ -33,7 +33,7 @@
     <!-- Trabajos realizados en esta parcela -->
     <div class="card">
         <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem;">
-            <h3 style="margin:0;">📋 Trabajos realizados</h3>
+            <h3 style="margin:0;"><?= emoji('clipboard') ?> Trabajos realizados</h3>
             <?php if (!empty($anosDisponibles)): ?>
             <div style="display:flex; align-items:center; gap:.5rem;">
                 <label for="year-filter" style="font-size:.85rem; color:#6b7280;">Año:</label>

@@ -6,7 +6,7 @@ $title = 'Ficha de Parcela — ' . htmlspecialchars($parcela['nombre']);
         <h2>📍 <?= htmlspecialchars($parcela['nombre']) ?></h2>
         <div class="header-actions">
             <button class="btn btn-primary" onclick="openEditModal()">✏️ Editar</button>
-            <button class="btn btn-danger" onclick="deleteParcela()">🗑️ Eliminar</button>
+            <button class="btn btn-danger" onclick="deleteParcela()"><?= emoji('trash') ?> Eliminar</button>
             <a href="<?= $this->url('/datos/parcelas') ?>" class="btn btn-secondary">← Volver</a>
         </div>
     </div>

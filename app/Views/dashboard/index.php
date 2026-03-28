@@ -7,9 +7,9 @@ $title = 'Dashboard - MiOlivar.es';
 
         <div class="quick-buttons">
             <a href="<?= $this->url('/busqueda') ?>" class="btn btn-info">🔍 Tareas</a>
-            <a href="<?= $this->url('/economia?openModal=true') ?>" class="btn btn-primary">💰 Añadir Movimiento</a>
+            <a href="<?= $this->url('/economia?openModal=true') ?>" class="btn btn-primary"><?= emoji('moneybag') ?> Añadir Movimiento</a>
             <?php if (!empty($campanaActiva)): ?>
-                <a href="<?= $this->url('/campana') ?>" class="btn btn-success">🫒 Campaña activa</a>
+                <a href="<?= $this->url('/campana') ?>" class="btn btn-success"><?= emoji('olive') ?> Campaña activa</a>
             <?php endif; ?>
             <a href="<?= $this->url('/riego') ?>" class="btn btn-secondary">💧 Riego</a>
         </div>
@@ -82,20 +82,20 @@ $title = 'Dashboard - MiOlivar.es';
 
     <div class="actions-grid">
         <a href="<?= $this->url('/datos') ?>" class="action-card">
-            <span class="action-icon">📚</span>
+            <span class="action-icon"><?= emoji('books', '1.2rem') ?></span>
             <div class="action-title">Bases de datos</div>
             <div class="action-desc">Gestiona y visualiza todas los datos</div>
         </a>
 
         <a href="<?= $this->url('/economia') ?>" class="action-card">
-            <span class="action-icon">💶</span>
+            <span class="action-icon"><?= emoji('euro', '1.2rem') ?></span>
             <div class="action-title">Economía</div>
             <div class="action-desc">Gestiona las finanzas y control de gastos</div>
         </a>
 
 
         <a href="<?= $this->url('/reportes') ?>" class="action-card">
-            <span class="action-icon">📊</span>
+            <span class="action-icon"><?= emoji('chart', '1.2rem') ?></span>
             <div class="action-title">Reportes</div>
             <div class="action-desc">Panel completo de estadísticas y análisis</div>
         </a>

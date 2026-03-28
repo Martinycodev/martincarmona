@@ -91,7 +91,7 @@
 
     <!-- Acceso rápido: nuevo movimiento -->
     <div style="display:flex; justify-content:flex-end; margin-bottom:20px;">
-        <button class="btn btn-primary" onclick="abrirModalMovimiento()">💰 Nuevo Movimiento</button>
+        <button class="btn btn-primary" onclick="abrirModalMovimiento()"><?= emoji('moneybag') ?> Nuevo Movimiento</button>
     </div>
 
     <!-- Últimos movimientos -->
@@ -151,7 +151,7 @@
 <div id="modalMovimiento" class="modal" style="display:none;">
     <div class="modal-content" style="max-width:480px;">
         <div class="modal-header">
-            <h3>💰 Nuevo Movimiento</h3>
+            <h3><?= emoji('moneybag') ?> Nuevo Movimiento</h3>
             <button class="modal-close" onclick="cerrarModalMovimiento()">&times;</button>
         </div>
         <form id="formMovimiento" style="padding:1rem 1.5rem 1.5rem;">
@@ -180,7 +180,7 @@
                 <label>Cuenta</label>
                 <select id="mov_cuenta" name="cuenta">
                     <option value="banco">🏦 Banco</option>
-                    <option value="efectivo">💶 Efectivo</option>
+                    <option value="efectivo"><?= emoji('euro') ?> Efectivo</option>
                 </select>
             </div>
             <div class="modal-footer">

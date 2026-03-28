@@ -3,10 +3,10 @@ $title = 'Ficha de Propietario — ' . htmlspecialchars($propietario['nombre'] .
 ?>
 <div class="container">
     <div class="page-header">
-        <h2>👤 <?= htmlspecialchars($propietario['nombre'] . ' ' . ($propietario['apellidos'] ?? '')) ?></h2>
+        <h2><?= emoji('person', '1.2rem') ?> <?= htmlspecialchars($propietario['nombre'] . ' ' . ($propietario['apellidos'] ?? '')) ?></h2>
         <div class="header-actions">
             <button class="btn btn-primary" onclick="openEditModal()">✏️ Editar</button>
-            <button class="btn btn-danger" onclick="deletePropietario()">🗑️ Eliminar</button>
+            <button class="btn btn-danger" onclick="deletePropietario()"><?= emoji('trash') ?> Eliminar</button>
             <a href="<?= $this->url('/datos/propietarios') ?>" class="btn btn-secondary">← Volver</a>
         </div>
     </div>

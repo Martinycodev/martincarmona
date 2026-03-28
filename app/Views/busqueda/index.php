@@ -11,7 +11,7 @@ $title = 'Búsqueda Avanzada de Tareas';
                     <h3>🎛️ Filtros de Búsqueda</h3>
                     <div class="filters-actions">
                         <a href="<?= $this->url('/tareas') ?>" class="btn-filter" style="text-decoration:none;background:#4caf50;color:#fff;border:none;">Ver todas</a>
-                        <button class="btn-filter btn-clear" onclick="limpiarFiltros()">🗑️ Limpiar</button>
+                        <button class="btn-filter btn-clear" onclick="limpiarFiltros()"><?= emoji('trash') ?> Limpiar</button>
                         <button class="btn-filter btn-toggle" onclick="toggleFiltros()" id="toggleBtn">▼ Ocultar</button>
                     </div>
                 </div>
@@ -37,7 +37,7 @@ $title = 'Búsqueda Avanzada de Tareas';
                         <!-- Fila 2: Trabajadores, Parcelas, Trabajos -->
                         <div class="filter-row">
                             <div class="filter-group">
-                                <label for="trabajador">👷‍♂️ Trabajador:</label>
+                                <label for="trabajador"><?= emoji('worker') ?> Trabajador:</label>
                                 <div class="autocomplete-wrapper">
                                     <input type="text" id="trabajador" name="trabajador_nombre" placeholder="Buscar trabajador..." autocomplete="off">
                                     <input type="hidden" id="trabajador_id" name="trabajador_id">
@@ -65,7 +65,7 @@ $title = 'Búsqueda Avanzada de Tareas';
                         <!-- Fila 2b: Propietario -->
                         <div class="filter-row">
                             <div class="filter-group">
-                                <label for="propietario">👤 Propietario:</label>
+                                <label for="propietario"><?= emoji('person') ?> Propietario:</label>
                                 <div class="autocomplete-wrapper">
                                     <input type="text" id="propietario" name="propietario_nombre" placeholder="Buscar propietario..." autocomplete="off">
                                     <input type="hidden" id="propietario_id" name="propietario_id">
@@ -85,7 +85,7 @@ $title = 'Búsqueda Avanzada de Tareas';
                                 <input type="number" id="horas_max" name="horas_max" step="0.5" min="0" placeholder="∞">
                             </div>
                             <div class="filter-group">
-                                <label for="orden">📊 Ordenar por:</label>
+                                <label for="orden"><?= emoji('chart') ?> Ordenar por:</label>
                                 <select id="orden" name="orden">
                                     <option value="fecha_desc">📅 Fecha (más reciente)</option>
                                     <option value="fecha_asc">📅 Fecha (más antigua)</option>
@@ -100,7 +100,7 @@ $title = 'Búsqueda Avanzada de Tareas';
                         <!-- Fila 4: Límite y botón buscar -->
                         <div class="filter-row">
                             <div class="filter-group">
-                                <label for="limite">📊 Límite de resultados:</label>
+                                <label for="limite"><?= emoji('chart') ?> Límite de resultados:</label>
                                 <select id="limite" name="limite">
                                     <option value="25" selected>25 resultados</option>
                                     <option value="50">50 resultados</option>
@@ -119,7 +119,7 @@ $title = 'Búsqueda Avanzada de Tareas';
             <!-- Panel de estadísticas -->
             <div class="stats-panel" id="statsPanel" style="display: none;">
                 <div class="stats-header">
-                    <h3>📊 Estadísticas de Resultados</h3>
+                    <h3><?= emoji('chart') ?> Estadísticas de Resultados</h3>
                 </div>
                 <div class="stats-content" id="statsContent">
                     <!-- Las estadísticas se cargarán aquí -->
@@ -137,7 +137,7 @@ $title = 'Búsqueda Avanzada de Tareas';
             <!-- Resultados -->
             <div class="results-panel" id="resultsPanel" style="display: none;">
                 <div class="results-header">
-                    <h3 id="resultsTitle">📋 Resultados</h3>
+                    <h3 id="resultsTitle"><?= emoji('clipboard') ?> Resultados</h3>
                     <div class="results-actions">
                         <button class="btn-export" onclick="exportarResultados()">📄 Exportar</button>
                         <button class="btn-clear-results" onclick="limpiarResultados()">❌ Limpiar</button>
@@ -150,7 +150,7 @@ $title = 'Búsqueda Avanzada de Tareas';
                                 <tr>
                                     <th>📅 Fecha</th>
                                     <th>📝 Descripción</th>
-                                    <th>👷‍♂️ Trabajadores</th>
+                                    <th><?= emoji('worker') ?> Trabajadores</th>
                                     <th>🌾 Parcelas</th>
                                     <th>🔧 Trabajos</th>
                                     <th>⏱️ Horas</th>
@@ -306,7 +306,7 @@ $title = 'Búsqueda Avanzada de Tareas';
             mostrarEstadisticas(estadisticas);
             
             // Actualizar título de resultados
-            document.getElementById('resultsTitle').textContent = `📋 ${total} Resultado${total !== 1 ? 's' : ''}`;
+            document.getElementById('resultsTitle').innerHTML = `${emojiSvg('clipboard')} ${total} Resultado${total !== 1 ? 's' : ''}`;
             
             // Llenar tabla
             const tbody = document.getElementById('resultsTableBody');
@@ -318,7 +318,7 @@ $title = 'Búsqueda Avanzada de Tareas';
                     <td>${formatDate(tarea.fecha)}</td>
                     <td class="description-cell">${tarea.descripcion || 'Sin descripción'}</td>
                     <td class="workers-cell">
-                        ${tarea.trabajadores.map(t => `<span class="worker-tag-small">👷‍♂️ ${t.nombre}</span>`).join('') || '-'}
+                        ${tarea.trabajadores.map(t => `<span class="worker-tag-small">${emojiSvg('worker')} ${t.nombre}</span>`).join('') || '-'}
                     </td>
                     <td class="parcelas-cell">
                         ${tarea.parcelas.map(p => `<span class="parcela-tag-small">🌾 ${p.nombre}</span>`).join('') || '-'}
@@ -345,7 +345,7 @@ $title = 'Búsqueda Avanzada de Tareas';
             content.innerHTML = `
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon">📋</div>
+                        <div class="stat-icon">${emojiSvg('clipboard')}</div>
                         <div class="stat-info">
                             <div class="stat-value">${stats.total_tareas}</div>
                             <div class="stat-label">Tareas encontradas</div>
@@ -359,7 +359,7 @@ $title = 'Búsqueda Avanzada de Tareas';
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">📊</div>
+                        <div class="stat-icon">${emojiSvg('chart')}</div>
                         <div class="stat-info">
                             <div class="stat-value">${stats.promedio_horas}h</div>
                             <div class="stat-label">Promedio por tarea</div>
@@ -457,7 +457,7 @@ $title = 'Búsqueda Avanzada de Tareas';
             if (tarea.trabajadores && tarea.trabajadores.length > 0) {
                 detailsHtml += `
                     <div class="detail-section">
-                        <h4>👷‍♂️ Trabajadores Asignados</h4>
+                        <h4>${emojiSvg('worker')} Trabajadores Asignados</h4>
                         <div class="list-items">
                 `;
                 tarea.trabajadores.forEach(trabajador => {

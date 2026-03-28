@@ -2,13 +2,13 @@
 $title = 'Mi Perfil - MiOlivar.es';
 ?>
 <div class="container">
-    <h2 style="text-align:center; margin:1.5rem 0;">👤 Mi Perfil</h2>
+    <h2 style="text-align:center; margin:1.5rem 0;"><?= emoji('person', '1.2rem') ?> Mi Perfil</h2>
 
     <div class="profile-section">
         <div class="profile-card">
             <div class="profile-header">
                 <div class="profile-avatar">
-                    <span class="avatar-icon">👤</span>
+                    <span class="avatar-icon"><?= emoji('person') ?></span>
                 </div>
                 <h2>Información del Usuario</h2>
             </div>
@@ -63,7 +63,7 @@ $title = 'Mi Perfil - MiOlivar.es';
         <!-- Sección de cambiar contraseña -->
         <div class="profile-card">
             <div class="profile-header">
-                <h2>🔒 Cambiar Contraseña</h2>
+                <h2><?= emoji('lock', '1.2rem') ?> Cambiar Contraseña</h2>
             </div>
 
             <form id="changePasswordForm" class="profile-form">
@@ -99,7 +99,7 @@ $title = 'Mi Perfil - MiOlivar.es';
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary" id="changePasswordBtn">
-                        🔒 Cambiar Contraseña
+                        <?= emoji('lock') ?> Cambiar Contraseña
                     </button>
                 </div>
 
@@ -111,7 +111,7 @@ $title = 'Mi Perfil - MiOlivar.es';
         <?php if (($user['rol'] ?? '') === 'empresa'): ?>
         <div class="profile-card" id="gestion-usuarios">
             <div class="profile-header">
-                <h2>👥 Gestión de Usuarios</h2>
+                <h2><?= emoji('people', '1.2rem') ?> Gestión de Usuarios</h2>
             </div>
             <p style="color:#aaa; font-size:0.85rem; margin-bottom:16px;">
                 Crea cuentas de acceso para tus trabajadores y propietarios. El usuario tendrá el formato <strong style="color:#a8d5ab;">nombre@miolivar.es</strong>
@@ -209,7 +209,7 @@ $title = 'Mi Perfil - MiOlivar.es';
         <!-- Sección de notificaciones -->
         <div class="profile-card" id="notificaciones">
             <div class="profile-header">
-                <h2>🔔 Notificaciones</h2>
+                <h2><?= emoji('bell', '1.2rem') ?> Notificaciones</h2>
             </div>
 
             <div id="notif-config" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
@@ -690,7 +690,7 @@ function initPerfil() {
             showPwMessage('Error de conexión', 'error');
         } finally {
             pwBtn.disabled = false;
-            pwBtn.textContent = '🔒 Cambiar Contraseña';
+            pwBtn.innerHTML = '<?= emoji('lock') ?> Cambiar Contraseña';
         }
     });
 
@@ -704,11 +704,11 @@ function initPerfil() {
     // ── Notificaciones ───────────────────────────────────────────────────
     var basePath = window._APP_BASE_PATH || '';
     var tiposLabels = {
-        'itv':            { icon: '🚗', label: 'ITV de vehículos', desc: 'Te avisará 30 días antes del vencimiento de la ITV de tus vehículos.' },
-        'cuentas':        { icon: '💰', label: 'Cierre de cuentas mensuales', desc: 'Recordatorio a principio de mes para revisar el cierre económico del mes anterior.' },
-        'jornadas':       { icon: '📋', label: 'Jornadas reales a gestoría', desc: 'Aparece 2 días antes de fin de mes y permanece hasta el día 5 del mes siguiente.' },
-        'fitosanitario':  { icon: '🧪', label: 'Fitosanitarios (stock bajo)', desc: 'Te avisa cuando algún producto fitosanitario tiene stock en 0.' },
-        'personalizado':  { icon: '📌', label: 'Recordatorios personalizados', desc: 'Recordatorios que tú mismo creas con fecha y descripción.' }
+        'itv':            { icon: '<?= emoji('car') ?>', label: 'ITV de vehículos', desc: 'Te avisará 30 días antes del vencimiento de la ITV de tus vehículos.' },
+        'cuentas':        { icon: '<?= emoji('moneybag') ?>', label: 'Cierre de cuentas mensuales', desc: 'Recordatorio a principio de mes para revisar el cierre económico del mes anterior.' },
+        'jornadas':       { icon: emojiSvg('clipboard'), label: 'Jornadas reales a gestoría', desc: 'Aparece 2 días antes de fin de mes y permanece hasta el día 5 del mes siguiente.' },
+        'fitosanitario':  { icon: emojiSvg('testtube'), label: 'Fitosanitarios (stock bajo)', desc: 'Te avisa cuando algún producto fitosanitario tiene stock en 0.' },
+        'personalizado':  { icon: emojiSvg('pin'), label: 'Recordatorios personalizados', desc: 'Recordatorios que tú mismo creas con fecha y descripción.' }
     };
 
     // Cargar configuración de tipos
@@ -770,14 +770,14 @@ function initPerfil() {
 
             var html = '';
             items.forEach(function(r) {
-                var icono = tiposLabels[r.tipo]?.icon || '📌';
+                var icono = tiposLabels[r.tipo]?.icon || emojiSvg('pin');
                 var titulo = r.tipo === 'cuentas' ? r.descripcion : r.titulo;
                 html += '<div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:#333; border-radius:8px; margin-bottom:6px;">'
                     + '<span>' + icono + '</span>'
                     + '<div style="flex:1; color:#ddd; font-size:0.85rem;">' + titulo
                     + (r.fecha_referencia ? '<br><span style="color:#888;font-size:0.75rem;">' + r.fecha_referencia + '</span>' : '')
                     + '</div>'
-                    + '<button onclick="eliminarRecordatorio(' + r.id + ', this)" style="background:none;border:none;color:#666;cursor:pointer;font-size:1rem;" title="Eliminar">🗑</button>'
+                    + '<button onclick="eliminarRecordatorio(' + r.id + ', this)" style="background:none;border:none;color:#666;cursor:pointer;font-size:1rem;" title="Eliminar">' + emojiSvg('trash') + '</button>'
                     + '</div>';
             });
             list.innerHTML = html;
@@ -912,7 +912,7 @@ function renderUsuariosActivos() {
         html += '</div>';
         html += '<div class="usuario-acciones">';
         html += '<button onclick="abrirModalCambiarPass(' + p.usuario_id + ', \'' + escapeHtml(p._nombreCompleto).replace(/'/g, "\\'") + '\')" title="Cambiar contraseña">🔑</button>';
-        html += '<button class="btn-eliminar-usuario" onclick="eliminarUsuarioVinculado(' + p.usuario_id + ', \'' + escapeHtml(p._nombreCompleto).replace(/'/g, "\\'") + '\')" title="Eliminar usuario">🗑</button>';
+        html += '<button class="btn-eliminar-usuario" onclick="eliminarUsuarioVinculado(' + p.usuario_id + ', \'' + escapeHtml(p._nombreCompleto).replace(/'/g, "\\'") + '\')" title="Eliminar usuario">' + emojiSvg('trash') + '</button>';
         html += '</div></div>';
     });
 

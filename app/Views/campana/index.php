@@ -1,7 +1,7 @@
 <?php $title = 'Campañas de Recolección'; ?>
 <div class="container">
     <div class="page-header">
-        <h2>🫒 Campañas</h2>
+        <h2><?= emoji('olive', '1.2rem') ?> Campañas</h2>
         <button class="btn btn-primary" onclick="abrirModalNueva()">+ Nueva campaña</button>
     </div>
 
@@ -53,7 +53,7 @@
 <div id="modalNueva" class="modal" style="display:none;">
     <div class="modal-content" style="max-width:420px;">
         <div class="modal-header">
-            <h3>🫒 Nueva campaña</h3>
+            <h3><?= emoji('olive', '1.2rem') ?> Nueva campaña</h3>
             <button class="modal-close" onclick="cerrarModalNueva()">&times;</button>
         </div>
         <form id="formNuevaCampana" style="padding:1rem 1.5rem 1.5rem;">

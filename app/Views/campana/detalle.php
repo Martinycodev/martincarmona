@@ -9,7 +9,7 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
     <!-- Cabecera -->
     <div class="page-header">
         <div>
-            <h2>🫒 Campaña <?= htmlspecialchars($campana['nombre']) ?>
+            <h2><?= emoji('olive', '1.2rem') ?> Campaña <?= htmlspecialchars($campana['nombre']) ?>
                 <?php if ($cerrada): ?>
                     <span style="font-size:.8rem; color:#6b7280; font-weight:400;">✓ Cerrada</span>
                 <?php else: ?>
@@ -25,7 +25,7 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
         <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
             <?php if (!$cerrada): ?>
                 <button class="btn btn-primary" onclick="abrirModalRegistro()">+ Añadir registro</button>
-                <button class="btn btn-secondary" onclick="abrirModalCerrar()">🔒 Cerrar campaña</button>
+                <button class="btn btn-secondary" onclick="abrirModalCerrar()"><?= emoji('lock') ?> Cerrar campaña</button>
             <?php endif; ?>
             <a href="<?= $this->url('/campana') ?>" class="btn btn-secondary">← Volver</a>
         </div>
@@ -84,7 +84,7 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
     <!-- Reporte por parcela (solo si hay datos) -->
     <?php if (!empty($reporte)): ?>
     <div class="card" style="margin-top:1.5rem;">
-        <h3 style="padding:1rem 1.5rem 0; margin:0;">📊 Reporte por parcela</h3>
+        <h3 style="padding:1rem 1.5rem 0; margin:0;"><?= emoji('chart', '1.2rem') ?> Reporte por parcela</h3>
         <table class="styled-table">
             <thead>
                 <tr>
@@ -185,7 +185,7 @@ $totalBeneficio = array_sum(array_column($registros, 'beneficio'));
 <div id="modalCerrar" class="modal" style="display:none;">
     <div class="modal-content" style="max-width:420px;">
         <div class="modal-header">
-            <h3>🔒 Cerrar campaña</h3>
+            <h3><?= emoji('lock', '1.2rem') ?> Cerrar campaña</h3>
             <button class="modal-close" onclick="cerrarModalCerrar()">&times;</button>
         </div>
         <form id="formCerrar" style="padding:1rem 1.5rem 1.5rem;">

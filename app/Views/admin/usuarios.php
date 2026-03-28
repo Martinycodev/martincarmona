@@ -15,7 +15,7 @@ $rolLabels = [
 ?>
 <div class="container">
     <div class="page-header">
-        <h2>👥 Gestión de Usuarios</h2>
+        <h2><?= emoji('people', '1.2rem') ?> Gestión de Usuarios</h2>
     </div>
 
     <div style="display:flex; justify-content:flex-end; margin-bottom:.75rem;">
@@ -45,9 +45,9 @@ $rolLabels = [
                     </td>
                     <td style="font-size:.85rem;">
                         <?php if ($u['propietario_nombre']): ?>
-                            👤 <?= htmlspecialchars($u['propietario_nombre']) ?>
+                            <?= emoji('person') ?> <?= htmlspecialchars($u['propietario_nombre']) ?>
                         <?php elseif ($u['trabajador_nombre']): ?>
-                            👷 <?= htmlspecialchars($u['trabajador_nombre']) ?>
+                            <?= emoji('worker') ?> <?= htmlspecialchars($u['trabajador_nombre']) ?>
                         <?php else: ?>
                             <span style="color:#9ca3af;">—</span>
                         <?php endif; ?>

@@ -14,7 +14,7 @@
         <button id="img-lightbox-close" onclick="closeLightbox()" title="Cerrar" aria-label="Cerrar visor de imagen">✕</button>
         <img id="img-lightbox-img" src="" alt="" onclick="event.stopPropagation()">
         <button id="img-lightbox-delete" class="btn btn-danger btn-sm" onclick="event.stopPropagation()">
-            🗑 Eliminar imagen
+            <?= emoji('trash') ?> Eliminar imagen
         </button>
     </div>
 
@@ -44,10 +44,10 @@
         <!-- Footer con acciones secundarias -->
         <div class="sidebar-footer">
             <button id="sidebar-duplicate-btn" class="btn btn-secondary btn-sm">
-                📋 Duplicar tarea
+                <?= emoji('clipboard') ?> Duplicar tarea
             </button>
             <button id="sidebar-delete-btn" class="btn btn-danger btn-sm">
-                🗑 Eliminar tarea
+                <?= emoji('trash') ?> Eliminar tarea
             </button>
         </div>
     </div>
@@ -106,13 +106,13 @@
 
             // Mapa de iconos por tipo de notificación
             var iconos = {
-                'itv': '🚗', 'cuentas': '💰', 'fitosanitario': '🧪',
-                'jornadas': '📋', 'personalizado': '📌'
+                'itv': emojiSvg('car'), 'cuentas': emojiSvg('moneybag'), 'fitosanitario': emojiSvg('testtube'),
+                'jornadas': emojiSvg('clipboard'), 'personalizado': emojiSvg('pin')
             };
 
             var html = '';
             items.forEach(function(r) {
-                var icono = iconos[r.tipo] || '📌';
+                var icono = iconos[r.tipo] || emojiSvg('pin');
                 var titulo = r.tipo === 'cuentas' ? r.descripcion : r.titulo;
                 // Formatear fecha_referencia a dd/mm/aaaa si existe
                 var fechaStr = '';

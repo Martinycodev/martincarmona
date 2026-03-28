@@ -263,7 +263,7 @@ class BaseController
                 </head>
                 <body>
                     <div class="container">
-                        <h1>🔒 403 - Token CSRF Inválido</h1>
+                        <h1>' . emoji('lock', '1.2rem') . ' 403 - Token CSRF Inválido</h1>
                         <p><strong>La petición fue rechazada por motivos de seguridad.</strong></p>
                         <p>El token CSRF es inválido, ha expirado, o no está presente.</p>
                         <p>Esto puede ocurrir si:</p>

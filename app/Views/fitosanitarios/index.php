@@ -7,7 +7,7 @@
     <!-- Pestañas -->
     <div style="display:flex; gap:.5rem; margin-bottom:1rem; border-bottom:2px solid var(--border-color, #e5e7eb);">
         <button id="tabInventarioBtn" class="tab-btn tab-active" onclick="mostrarTab('inventario')">📦 Inventario</button>
-        <button id="tabAplicacionesBtn" class="tab-btn" onclick="mostrarTab('aplicaciones')">📋 Aplicaciones</button>
+        <button id="tabAplicacionesBtn" class="tab-btn" onclick="mostrarTab('aplicaciones')"><?= emoji('clipboard') ?> Aplicaciones</button>
     </div>
 
     <!-- TAB: Inventario -->
@@ -75,7 +75,7 @@
                         <td><?= $ap['cantidad'] !== null ? number_format($ap['cantidad'], 2, ',', '.') : '—' ?></td>
                         <td>
                             <?php if ($ap['tarea_id']): ?>
-                                <span style="color:#6b7280; font-size:.8rem;">🔗 Auto (tarea #<?= intval($ap['tarea_id']) ?>)</span>
+                                <span style="color:#6b7280; font-size:.8rem;"><?= emoji('link') ?> Auto (tarea #<?= intval($ap['tarea_id']) ?>)</span>
                             <?php else: ?>
                                 <span style="color:#6b7280; font-size:.8rem;">Manual</span>
                             <?php endif; ?>

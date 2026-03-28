@@ -3,7 +3,7 @@ $title = 'Gestión de Trabajadores';
 ?>
 <div class="container">
     <div class="page-header">
-        <h1>👷‍♂️ Gestión de Trabajadores</h1>
+        <h1><?= emoji('worker', '1.2rem') ?> Gestión de Trabajadores</h1>
         <div class="header-actions">
             <button class="btn btn-primary" onclick="openCreateModal()">➕ Nuevo Trabajador</button>
             <a href="<?= $this->url('/datos') ?>" class="btn btn-secondary">← Volver</a>
@@ -23,7 +23,7 @@ $title = 'Gestión de Trabajadores';
                     <label>Foto de perfil:</label>
                     <div class="foto-preview-wrap">
                         <div class="foto-preview foto-preview--empty" id="createFotoPreview">
-                            <span>👤</span>
+                            <span><?= emoji('person') ?></span>
                         </div>
                         <label class="btn btn-secondary btn-sm foto-btn" for="createFotoInput">
                             Seleccionar imagen
@@ -68,7 +68,7 @@ $title = 'Gestión de Trabajadores';
                     <div class="form-group form-group--checkbox">
                         <label class="checkbox-label">
                             <input type="checkbox" id="cuadrilla" name="cuadrilla" value="1">
-                            <span>👷 Parte de la cuadrilla</span>
+                            <span><?= emoji('worker') ?> Parte de la cuadrilla</span>
                         </label>
                         <small class="form-hint">Los trabajadores de la cuadrilla se pueden asignar a tareas en bloque.</small>
                     </div>
@@ -113,13 +113,13 @@ $title = 'Gestión de Trabajadores';
                         <?php if ($fotoSrc): ?>
                             <img src="<?= htmlspecialchars($fotoSrc) ?>" alt="Foto" class="worker-avatar">
                         <?php else: ?>
-                            <div class="worker-avatar worker-avatar--empty">👤</div>
+                            <div class="worker-avatar worker-avatar--empty"><?= emoji('person') ?></div>
                         <?php endif; ?>
                     </td>
                     <td>
                         <?= htmlspecialchars($trabajador['nombre'] ?? '-') ?>
                         <?php if ($esCuadrilla): ?>
-                            <span class="badge-cuadrilla" title="Cuadrilla">👷</span>
+                            <span class="badge-cuadrilla" title="Cuadrilla"><?= emoji('worker') ?></span>
                         <?php endif; ?>
                     </td>
                     <td><?= htmlspecialchars($trabajador['telefono'] ?? '-') ?></td>
@@ -148,7 +148,7 @@ $title = 'Gestión de Trabajadores';
                     <tr>
                         <td colspan="4" class="no-data">
                             <div class="no-tareas">
-                                <h3>👷 No hay trabajadores registrados</h3>
+                                <h3><?= emoji('worker') ?> No hay trabajadores registrados</h3>
                                 <p>Empieza añadiendo tu primer trabajador al equipo.</p>
                                 <button class="btn btn-primary" onclick="openCreateModal()">➕ Nuevo Trabajador</button>
                             </div>
@@ -168,13 +168,13 @@ $title = 'Gestión de Trabajadores';
                             <?php if ($fotoSrc): ?>
                                 <img src="<?= htmlspecialchars($fotoSrc) ?>" alt="Foto" class="worker-avatar">
                             <?php else: ?>
-                                <div class="worker-avatar worker-avatar--empty">👤</div>
+                                <div class="worker-avatar worker-avatar--empty"><?= emoji('person') ?></div>
                             <?php endif; ?>
                         </td>
                         <td>
                             <?= htmlspecialchars($trabajador['nombre'] ?? '-') ?>
                             <?php if ($esCuadrilla): ?>
-                                <span class="badge-cuadrilla" title="Cuadrilla">👷</span>
+                                <span class="badge-cuadrilla" title="Cuadrilla"><?= emoji('worker') ?></span>
                             <?php endif; ?>
                             <?php if ($estaDeBaja): ?>
                                 <span class="badge-baja" title="Dado de baja el <?= date('d-m-Y', strtotime($trabajador['fecha_baja'])) ?>">🚫 Baja</span>
@@ -204,7 +204,7 @@ $title = 'Gestión de Trabajadores';
                     <label>Foto de perfil:</label>
                     <div class="foto-preview-wrap">
                         <div class="foto-preview" id="editFotoPreview">
-                            <span>👤</span>
+                            <span><?= emoji('person') ?></span>
                         </div>
                         <label class="btn btn-secondary btn-sm foto-btn" for="editFotoInput">
                             Cambiar foto
@@ -248,7 +248,7 @@ $title = 'Gestión de Trabajadores';
                     <div class="form-group form-group--checkbox">
                         <label class="checkbox-label">
                             <input type="checkbox" id="editCuadrilla" name="cuadrilla" value="1">
-                            <span>👷 Parte de la cuadrilla</span>
+                            <span><?= emoji('worker') ?> Parte de la cuadrilla</span>
                         </label>
                     </div>
                 </div>

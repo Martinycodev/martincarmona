@@ -79,7 +79,7 @@ Mejoras adicionales (marzo 2026): touch drag & drop en dashboard (chips pendient
 
 - [ ] Crear vista general campaña, días trabajados, y lluvias. como en mi excel. (buscar referencia)
 
-- [ ] El logo de campaña de las aceitunas, que es un emogi, en chrome de w10 no se ve. Puede ser un problema de la tipografía o del diseño por lo que podemos planear cambiar todos los iconos por imagenes svg o iconos que se guarden en local. Para que en todos los navegadores se vea igual.
+- [ ] El logo de campaña de las aceitunas, que es un emogi, en chrome de w10 no se ve. Puede ser un problema de la tipografía o del diseño por lo que podemos planear cambiar todos los iconos por imagenes svg o iconos que se guarden en local. Para que en todos los navegadores se vea igual. Quedan sin migrar los emojis que no estaban en el mapa (~15: ✏️, 🔍, 📅, 💧, 💊, 🛠️, 🌾, 🚚, 🧑‍💼, 📝, ⏳, 🎛️, 💡, 🌤️, 🌿, etc.). Si quieres los añadimos descargando más SVGs y ampliando el mapa.
 
 - [x] Al crear una tarea con abrir riego, se crea un registro automáticamente en la bbdd de riego. Lo malo es que al borrar la tarea no se elimina el registro. por lo que tenemos dos opciones, que se borre por cascade, o que tengamos la opcion de borrar el registro en la tabla riego.
 

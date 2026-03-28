@@ -519,17 +519,17 @@
                 <p class="lp-feature-desc">Organiza tus fincas con ficha detallada por parcela, propietario y datos de superficie.</p>
             </div>
             <div class="lp-feature-card" data-feature="personal">
-                <span class="lp-feature-icon">👷</span>
+                <span class="lp-feature-icon"><?= emoji('worker') ?></span>
                 <div class="lp-feature-title">Control de Personal</div>
                 <p class="lp-feature-desc">Registra trabajadores, asigna roles y lleva el seguimiento de jornadas y contratos.</p>
             </div>
             <div class="lp-feature-card" data-feature="tareas">
-                <span class="lp-feature-icon">📋</span>
+                <span class="lp-feature-icon"><?= emoji('clipboard') ?></span>
                 <div class="lp-feature-title">Planificación de Tareas</div>
                 <p class="lp-feature-desc">Crea, asigna y monitoriza cada faena: poda, riego, recolección y tratamientos.</p>
             </div>
             <div class="lp-feature-card" data-feature="economia">
-                <span class="lp-feature-icon">💶</span>
+                <span class="lp-feature-icon"><?= emoji('euro') ?></span>
                 <div class="lp-feature-title">Control Económico</div>
                 <p class="lp-feature-desc">Registra gastos e ingresos por temporada y genera reportes para tomar mejores decisiones.</p>
             </div>
@@ -539,12 +539,12 @@
                 <p class="lp-feature-desc">Programa y registra los riegos por parcela, controlando consumos y fechas de cada intervención.</p>
             </div>
             <div class="lp-feature-card" data-feature="fitosanitario">
-                <span class="lp-feature-icon">🧪</span>
+                <span class="lp-feature-icon"><?= emoji('testtube') ?></span>
                 <div class="lp-feature-title">Control Fitosanitario</div>
                 <p class="lp-feature-desc">Registra tratamientos, productos y dosis aplicados. Mantén el historial fitosanitario de cada parcela.</p>
             </div>
             <div class="lp-feature-card" data-feature="portales">
-                <span class="lp-feature-icon">👥</span>
+                <span class="lp-feature-icon"><?= emoji('people') ?></span>
                 <div class="lp-feature-title">Portal Propietarios y Trabajadores</div>
                 <p class="lp-feature-desc">Acceso diferenciado por rol: los propietarios consultan sus parcelas y los trabajadores sus tareas asignadas.</p>
             </div>
@@ -737,17 +737,17 @@
                     body: '<p>Controla cada parcela con una ficha completa: referencia catastral, superficie, número de olivos, tipo de plantación y propietario asignado.</p><ul><li>Vincula parcelas a propietarios con DNI y datos de contacto</li><li>Consulta qué tareas se han realizado en cada finca</li><li>Filtra parcelas inactivas o con alerta de mantenimiento</li><li>Integración con SIGPAC para verificar datos catastrales</li></ul>'
                 },
                 personal: {
-                    icon: '👷',
+                    icon: emojiSvg('worker'),
                     title: 'Control de Personal',
                     body: '<p>Gestiona tu equipo de trabajo completo: altas, bajas, documentación y control de jornadas.</p><ul><li>Registro de trabajadores con datos de Seguridad Social</li><li>Control de horas trabajadas por tarea y mes</li><li>Generación de deuda mensual automática por trabajador</li><li>Historial completo de pagos y saldos pendientes</li></ul>'
                 },
                 tareas: {
-                    icon: '📋',
+                    icon: emojiSvg('clipboard'),
                     title: 'Planificación de Tareas',
                     body: '<p>Crea, asigna y monitoriza cada faena del campo con calendario visual y asignación múltiple.</p><ul><li>Calendario interactivo con vista diaria, semanal y mensual</li><li>Asignación de trabajadores, parcelas y tipos de trabajo por tarea</li><li>Estados: pendiente, en curso y completada</li><li>Sidebar lateral para edición rápida sin cambiar de pantalla</li></ul>'
                 },
                 economia: {
-                    icon: '💶',
+                    icon: emojiSvg('euro'),
                     title: 'Control Económico',
                     body: '<p>Registra cada euro que entra y sale de tu explotación agrícola con categorización automática.</p><ul><li>Movimientos de tipo gasto e ingreso por categoría</li><li>Diferenciación entre cuenta bancaria y efectivo</li><li>Dashboard con gráficos de evolución mensual</li><li>Reportes exportables en CSV y PDF</li></ul>'
                 },
@@ -757,12 +757,12 @@
                     body: '<p>Programa y registra los riegos por parcela, manteniendo un historial detallado de consumos.</p><ul><li>Registro de fecha, duración y caudal por intervención</li><li>Historial de riego por parcela con filtros por fecha</li><li>Alertas de parcelas que llevan mucho tiempo sin riego</li><li>Resumen mensual de consumo total</li></ul>'
                 },
                 fitosanitario: {
-                    icon: '🧪',
+                    icon: emojiSvg('testtube'),
                     title: 'Control Fitosanitario',
                     body: '<p>Cumple con la normativa manteniendo un registro completo de productos y aplicaciones.</p><ul><li>Inventario de productos fitosanitarios con control de stock</li><li>Registro de aplicaciones: parcela, producto, dosis y fecha</li><li>Historial por parcela para inspecciones y auditorías</li><li>Alertas de productos sin stock o próximos a caducar</li></ul>'
                 },
                 portales: {
-                    icon: '👥',
+                    icon: emojiSvg('people'),
                     title: 'Portal Propietarios y Trabajadores',
                     body: '<p>Cada usuario accede solo a lo que necesita, con una experiencia adaptada a su rol.</p><ul><li><strong>Propietario:</strong> consulta sus parcelas, tareas realizadas y campañas (sin precios)</li><li><strong>Trabajador:</strong> ve sus tareas asignadas, calendario personal y deuda mensual</li><li>Acceso seguro con credenciales individuales</li><li>Interfaz simplificada para cada perfil</li></ul>'
                 },

@@ -189,7 +189,7 @@
                         <p>La plataforma evoluciona con las necesidades del campo y las normativas del sector.</p>
                     </div>
                     <div class="about-value-card">
-                        <span class="icon">🫒</span>
+                        <span class="icon"><?= emoji('olive') ?></span>
                         <h3>Especialistas en olivar</h3>
                         <p>Centrados en el sector del aceite de oliva, con conocimiento directo de la realidad del cultivo.</p>
                     </div>
