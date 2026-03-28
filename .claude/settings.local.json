@@ -67,7 +67,9 @@
       "Bash(npx --yes @anthropic-ai/claude-code --version)",
       "Bash(php -l app/Controllers/PerfilController.php)",
       "Bash(php -l app/Views/perfil/index.php)",
-      "Bash(php -l routes/web.php)"
+      "Bash(php -l routes/web.php)",
+      "Bash(find /c/xampp/htdocs/martincarmona/app/Views -type d -name *dashboard* -o -type d -name *propietario* -o -type d -name *trabajador*)",
+      "Bash(find /c/xampp/htdocs/martincarmona -type f -name *migration* -o -name *Dump.sql)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Martin\\Desktop"

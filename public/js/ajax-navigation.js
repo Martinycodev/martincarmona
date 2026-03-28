@@ -160,6 +160,16 @@ class AjaxNavigation {
             const newContent = doc.querySelector('.container') || doc.querySelector('main') || doc.body;
 
             if (newContent) {
+                // Sincronizar token CSRF del DOM con el del servidor
+                // (previene 403 cuando la sesión se regenera o restaura)
+                const newToken = response.headers.get('X-CSRF-TOKEN');
+                if (newToken) {
+                    const meta = document.querySelector('meta[name="csrf-token"]');
+                    if (meta) {
+                        meta.setAttribute('content', newToken);
+                    }
+                }
+
                 // Recoger <style> que estén fuera del .container (ej. vistas con style antes del div)
                 let extraStyles = '';
                 doc.querySelectorAll('style').forEach(s => {
@@ -250,10 +260,11 @@ class AjaxNavigation {
     }
 
     loadExternalScript(src) {
-        // Verificar si el script ya está cargado
+        // Si el script ya está cargado, eliminarlo y volver a cargarlo
+        // para que se re-ejecute (necesario para scripts de vista como trabajos.js)
         const existingScript = document.querySelector(`script[src="${src}"]`);
         if (existingScript) {
-            return;
+            existingScript.remove();
         }
 
         const script = document.createElement('script');

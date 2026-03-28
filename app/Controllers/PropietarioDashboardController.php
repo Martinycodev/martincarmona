@@ -21,13 +21,26 @@ class PropietarioDashboardController extends BaseController
         $db = \Database::connect();
 
         // Datos del propietario
-        $stmt = $db->prepare("SELECT id, nombre, apellidos FROM propietarios WHERE id = ?");
+        $stmt = $db->prepare("SELECT id, nombre, apellidos, id_user FROM propietarios WHERE id = ?");
         $stmt->bind_param("i", $propietarioId);
         $stmt->execute();
         $propietario = $stmt->get_result()->fetch_assoc();
         $stmt->close();
 
         if (!$propietario) { $db->close(); $this->redirect('/'); return; }
+
+        // Nombre de la empresa (usuario propietario del propietario)
+        $nombreEmpresa = '';
+        if (!empty($propietario['id_user'])) {
+            $stmt = $db->prepare("SELECT name FROM usuarios WHERE id = ? AND rol IN ('empresa','admin')");
+            $stmt->bind_param("i", $propietario['id_user']);
+            $stmt->execute();
+            $empresa = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+            if ($empresa) {
+                $nombreEmpresa = $empresa['name'];
+            }
+        }
 
         // Sus parcelas
         $stmt = $db->prepare("
@@ -41,13 +54,57 @@ class PropietarioDashboardController extends BaseController
         $parcelas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
-        // Tareas realizadas en sus parcelas (últimas 50, sin horas ni precios)
-        $tareas = [];
+        // Filtro por año y paginación
+        $yearFilter  = intval($_GET['year'] ?? date('Y'));
+        $page        = max(1, intval($_GET['page'] ?? 1));
+        $porPagina   = 15;
+        $offset      = ($page - 1) * $porPagina;
+
+        // Años disponibles para el selector (años con tareas realizadas en sus parcelas)
+        $anosDisponibles = [];
+
+        // Tareas realizadas en sus parcelas — paginadas y filtradas por año
+        $tareas      = [];
+        $totalTareas = 0;
+
         if (!empty($parcelas)) {
             $parcelaIds   = array_column($parcelas, 'id');
             $placeholders = implode(',', array_fill(0, count($parcelaIds), '?'));
             $types        = str_repeat('i', count($parcelaIds));
 
+            // Años disponibles
+            $stmt = $db->prepare("
+                SELECT DISTINCT YEAR(t.fecha) AS ano
+                FROM tareas t
+                JOIN tarea_parcelas tp ON t.id = tp.tarea_id
+                WHERE tp.parcela_id IN ($placeholders) AND t.estado = 'realizada' AND t.fecha IS NOT NULL
+                ORDER BY ano DESC
+            ");
+            $stmt->bind_param($types, ...$parcelaIds);
+            $stmt->execute();
+            $anosDisponibles = array_column($stmt->get_result()->fetch_all(MYSQLI_ASSOC), 'ano');
+            $stmt->close();
+
+            // Si el año seleccionado no tiene tareas, usar el año actual
+            if (!in_array($yearFilter, $anosDisponibles) && !empty($anosDisponibles)) {
+                $yearFilter = $anosDisponibles[0];
+            }
+
+            // Total de tareas para la paginación
+            $stmt = $db->prepare("
+                SELECT COUNT(DISTINCT t.id) AS total
+                FROM tareas t
+                JOIN tarea_parcelas tp ON t.id = tp.tarea_id
+                WHERE tp.parcela_id IN ($placeholders) AND t.estado = 'realizada'
+                  AND YEAR(t.fecha) = ?
+            ");
+            $typesCount = $types . 'i';
+            $stmt->bind_param($typesCount, ...[...$parcelaIds, $yearFilter]);
+            $stmt->execute();
+            $totalTareas = intval($stmt->get_result()->fetch_assoc()['total']);
+            $stmt->close();
+
+            // Tareas paginadas
             $stmt = $db->prepare("
                 SELECT DISTINCT t.id, t.fecha, t.titulo, t.descripcion,
                        GROUP_CONCAT(DISTINCT p.nombre ORDER BY p.nombre SEPARATOR ', ') AS parcelas_nombres
@@ -55,25 +112,35 @@ class PropietarioDashboardController extends BaseController
                 JOIN tarea_parcelas tp ON t.id = tp.tarea_id
                 JOIN parcelas p ON tp.parcela_id = p.id
                 WHERE tp.parcela_id IN ($placeholders) AND t.estado = 'realizada'
+                  AND YEAR(t.fecha) = ?
                 GROUP BY t.id
                 ORDER BY t.fecha DESC
-                LIMIT 50
+                LIMIT ? OFFSET ?
             ");
-            $stmt->bind_param($types, ...$parcelaIds);
+            $typesPag = $types . 'iii';
+            $stmt->bind_param($typesPag, ...[...$parcelaIds, $yearFilter, $porPagina, $offset]);
             $stmt->execute();
             $tareas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             $stmt->close();
         }
+
+        $totalPaginas = ceil($totalTareas / $porPagina);
 
         $db->close();
 
         $nombreCompleto = $propietario['nombre'] . ($propietario['apellidos'] ? ' ' . $propietario['apellidos'] : '');
 
         $this->render('propietario/index', [
-            'propietario' => $propietario,
-            'parcelas'    => $parcelas,
-            'tareas'      => $tareas,
-            'user'        => ['name' => $nombreCompleto],
+            'propietario'     => $propietario,
+            'nombreEmpresa'   => $nombreEmpresa,
+            'parcelas'        => $parcelas,
+            'tareas'          => $tareas,
+            'yearFilter'      => $yearFilter,
+            'anosDisponibles' => $anosDisponibles,
+            'page'            => $page,
+            'totalPaginas'    => $totalPaginas,
+            'totalTareas'     => $totalTareas,
+            'user'            => ['name' => $nombreCompleto],
         ]);
     }
 
@@ -108,26 +175,68 @@ class PropietarioDashboardController extends BaseController
             return;
         }
 
-        // Tareas realizadas en esta parcela (últimas 30)
+        // Filtro por año y paginación
+        $yearFilter = intval($_GET['year'] ?? date('Y'));
+        $page       = max(1, intval($_GET['page'] ?? 1));
+        $porPagina  = 15;
+        $offset     = ($page - 1) * $porPagina;
+
+        // Años disponibles
+        $stmt = $db->prepare("
+            SELECT DISTINCT YEAR(t.fecha) AS ano
+            FROM tareas t
+            JOIN tarea_parcelas tp ON t.id = tp.tarea_id
+            WHERE tp.parcela_id = ? AND t.estado = 'realizada' AND t.fecha IS NOT NULL
+            ORDER BY ano DESC
+        ");
+        $stmt->bind_param("i", $parcelaId);
+        $stmt->execute();
+        $anosDisponibles = array_column($stmt->get_result()->fetch_all(MYSQLI_ASSOC), 'ano');
+        $stmt->close();
+
+        if (!in_array($yearFilter, $anosDisponibles) && !empty($anosDisponibles)) {
+            $yearFilter = $anosDisponibles[0];
+        }
+
+        // Total de tareas para paginación
+        $stmt = $db->prepare("
+            SELECT COUNT(*) AS total
+            FROM tareas t
+            JOIN tarea_parcelas tp ON t.id = tp.tarea_id
+            WHERE tp.parcela_id = ? AND t.estado = 'realizada' AND YEAR(t.fecha) = ?
+        ");
+        $stmt->bind_param("ii", $parcelaId, $yearFilter);
+        $stmt->execute();
+        $totalTareas = intval($stmt->get_result()->fetch_assoc()['total']);
+        $stmt->close();
+
+        // Tareas paginadas
         $stmt = $db->prepare("
             SELECT t.fecha, t.titulo, t.descripcion
             FROM tareas t
             JOIN tarea_parcelas tp ON t.id = tp.tarea_id
-            WHERE tp.parcela_id = ? AND t.estado = 'realizada'
+            WHERE tp.parcela_id = ? AND t.estado = 'realizada' AND YEAR(t.fecha) = ?
             ORDER BY t.fecha DESC
-            LIMIT 30
+            LIMIT ? OFFSET ?
         ");
-        $stmt->bind_param("i", $parcelaId);
+        $stmt->bind_param("iiii", $parcelaId, $yearFilter, $porPagina, $offset);
         $stmt->execute();
         $tareas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
+        $totalPaginas = ceil($totalTareas / $porPagina);
+
         $nombreCompleto = $parcela['prop_nombre'] . ($parcela['prop_apellidos'] ? ' ' . $parcela['prop_apellidos'] : '');
 
         $this->render('propietario/parcela_detalle', [
-            'parcela' => $parcela,
-            'tareas'  => $tareas,
-            'user'    => ['name' => $nombreCompleto],
+            'parcela'         => $parcela,
+            'tareas'          => $tareas,
+            'yearFilter'      => $yearFilter,
+            'anosDisponibles' => $anosDisponibles,
+            'page'            => $page,
+            'totalPaginas'    => $totalPaginas,
+            'totalTareas'     => $totalTareas,
+            'user'            => ['name' => $nombreCompleto],
         ]);
     }
 }

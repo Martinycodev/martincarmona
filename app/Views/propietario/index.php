@@ -6,6 +6,9 @@
             <?= htmlspecialchars($propietario['nombre']) ?>
             <?= $propietario['apellidos'] ? htmlspecialchars($propietario['apellidos']) : '' ?>
         </p>
+        <?php if (!empty($nombreEmpresa)): ?>
+        <p style="color:#9ca3af; margin-top:.25rem; font-size:.85rem;">Empresa: <strong style="color:#ccc;"><?= htmlspecialchars($nombreEmpresa) ?></strong></p>
+        <?php endif; ?>
     </div>
 
     <!-- Parcelas -->
@@ -41,11 +44,29 @@
     </div>
 
     <!-- Tareas realizadas -->
-    <h3 style="margin-bottom:.75rem; font-size:1rem; color:#374151;">📋 Trabajos realizados</h3>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; flex-wrap:wrap; gap:.5rem;">
+        <h3 style="margin:0; font-size:1rem; color:#374151;">📋 Trabajos realizados</h3>
+        <?php if (!empty($anosDisponibles)): ?>
+        <div style="display:flex; align-items:center; gap:.5rem;">
+            <label for="year-filter" style="font-size:.85rem; color:#6b7280;">Año:</label>
+            <select id="year-filter" onchange="window.location.href='<?= $this->url('/propietario') ?>?year=' + this.value"
+                style="padding:.35rem .5rem; border-radius:6px; border:1px solid #374151; background:#2a2a2a; color:#ccc; font-size:.85rem;">
+                <?php foreach ($anosDisponibles as $ano): ?>
+                <option value="<?= $ano ?>" <?= $ano == $yearFilter ? 'selected' : '' ?>><?= $ano ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <?php endif; ?>
+    </div>
+
     <div class="card">
         <?php if (empty($tareas)): ?>
-            <p style="color:#6b7280; padding:1.5rem; text-align:center;">Sin trabajos registrados en tus parcelas.</p>
+            <p style="color:#6b7280; padding:1.5rem; text-align:center;">Sin trabajos registrados en <?= $yearFilter ?>.</p>
         <?php else: ?>
+        <!-- Info de resultados -->
+        <p style="padding:.75rem 1rem 0; font-size:.8rem; color:#6b7280; margin:0;">
+            Mostrando <?= count($tareas) ?> de <?= $totalTareas ?> trabajos en <?= $yearFilter ?>
+        </p>
         <table class="styled-table">
             <thead>
                 <tr>
@@ -66,6 +87,34 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
+
+        <!-- Paginación -->
+        <?php if ($totalPaginas > 1): ?>
+        <div style="display:flex; align-items:center; justify-content:center; gap:.5rem; padding:1rem; flex-wrap:wrap;">
+            <?php if ($page > 1): ?>
+            <a href="<?= $this->url('/propietario') ?>?year=<?= $yearFilter ?>&page=<?= $page - 1 ?>"
+               class="btn btn-secondary" style="padding:.4rem .75rem; font-size:.85rem;">← Anterior</a>
+            <?php endif; ?>
+
+            <?php
+            // Mostrar máximo 5 páginas alrededor de la actual
+            $inicio = max(1, $page - 2);
+            $fin    = min($totalPaginas, $page + 2);
+            for ($i = $inicio; $i <= $fin; $i++): ?>
+                <?php if ($i == $page): ?>
+                <span style="padding:.4rem .65rem; background:#4caf50; color:#fff; border-radius:6px; font-size:.85rem; font-weight:600;"><?= $i ?></span>
+                <?php else: ?>
+                <a href="<?= $this->url('/propietario') ?>?year=<?= $yearFilter ?>&page=<?= $i ?>"
+                   style="padding:.4rem .65rem; background:#2a2a2a; color:#ccc; border-radius:6px; font-size:.85rem; text-decoration:none; border:1px solid #374151;"><?= $i ?></a>
+                <?php endif; ?>
+            <?php endfor; ?>
+
+            <?php if ($page < $totalPaginas): ?>
+            <a href="<?= $this->url('/propietario') ?>?year=<?= $yearFilter ?>&page=<?= $page + 1 ?>"
+               class="btn btn-secondary" style="padding:.4rem .75rem; font-size:.85rem;">Siguiente →</a>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
         <?php endif; ?>
     </div>
 </div>

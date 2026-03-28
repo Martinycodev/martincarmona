@@ -62,6 +62,11 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['user_id'])) {
     }
 }
 
+// Enviar token CSRF actual en cabecera de respuesta
+// Esto permite que la navegación AJAX sincronice el meta tag del DOM
+// cuando la sesión se regenera o restaura (ej. cookie "Recuérdame")
+header('X-CSRF-TOKEN: ' . \Core\CsrfMiddleware::generateToken());
+
 // Router
 $router = new Core\Router();
 

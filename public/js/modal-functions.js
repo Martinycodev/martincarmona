@@ -253,9 +253,19 @@ function handleFetchError(error, context = 'operación') {
 }
 
 // Función para manejar respuestas de API
-function handleApiResponse(response, context = 'operación') {
+async function handleApiResponse(response, context = 'operación') {
     if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Intentar leer el mensaje de error del servidor
+        try {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        } catch (parseError) {
+            // Si no es JSON, lanzar con el código de estado
+            if (parseError.message && !parseError.message.includes('HTTP error')) {
+                throw parseError;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
     }
     return response.json();
 }
