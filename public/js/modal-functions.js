@@ -140,6 +140,10 @@ function positionModalInViewport(modal) {
     const modalContent = modal.querySelector('.modal-content');
     if (!modalContent) return;
 
+    // En móvil el CSS ya hace fullscreen (position:fixed inset:0),
+    // no aplicar posicionamiento dinámico que lo desplazaría
+    if (window.innerWidth <= 768) return;
+
     const windowHeight = window.innerHeight;
 
     // Calcular posición Y para centrar en el viewport
