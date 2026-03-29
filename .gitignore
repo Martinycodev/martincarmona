@@ -1,0 +1,25 @@
+# Dependencias
+/vendor/
+/node_modules/
+
+# Build de producción
+/public/dist/
+
+# Variables de entorno
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# Uploads (no versionar media)
+/public/uploads/*
+!/public/uploads/.gitkeep

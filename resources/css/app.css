@@ -1,0 +1,186 @@
+/* ─── Tailwind layers ─────────────────────────────────────── */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Fuentes personalizadas (Fontshare via CDN en layout) ── */
+/* Si prefieres auto-hospedar, descargar y poner en public/fonts/ */
+
+/* ─── Base global ─────────────────────────────────────────── */
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        /* Lenis override (scroll-behavior debe ser auto cuando Lenis está activo) */
+    }
+
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Scrollbar custom */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: #c8a97e; }
+
+    /* Selección de texto */
+    ::selection {
+        background: #c8a97e33;
+        color: #f5f5f5;
+    }
+
+    /* Focus visible accesible */
+    :focus-visible {
+        outline: 2px solid #c8a97e;
+        outline-offset: 3px;
+    }
+}
+
+/* ─── Componentes reutilizables ───────────────────────────── */
+@layer components {
+
+    /* Sección genérica con padding vertical */
+    .section-padding {
+        @apply py-28 lg:py-40 px-6 lg:px-12;
+    }
+
+    /* Contenedor máximo */
+    .container-site {
+        @apply max-w-7xl mx-auto w-full;
+    }
+
+    /* Etiqueta de sección */
+    .section-label {
+        @apply text-accent text-sm font-medium tracking-[0.2em] uppercase mb-4;
+    }
+
+    /* Título de sección */
+    .section-title {
+        @apply font-display font-bold text-fluid-2xl text-light-50 leading-tight;
+    }
+
+    /* Botón primario */
+    .btn-primary {
+        @apply inline-flex items-center gap-2 px-8 py-4 bg-accent text-dark-900 font-bold font-display
+               tracking-wide rounded hover:bg-accent-light transition-all duration-300;
+    }
+
+    /* Botón outline */
+    .btn-outline {
+        @apply inline-flex items-center gap-2 px-8 py-4 border border-light-200/20 text-light-200
+               font-medium rounded hover:border-accent/50 hover:text-accent transition-all duration-300;
+    }
+
+    /* Línea decorativa */
+    .divider {
+        @apply w-12 h-px bg-accent;
+    }
+
+    /* Card de portfolio */
+    .portfolio-card {
+        @apply relative overflow-hidden bg-dark-800 group cursor-pointer;
+    }
+
+    .portfolio-card-overlay {
+        @apply absolute inset-0 bg-dark-900/60 opacity-0 group-hover:opacity-100
+               transition-opacity duration-400 flex items-center justify-center;
+    }
+
+    /* Nav link activo */
+    .nav-link.active {
+        @apply text-light-50;
+    }
+
+    /* Header scrolled */
+    #site-header.scrolled {
+        @apply bg-dark-900/90 backdrop-blur-md border-b border-dark-700;
+    }
+
+    /* Tag de tecnología */
+    .tech-tag {
+        @apply px-4 py-2 bg-dark-700 border border-dark-600 text-light-400 text-sm rounded font-medium
+               hover:border-accent/40 hover:text-light-200 transition-colors duration-300;
+    }
+
+    /* Formulario de contacto */
+    .form-field {
+        @apply w-full bg-dark-800 border border-dark-600 text-light-50 px-5 py-4 rounded
+               placeholder:text-light-600 focus:outline-none focus:border-accent/60
+               transition-colors duration-300;
+    }
+
+    .form-label {
+        @apply block text-light-400 text-sm font-medium mb-2;
+    }
+}
+
+/* ─── Utilidades extra ────────────────────────────────────── */
+@layer utilities {
+
+    /* Texto con clip gradient */
+    .text-gradient {
+        background: linear-gradient(135deg, #f5f5f5 0%, #c8a97e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Backdrop blur con soporte variable */
+    .glass {
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        background: rgba(10, 10, 10, 0.7);
+    }
+
+    /* Ruido de textura */
+    .noise::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        pointer-events: none;
+        opacity: 0.04;
+    }
+}
+
+/* ─── Animaciones de reveal (controladas por GSAP) ───────── */
+
+/* Estado inicial: oculto */
+.reveal-left,
+.reveal-right,
+.reveal-fade {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.reveal-left  { transform: translateX(-30px); }
+.reveal-right { transform: translateX(30px); }
+
+/* Estado visible (GSAP lo añade) */
+.revealed {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+/* ─── Hero animaciones iniciales ─────────────────────────── */
+.hero-label,
+.hero-title,
+.hero-subtitle,
+.hero-ctas,
+.hero-scroll {
+    opacity: 0;
+}
+
+/* ─── Cursor personalizado ────────────────────────────────── */
+@media (hover: hover) and (pointer: fine) {
+    body { cursor: none; }
+    a, button { cursor: none; }
+
+    #cursor.is-hovering {
+        transform: translate(-50%, -50%) scale(3);
+        background: transparent;
+        border: 1px solid #c8a97e;
+    }
+}

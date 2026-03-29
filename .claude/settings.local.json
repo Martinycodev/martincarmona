@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(composer install:*)",
+      "Bash(npm run:*)"
+    ]
+  }
+}
