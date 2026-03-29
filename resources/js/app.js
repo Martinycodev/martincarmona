@@ -86,37 +86,24 @@ function initAnchorLinks() {
 
 // ── Cursor personalizado ───────────────────────────────────────
 function initCursor() {
-    const cursor      = document.getElementById('cursor');
-    const cursorTrail = document.getElementById('cursor-trail');
+    const cursor = document.getElementById('cursor');
+    if (!cursor) return;
 
-    if (!cursor || !cursorTrail) return;
-
-    // Solo en dispositivos con cursor real
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-    let mx = -100, my = -100;
-
+    // Mover con CSS transform directo — sin lag, sin GSAP
     document.addEventListener('mousemove', (e) => {
-        mx = e.clientX;
-        my = e.clientY;
-        gsap.to(cursor,      { x: mx, y: my, duration: 0.05 });
-        gsap.to(cursorTrail, { x: mx, y: my, duration: 0.25 });
+        cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
     });
 
     // Hover sobre interactivos
-    const interactives = document.querySelectorAll('a, button, [data-cursor-hover]');
-    interactives.forEach((el) => {
+    document.querySelectorAll('a, button, [data-cursor-hover]').forEach((el) => {
         el.addEventListener('mouseenter', () => cursor.classList.add('is-hovering'));
         el.addEventListener('mouseleave', () => cursor.classList.remove('is-hovering'));
     });
 
-    // Ocultar al salir de la ventana
-    document.addEventListener('mouseleave', () => {
-        gsap.to([cursor, cursorTrail], { opacity: 0, duration: 0.3 });
-    });
-    document.addEventListener('mouseenter', () => {
-        gsap.to([cursor, cursorTrail], { opacity: 1, duration: 0.3 });
-    });
+    document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+    document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
 }
 
 

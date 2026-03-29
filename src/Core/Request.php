@@ -6,12 +6,22 @@ class Request
 {
     public function getPath(): string
     {
-        $path = $_SERVER['REQUEST_URI'] ?? '/';
-        $pos  = strpos($path, '?');
-        if ($pos === false) {
-            return $path;
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+
+        // Eliminar query string
+        $pos = strpos($uri, '?');
+        if ($pos !== false) {
+            $uri = substr($uri, 0, $pos);
         }
-        return substr($path, 0, $pos);
+
+        // Eliminar el subdirectorio base (ej: /martincarmona1/public)
+        // para que las rutas funcionen igual en localhost y en producción
+        $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+        if ($scriptDir !== '' && str_starts_with($uri, $scriptDir)) {
+            $uri = substr($uri, strlen($scriptDir));
+        }
+
+        return $uri === '' ? '/' : $uri;
     }
 
     public function getMethod(): string

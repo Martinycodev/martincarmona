@@ -27,8 +27,7 @@
 <body class="bg-dark-900 text-light-50 font-body antialiased overflow-x-hidden">
 
     <!-- Cursor personalizado (sólo desktop) -->
-    <div id="cursor"       class="hidden lg:block fixed w-3 h-3 bg-accent rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 transition-transform duration-150 mix-blend-difference" aria-hidden="true"></div>
-    <div id="cursor-trail" class="hidden lg:block fixed w-8 h-8 border border-accent/40 rounded-full pointer-events-none z-[9998] -translate-x-1/2 -translate-y-1/2 transition-all duration-300" aria-hidden="true"></div>
+    <div id="cursor" aria-hidden="true"></div>
 
     <!-- Navegación -->
     <header id="site-header" class="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 transition-all duration-600"

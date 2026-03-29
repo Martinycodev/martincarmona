@@ -175,12 +175,29 @@
 
 /* ─── Cursor personalizado ────────────────────────────────── */
 @media (hover: hover) and (pointer: fine) {
-    body { cursor: none; }
-    a, button { cursor: none; }
+    body, a, button { cursor: none; }
+
+    #cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        background: #c8a97e;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        margin-left: -5px;
+        margin-top: -5px;
+        transition: width 0.2s ease, height 0.2s ease, background 0.2s ease, margin 0.2s ease;
+    }
 
     #cursor.is-hovering {
-        transform: translate(-50%, -50%) scale(3);
+        width: 32px;
+        height: 32px;
+        margin-left: -16px;
+        margin-top: -16px;
         background: transparent;
-        border: 1px solid #c8a97e;
+        border: 1.5px solid #c8a97e;
     }
 }
