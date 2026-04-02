@@ -184,26 +184,20 @@
             animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
         }
 
-        .subtitle-wrap {
-            margin-top: clamp(1.2rem, 3vw, 2rem);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            justify-content: center;
-            gap: 0.6em;
-            opacity: 0;
-            animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
-        }
-
         .subtitle {
+            margin-top: clamp(1.2rem, 3vw, 2rem);
             font-size: clamp(0.85rem, 1.8vw, 1.15rem);
             font-weight: 400;
             color: var(--text-secondary);
             letter-spacing: 0.01em;
             line-height: 1.5;
+            opacity: 0;
+            animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
         }
 
         .ai-tag {
+            display: inline-block;
+            margin-top: 0.9em;
             font-size: clamp(0.6rem, 1vw, 0.72rem);
             font-weight: 500;
             color: var(--green-bright);
@@ -213,8 +207,8 @@
             border: 1px solid rgba(155, 197, 61, 0.25);
             border-radius: 100px;
             white-space: nowrap;
-            position: relative;
-            top: -0.08em;
+            opacity: 0;
+            animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.1s forwards;
         }
 
         /* ── Email ── */
@@ -255,14 +249,8 @@
 
         /* ── Responsive fine-tuning ── */
         @media (max-width: 480px) {
-            .subtitle-wrap {
-                flex-direction: column;
-                align-items: center;
-                gap: 0.8em;
-            }
-
             .ai-tag {
-                top: 0;
+                margin-top: 1em;
             }
         }
 

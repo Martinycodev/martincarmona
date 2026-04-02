@@ -12,10 +12,8 @@
         <p class="greeting">Hola!, soy</p>
         <h1 class="name">Martin Carmona</h1>
 
-        <div class="subtitle-wrap">
-            <p class="subtitle">Aprendiz de Fotógrafo, Videógrafo, Diseñador y Desarrollador</p>
-            <span class="ai-tag">Fan de la IA</span>
-        </div>
+        <p class="subtitle">Aprendiz de Fotógrafo, Videógrafo, Diseñador y Desarrollador</p>
+        <span class="ai-tag">Fan de la IA</span>
     </div>
 
     <div class="contact">
