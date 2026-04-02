@@ -45,32 +45,58 @@ if ($ref !== "refs/heads/{$branch}") {
     exit("Ignored: push to {$ref}");
 }
 
-// Ejecutar deploy
+// ─── Ejecutar comando con proc_open ──────────────────────
+function run(string $command, string $cwd): array
+{
+    $descriptors = [
+        0 => ['pipe', 'r'],
+        1 => ['pipe', 'w'],
+        2 => ['pipe', 'w'],
+    ];
+
+    $process = proc_open($command, $descriptors, $pipes, $cwd);
+
+    if (!is_resource($process)) {
+        return ['output' => 'Failed to start process', 'code' => 1];
+    }
+
+    fclose($pipes[0]);
+    $stdout = stream_get_contents($pipes[1]);
+    $stderr = stream_get_contents($pipes[2]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+
+    $code = proc_close($process);
+
+    $output = trim($stdout . "\n" . $stderr);
+    return ['output' => $output, 'code' => $code];
+}
+
+// Deploy
 $commands = [
-    "cd {$repoPath}",
     "git fetch origin {$branch}",
     "git reset --hard origin/{$branch}",
-    "composer install --no-dev --optimize-autoloader 2>&1",
+    "composer install --no-dev --optimize-autoloader",
 ];
 
-$fullCommand = implode(' && ', $commands);
-$output = [];
-$returnCode = 0;
+$log = "[" . date('Y-m-d H:i:s') . "] Deploy started\n";
+$failed = false;
 
-exec($fullCommand, $output, $returnCode);
+foreach ($commands as $cmd) {
+    $result = run($cmd, $repoPath);
+    $log .= "> {$cmd}\n{$result['output']}\n";
 
-// Log
-$log = sprintf(
-    "[%s] Deploy %s (branch: %s, exit: %d)\n%s\n%s\n",
-    date('Y-m-d H:i:s'),
-    $returnCode === 0 ? 'OK' : 'FAIL',
-    $branch,
-    $returnCode,
-    str_repeat('-', 50),
-    implode("\n", $output)
-);
+    if ($result['code'] !== 0) {
+        $log .= "FAILED (exit {$result['code']})\n";
+        $failed = true;
+        break;
+    }
+}
+
+$log .= $failed ? "Deploy FAILED\n" : "Deploy OK\n";
+$log .= str_repeat('-', 50) . "\n";
 
 file_put_contents($logFile, $log, FILE_APPEND);
 
-http_response_code($returnCode === 0 ? 200 : 500);
-echo $returnCode === 0 ? 'Deploy OK' : 'Deploy failed — check log';
+http_response_code($failed ? 500 : 200);
+echo $failed ? 'Deploy failed — check log' : 'Deploy OK';
