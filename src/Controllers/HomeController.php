@@ -10,8 +10,11 @@ class HomeController extends Controller
 {
     public function index(Request $request, Response $response): string
     {
-        return $this->render('home/index', [
-            'title' => 'Martín Carmona — Desarrollador Web, Diseñador & Creador Visual',
+        // Placeholder provisional mientras se desarrolla la web definitiva
+        $this->setLayout('placeholder');
+
+        return $this->render('home/placeholder', [
+            'title' => 'Martín Carmona — Fotógrafo, Videógrafo, Diseñador y Desarrollador',
         ]);
     }
 }
