@@ -8,8 +8,7 @@
  */
 
 // ─── Configuración ───────────────────────────────────────
-$secret    = '
-66db4530fbf51481fef70205f1f88d9cdd1644ddbd2a531d3517e1415e2b3a57'; // El mismo que pongas en GitHub
+$secret    = '66db4530fbf51481fef70205f1f88d9cdd1644ddbd2a531d3517e1415e2b3a57'; // El mismo que pongas en GitHub
 $repoPath  = '/home/u873002419/domains/martincarmona.com/public_html';
 $branch    = 'main';
 $logFile   = __DIR__ . '/deploy.log';
