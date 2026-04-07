@@ -11,6 +11,13 @@ use App\Controllers\HomeController;
 
 $router->get('/', [HomeController::class, 'index']);
 
+// ┌─────────────────────────────────────────────────────────┐
+// │  MÓDULO PLANNER (Fase 7) — aislado bajo /planner/*      │
+// │  Las rutas viven en su propio archivo para no mezclar   │
+// │  con la marca personal pública.                         │
+// └─────────────────────────────────────────────────────────┘
+require_once __DIR__ . '/Modules/Planner/routes.php';
+
 // use App\Controllers\PortfolioController;
 // use App\Controllers\ContactController;
 //

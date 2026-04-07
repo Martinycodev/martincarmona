@@ -23,3 +23,7 @@ Thumbs.db
 # Uploads (no versionar media)
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# Database
+/database/*.txt
+

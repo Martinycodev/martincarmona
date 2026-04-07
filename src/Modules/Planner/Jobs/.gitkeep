@@ -1,0 +1,3 @@
+# Jobs del módulo Planner
+# Tareas invocadas por el cron de Hostinger: TickJob (cada minuto),
+# DailyCheckinJob (22:00). Paso 5 y 6.
