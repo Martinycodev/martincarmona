@@ -13,7 +13,7 @@
         <h1 class="name">Martin Carmona</h1>
 
         <p class="subtitle">Aprendiz de Fotógrafo, Videógrafo, Diseñador y Desarrollador</p>
-        <span class="ai-tag">Fan de la IA</span>
+        <span class="ai-tag">Super Fan de la IA</span>
     </div>
 
     <div class="contact">
