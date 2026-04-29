@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Despedida Pitu · Planning, equipo y compra</title>
+<style>
+  :root {
+    color-scheme: dark;
+
+    --bg-page:        #0e1014;
+    --bg-card:        #161a21;
+    --bg-elevated:    #1d2129;
+    --bg-hover:       #232831;
+
+    --text-primary:   #ecedef;
+    --text-secondary: #b3b8c2;
+    --text-tertiary:  #7d8694;
+
+    --border-strong:  #353b46;
+    --border-med:     #262b34;
+    --border-soft:    #1d2129;
+
+    --accent:         #f0a93b;
+    --accent-soft:    #3a2a10;
+
+    --info-bg:        #14283d;   --info-fg:    #7cb8ff;
+    --success-bg:     #0f2e22;   --success-fg: #5fd5a3;
+    --warning-bg:     #3a2a10;   --warning-fg: #f0a93b;
+
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    --focus-ring: 0 0 0 2px var(--bg-page), 0 0 0 4px var(--accent);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-page);
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px 20px 48px;
+  }
+
+  header.page {
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  header.page h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 4px;
+  }
+  header.page p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border-soft);
+    padding-bottom: 6px;
+  }
+  .tab {
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: inherit;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    transition: background-color .15s, color .15s, border-color .15s;
+  }
+  .tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+  .tab[aria-selected="true"] {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border-color: var(--border-med);
+  }
+  .tab:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .section[hidden] { display: none; }
+
+  /* Day blocks */
+  .day-block { margin-bottom: 32px; }
+  .day-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin: 0 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  /* Timeline */
+  .timeline { display: flex; flex-direction: column; }
+  .event { display: flex; gap: 16px; position: relative; }
+  .event:not(:last-child) .dot-col::after {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    bottom: -2px;
+    background: var(--border-med);
+  }
+  .dot-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 18px;
+    flex-shrink: 0;
+    padding-top: 6px;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px var(--bg-page);
+    z-index: 1;
+  }
+  .dot.green  { background: #2bc48a; }
+  .dot.amber  { background: #f0a93b; }
+  .dot.blue   { background: #5aa6f0; }
+  .dot.purple { background: #a097f0; }
+  .dot.coral  { background: #ee7757; }
+  .dot.gray   { background: #8a92a0; }
+
+  .event-body { flex: 1; padding-bottom: 22px; }
+  .event-time {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-bottom: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .event-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .event-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    margin: 6px 4px 0 0;
+    font-weight: 500;
+  }
+  .badge.activity { background: var(--info-bg);    color: var(--info-fg); }
+  .badge.food     { background: var(--success-bg); color: var(--success-fg); }
+  .badge.key      { background: var(--warning-bg); color: var(--warning-fg); }
+
+  /* Items lists */
+  .category { margin-bottom: 24px; }
+  .cat-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin: 0 0 10px;
+  }
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 6px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .item {
+    font-size: 13px;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    border: 1px solid var(--border-med);
+  }
+
+  /* Compra */
+  .compra-section { margin-bottom: 24px; }
+  .compra-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+  }
+  .compra-sub {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin: 0 0 10px;
+  }
+  .compra-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 5px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .compra-item {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 6px 10px;
+    background: var(--bg-card);
+    border-radius: 6px;
+    border: 1px solid var(--border-med);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .compra-item::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .nota {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+
+  .personas-note {
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-med);
+  }
+  .personas-note strong { color: var(--text-primary); font-weight: 600; }
+
+  /* Skip link */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .skip-link:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    display: inline-block;
+    padding: 8px 12px;
+    background: var(--accent);
+    color: #1a1207;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 16px 14px 40px; }
+    header.page h1 { font-size: 19px; }
+    .items-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .compra-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+  <header class="page">
+    <h1>Despedida Pitu · 1–3 de mayo</h1>
+    <p>Planning del fin de semana, equipo personal y lista de la compra.</p>
+  </header>
+
+  <main id="main">
+    <div class="tabs" role="tablist" aria-label="Secciones del plan">
+      <button class="tab" id="tab-planning" role="tab" aria-selected="true"  aria-controls="panel-planning" tabindex="0">Planning</button>
+      <button class="tab" id="tab-equipo"   role="tab" aria-selected="false" aria-controls="panel-equipo"   tabindex="-1">Equipo personal</button>
+      <button class="tab" id="tab-compra"   role="tab" aria-selected="false" aria-controls="panel-compra"   tabindex="-1">Lista de la compra</button>
+    </div>
+
+    <!-- PLANNING -->
+    <section class="section" id="panel-planning" role="tabpanel" aria-labelledby="tab-planning" tabindex="0">
+
+      <div class="day-block">
+        <h2 class="day-header">Viernes 1 de mayo</h2>
+        <div class="timeline">
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot green"></div></div>
+            <div class="event-body">
+              <div class="event-time">12:00</div>
+              <div class="event-title">Llegada a Cazorla pueblo</div>
+              <div class="event-desc">Quedada en un punto central del pueblo. Primer contacto con el novio (Jesús no sabe nada, ¡sorpresa!).</div>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot amber"></div></div>
+            <div class="event-body">
+              <div class="event-time">14:00</div>
+              <div class="event-title">Comida en Cazorla</div>
+              <div class="event-desc">Restaurante en el pueblo. Primera comida del viaje, tomaros el tiempo, no hay prisa.</div>
+              <span class="badge food">Comida fuera</span>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot blue"></div></div>
+            <div class="event-body">
+              <div class="event-time">16:30</div>
+              <div class="event-title">Desplazamiento al camping</div>
+              <div class="event-desc">Montar tiendas, distribuir el espacio, instalarse. Cuanto antes mejor para tener la tarde libre.</div>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot purple"></div></div>
+            <div class="event-body">
+              <div class="event-time">18:00 – 20:00</div>
+              <div class="event-title">Tiempo libre / primer juego</div>
+              <div class="event-desc">Ratos para estrenar el ambiente: frisbee, cartas, petanca, lo que salga. Ideal para ir rompiendo el hielo.</div>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot coral"></div></div>
+            <div class="event-body">
+              <div class="event-time">21:00</div>
+              <div class="event-title">Cena en el camping</div>
+              <div class="event-desc">Barbacoa o camping gas. Con tiempo para hacer los preparativos antes de que oscurezca del todo.</div>
+              <span class="badge food">Cena propia</span>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot gray"></div></div>
+            <div class="event-body">
+              <div class="event-time">23:00+</div>
+              <div class="event-title">Noche de despedida</div>
+              <div class="event-desc">Juegos, anécdotas, actividades del novio… la noche es vuestra.</div>
+              <span class="badge key">Momento clave</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="day-block">
+        <h2 class="day-header">Sábado 2 de mayo</h2>
+        <div class="timeline">
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot amber"></div></div>
+            <div class="event-body">
+              <div class="event-time">08:00</div>
+              <div class="event-title">Desayuno en el camping</div>
+              <div class="event-desc">Rápido y energético, hay que estar listos. Café, fruta, tostadas o lo que tengáis preparado.</div>
+              <span class="badge food">Desayuno propio</span>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot blue"></div></div>
+            <div class="event-body">
+              <div class="event-time">09:30</div>
+              <div class="event-title">Salida hacia los kayaks</div>
+              <div class="event-desc">Llegar con margen al punto de inicio del descenso.</div>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot green"></div></div>
+            <div class="event-body">
+              <div class="event-time">10:00 – 13:30</div>
+              <div class="event-title">Descenso en kayak por el Guadalquivir</div>
+              <div class="event-desc">Actividad principal del viaje. Calculad ~3 horas de agua más traslados y equipación.</div>
+              <span class="badge activity">Actividad principal</span>
+              <span class="badge key">¡Sorpresa!</span>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot amber"></div></div>
+            <div class="event-body">
+              <div class="event-time">14:00</div>
+              <div class="event-title">Comida en el camping</div>
+              <div class="event-desc">De vuelta al campamento, comida para reponer fuerzas. Algo sencillo y contundente.</div>
+              <span class="badge food">Comida propia</span>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot coral"></div></div>
+            <div class="event-body">
+              <div class="event-time">16:00 – 20:00</div>
+              <div class="event-title">Actividad inventada de tarde</div>
+              <div class="event-desc">El momento creativo del viaje. Olimpiadas de despedida, gymkana, pruebas del novio, o lo que se os ocurra en el momento.</div>
+              <span class="badge activity">Actividad libre</span>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot purple"></div></div>
+            <div class="event-body">
+              <div class="event-time">21:30</div>
+              <div class="event-title">Cena barbacoa</div>
+              <div class="event-desc">La gran cena de la despedida. Con todo el rato del mundo para disfrutarla.</div>
+              <span class="badge food">Cena propia</span>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot gray"></div></div>
+            <div class="event-body">
+              <div class="event-time">Noche</div>
+              <div class="event-title">Sobremesa, juegos y lo que salga</div>
+              <div class="event-desc">La noche más larga. Guardad energía para esto.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="day-block">
+        <h2 class="day-header">Domingo 3 de mayo</h2>
+        <div class="timeline">
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot amber"></div></div>
+            <div class="event-body">
+              <div class="event-time">09:00 – 10:00</div>
+              <div class="event-title">Desayuno y levantarse con calma</div>
+              <div class="event-desc">El domingo manda el cuerpo. Sin prisas.</div>
+              <span class="badge food">Desayuno propio</span>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot blue"></div></div>
+            <div class="event-body">
+              <div class="event-time">10:00 – 12:00</div>
+              <div class="event-title">Recogida del camping</div>
+              <div class="event-desc">Desmontar tiendas, recoger basura, limpiar la zona. Entre 8 es rápido si cada uno hace su parte.</div>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="dot-col" aria-hidden="true"><div class="dot green"></div></div>
+            <div class="event-body">
+              <div class="event-time">12:30</div>
+              <div class="event-title">Decisión: ¿comemos allí o nos vamos?</div>
+              <div class="event-desc">Según el cuerpo y el ambiente: una última comida juntos en Cazorla o cada uno tira para casa con lo que quede de la nevera.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- EQUIPO -->
+    <section class="section" id="panel-equipo" role="tabpanel" aria-labelledby="tab-equipo" tabindex="0" hidden>
+      <p class="personas-note">Lista <strong>por persona</strong> · 8 personas en total · 2 noches en tienda</p>
+
+      <div class="category">
+        <h3 class="cat-title">Dormir</h3>
+        <ul class="items-grid">
+          <li class="item">Tienda de campaña</li>
+          <li class="item">Saco de dormir</li>
+          <li class="item">Esterilla o colchoneta</li>
+          <li class="item">Almohada inflable</li>
+        </ul>
+      </div>
+
+      <div class="category">
+        <h3 class="cat-title">Ropa</h3>
+        <ul class="items-grid">
+          <li class="item">Ropa para kayak (que moje)</li>
+          <li class="item">Ropa de cambio seca (x2)</li>
+          <li class="item">Bañador</li>
+          <li class="item">Chanclas</li>
+          <li class="item">Zapatillas cerradas (kayak)</li>
+          <li class="item">Forro o chaqueta noche</li>
+          <li class="item">Calcetines (x3 pares)</li>
+          <li class="item">Ropa interior extra</li>
+        </ul>
+      </div>
+
+      <div class="category">
+        <h3 class="cat-title">Aseo e higiene</h3>
+        <ul class="items-grid">
+          <li class="item">Neceser</li>
+          <li class="item">Toalla (pequeña)</li>
+          <li class="item">Papel higiénico</li>
+          <li class="item">Toallitas húmedas</li>
+          <li class="item">Desodorante</li>
+        </ul>
+      </div>
+
+      <div class="category">
+        <h3 class="cat-title">Sol y protección</h3>
+        <ul class="items-grid">
+          <li class="item">Protector solar</li>
+          <li class="item">Gorra o sombrero</li>
+          <li class="item">Gafas de sol</li>
+          <li class="item">Crema labial con SPF</li>
+        </ul>
+      </div>
+
+      <div class="category">
+        <h3 class="cat-title">Varios imprescindibles</h3>
+        <ul class="items-grid">
+          <li class="item">Linterna o frontal</li>
+          <li class="item">Botella de agua reutilizable</li>
+          <li class="item">Documentación (DNI)</li>
+          <li class="item">Dinero en efectivo</li>
+          <li class="item">Medicación personal</li>
+          <li class="item">Powerbank</li>
+          <li class="item">Bolsas de basura propias</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- COMPRA -->
+    <section class="section" id="panel-compra" role="tabpanel" aria-labelledby="tab-compra" tabindex="0" hidden>
+      <p class="personas-note">Para <strong>8 personas</strong> · Se asume reparto equitativo entre el grupo</p>
+
+      <div class="compra-section">
+        <h3 class="compra-title">Cena viernes · Camping gas / sencilla</h3>
+        <p class="compra-sub">Algo rápido de preparar al llegar cansados del viaje</p>
+        <ul class="compra-grid">
+          <li class="compra-item">Lomo/chistorra (1 kg)</li>
+          <li class="compra-item">Pan de pueblo o baguettes</li>
+          <li class="compra-item">Quesos variados</li>
+          <li class="compra-item">Latas de conserva (atún, mejillones)</li>
+          <li class="compra-item">Tomates cherry</li>
+          <li class="compra-item">Patatas fritas de bolsa</li>
+        </ul>
+      </div>
+
+      <div class="compra-section">
+        <h3 class="compra-title">Desayuno sábado</h3>
+        <p class="compra-sub">Rápido, antes de los kayaks a las 10h</p>
+        <ul class="compra-grid">
+          <li class="compra-item">Pan de molde o tostadas</li>
+          <li class="compra-item">Mantequilla / mermelada</li>
+          <li class="compra-item">Café soluble o sobres</li>
+          <li class="compra-item">Zumo (tetrabrik)</li>
+          <li class="compra-item">Fruta fácil (plátanos)</li>
+          <li class="compra-item">Barritas o galletas</li>
+        </ul>
+      </div>
+
+      <div class="compra-section">
+        <h3 class="compra-title">Comida sábado · Tras el kayak</h3>
+        <p class="compra-sub">Contundente y fácil de preparar</p>
+        <ul class="compra-grid">
+          <li class="compra-item">Pasta (1,5 kg)</li>
+          <li class="compra-item">Tomate frito (2 botes)</li>
+          <li class="compra-item">Atún en lata (x6)</li>
+          <li class="compra-item">Queso rallado</li>
+          <li class="compra-item">Pan</li>
+          <li class="compra-item">Ensalada mixta o bolsa</li>
+        </ul>
+      </div>
+
+      <div class="compra-section">
+        <h3 class="compra-title">Cena sábado · Barbacoa principal</h3>
+        <p class="compra-sub">La cena grande de la despedida</p>
+        <ul class="compra-grid">
+          <li class="compra-item">Carne (chuletas/pinchos, 2 kg)</li>
+          <li class="compra-item">Chorizo para asar (800 g)</li>
+          <li class="compra-item">Morcilla (500 g)</li>
+          <li class="compra-item">Pan para bocadillos</li>
+          <li class="compra-item">Pimientos y cebolla</li>
+          <li class="compra-item">Alioli / salsas</li>
+          <li class="compra-item">Patatas para foguera</li>
+          <li class="compra-item">Ensalada/guarnición</li>
+        </ul>
+      </div>
+
+      <div class="compra-section">
+        <h3 class="compra-title">Desayuno domingo</h3>
+        <p class="compra-sub">Con lo que sobre del sábado + algo extra</p>
+        <ul class="compra-grid">
+          <li class="compra-item">Magdalenas o bollería</li>
+          <li class="compra-item">Café</li>
+          <li class="compra-item">Fruta</li>
+        </ul>
+      </div>
+
+      <div class="compra-section">
+        <h3 class="compra-title">Bebidas y extras (todo el viaje)</h3>
+        <ul class="compra-grid">
+          <li class="compra-item">Agua (10–12 litros)</li>
+          <li class="compra-item">Refrescos / cervezas</li>
+          <li class="compra-item">Hielo para la nevera</li>
+          <li class="compra-item">Carbón y pastillas de encendido</li>
+          <li class="compra-item">Papel de aluminio</li>
+          <li class="compra-item">Platos y vasos desechables</li>
+          <li class="compra-item">Cubiertos desechables</li>
+          <li class="compra-item">Servilletas</li>
+          <li class="compra-item">Bolsas de basura (x10)</li>
+          <li class="compra-item">Detergente y estropajo</li>
+        </ul>
+      </div>
+
+      <p class="nota">Nota: La comida del viernes al mediodía en Cazorla y la posible del domingo son en restaurante, no necesitáis comprar nada para esas. Si acabáis comiendo el domingo allí, tenéis el stock de bebidas y snacks para el camino de vuelta.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  const tabs   = Array.from(document.querySelectorAll('[role="tab"]'));
+  const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+
+  function activate(idx, focus) {
+    tabs.forEach((t, i) => {
+      const selected = i === idx;
+      t.setAttribute('aria-selected', selected ? 'true' : 'false');
+      t.setAttribute('tabindex', selected ? '0' : '-1');
+      panels[i].hidden = !selected;
+    });
+    if (focus) tabs[idx].focus();
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => activate(i, false));
+    tab.addEventListener('keydown', (e) => {
+      let next = null;
+      if (e.key === 'ArrowRight') next = (i + 1) % tabs.length;
+      else if (e.key === 'ArrowLeft') next = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = tabs.length - 1;
+      if (next !== null) {
+        e.preventDefault();
+        activate(next, true);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
