@@ -160,7 +160,7 @@ $disciplines = [
 
             <!-- Retrato del personaje (recortado vía CSS desde el sheet) -->
             <div class="about__portrait" data-reveal>
-                <img src="/Propuesta%20personaje.png"
+                <img src="/personaje.png"
                      alt="Ilustración tipo Disney de Martín Carmona — músico urbano con sudadera negra y cascos verdes">
                 <div class="about__portrait-mark">
                     <span>Martín, 32</span>
