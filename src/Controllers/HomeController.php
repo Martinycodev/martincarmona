@@ -10,11 +10,13 @@ class HomeController extends Controller
 {
     public function index(Request $request, Response $response): string
     {
-        // Placeholder provisional mientras se desarrolla la web definitiva
-        $this->setLayout('placeholder');
+        // Landing portfolio personal (sin CTAs comerciales).
+        // El layout 'landing' usa la paleta del personaje + tipografía
+        // Fraunces/Switzer, totalmente independiente de Tailwind/Vite.
+        $this->setLayout('landing');
 
-        return $this->render('home/placeholder', [
-            'title' => 'Martín Carmona — Fotógrafo, Videógrafo, Diseñador y Desarrollador',
+        return $this->render('home/landing', [
+            'title' => 'Martín Carmona — Una década convirtiendo ideas en cosas reales',
         ]);
     }
 }
