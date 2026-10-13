@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
+    "polygon-clipping": "^0.15.7",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
     "vite": "^5.3.1"
@@ -17,9 +18,9 @@
   "dependencies": {
     "@alpinejs/focus": "^3.14.1",
     "alpinejs": "^3.14.1",
+    "glightbox": "^3.3.0",
     "gsap": "^3.12.5",
     "lenis": "^1.1.9",
-    "swiper": "^11.1.4",
-    "glightbox": "^3.3.0"
+    "swiper": "^11.1.4"
   }
 }
